@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="线性降维（Linear Dimensionality Reduction）（以PCA为例） 引入 主成分分析（Principal Component Analysis，PCA）是最常见的线性降维方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线性降维与统计学习理论（Linear Dimensionality Reduction &amp; Statistical Learning Theory）">
+<meta property="og:url" content="https://superzlw.github.io/2021/08/03/%E7%BA%BF%E6%80%A7%E9%99%8D%E7%BB%B4%E4%B8%8E%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E7%90%86%E8%AE%BA%EF%BC%88Linear-Dimensionality-Reduction-Statistical-Learning-Theory%EF%BC%89/index.html">
+<meta property="og:site_name" content="SuperZLW&#39;s Blog">
+<meta property="og:description" content="线性降维（Linear Dimensionality Reduction）（以PCA为例） 引入 主成分分析（Principal Component Analysis，PCA）是最常见的线性降维方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210717210412307.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210717213720773.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021071722173678.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210717230441723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021071801252064.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718012915445.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718045939294.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718050457581.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021071805054020.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718062453710.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718063540655.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718064537281.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718065326292.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718174731487.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718182451841.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718220214545.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718220521913.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718220529526.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718221008431.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718221431296.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718221600918.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718222837981.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210718223543362.png#pic_center">
+<meta property="article:published_time" content="2021-08-03T21:23:42.716Z">
+<meta property="article:modified_time" content="2021-08-03T21:38:23.834Z">
+<meta property="article:author" content="super_wzl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210717210412307.png#pic_center">
+
+<link rel="canonical" href="https://superzlw.github.io/2021/08/03/%E7%BA%BF%E6%80%A7%E9%99%8D%E7%BB%B4%E4%B8%8E%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E7%90%86%E8%AE%BA%EF%BC%88Linear-Dimensionality-Reduction-Statistical-Learning-Theory%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>线性降维与统计学习理论（Linear Dimensionality Reduction & Statistical Learning Theory） | SuperZLW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SuperZLW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">小咸鱼的学习历程</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/2021/08/03/%E7%BA%BF%E6%80%A7%E9%99%8D%E7%BB%B4%E4%B8%8E%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E7%90%86%E8%AE%BA%EF%BC%88Linear-Dimensionality-Reduction-Statistical-Learning-Theory%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="super_wzl">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuperZLW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          线性降维与统计学习理论（Linear Dimensionality Reduction & Statistical Learning Theory）
+        </h1>
+
+        <div class="post-meta">
+          <span class="post-time">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-08-03 23:23:42 / 修改时间：23:38:23" itemprop="dateCreated datePublished" datetime="2021-08-03T23:23:42+02:00">2021-08-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">学习总结</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="线性降维linear-dimensionality-reduction以pca为例">线性降维（Linear Dimensionality Reduction）（以PCA为例）</h1>
+<h2 id="引入">引入</h2>
+<p>主成分分析（Principal Component Analysis，PCA）是最常见的线性降维方法。 <span id="more"></span> 拿之前的线性回归举例，对于最小二乘法的线性回归，其求解参数为：<span class="math display">\[\hat{w}=(\hat{X}\hat{X})^{-1}\hat{X}y\]</span>其中<span class="math inline">\(\hat{X}\in \R^{d\times n}\)</span>，<span class="math inline">\(y\in \R^{n\times 1}\)</span>。 若直接求解<span class="math inline">\(d\times d\)</span>的逆矩阵，其复杂度为<span class="math inline">\(O(d^3)\)</span>，所以我们就想找到一个新的维度<span class="math inline">\(d^{new}\)</span>，使其远小于原维度，即<span class="math inline">\(d^{new}&lt;&lt;d\)</span>，但又不能对结果造成很大的影响。 这就引出了PCA，我们要抓住数据的”本质“。</p>
+<h2 id="具体讲解">具体讲解</h2>
+<p>现假设我们的原始数据<span class="math inline">\(X=\left\{x_1,...,x_n\right\}\)</span>，以第<span class="math inline">\(i\)</span>个数据为例，其维度为：<span class="math display">\[x^i\in \R^M\]</span> 然后这第<span class="math inline">\(i\)</span>个数据的低纬度表示法为：<span class="math display">\[a^i\in \R^D, \quad D&lt;&lt;M\]</span>现在要做的就是找到个映射满足：<span class="math display">\[x^i \rightarrow a^i\]</span> 现在我们限制这样的映射为线性方程，即：<span class="math display">\[a^i=Bx^i, \quad B\in \R^{D\times M}\]</span> ———————————————————————————————————————</p>
+<p>在继续之前先补充一个知识点，即是说，任何向量我们都可以改写成下面这样：<span class="math display">\[\pmb{x}=\sum_{i=1}^{M}a_i\pmb{u}_i, \quad其中 \pmb{u}_i^T\pmb{u}_j=\delta_{ij}\]</span> 当<span class="math inline">\(i=j\)</span>时，<span class="math inline">\(\delta_{ij}=1\)</span>，否则等于0，<span class="math inline">\(u_i\)</span>与<span class="math inline">\(u_j\)</span>正交。举个例子如下： <img src="https://img-blog.csdnimg.cn/20210717210412307.png#pic_center" alt="在这里插入图片描述" /> 其中标量参数<span class="math inline">\(a\)</span>可作如下表述： <img src="https://img-blog.csdnimg.cn/20210717213720773.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 也就是说，这个<span class="math inline">\(a_i\)</span>是一个投影结果。</p>
+<p>————————————————————————————————————————</p>
+<p>所以原始向量我们可以写成如下两部分相加的形式：<span class="math display">\[x^n=\sum_{i=1}^{D}a_i\pmb{u}_i+\sum_{j=D+1}^{M}b_j\pmb{u}_j\approx\tilde{x}^n\]</span>其中第一部分就是我们想要的降维后的数据，第二部分是一些<span class="math inline">\(error\)</span>组成的数据。这里的<span class="math inline">\(\tilde{x}^n\)</span>是我们降维之后的数据，也就是第一部分。 我们选择<span class="math inline">\(D\)</span>的标准是最小化数据的均方差，即是： <img src="https://img-blog.csdnimg.cn/2021071722173678.png#pic_center" alt="在这里插入图片描述" /> 我们现在要最小化这个<span class="math inline">\(error\)</span>，首先对<span class="math inline">\(error\)</span>进行改写： <img src="https://img-blog.csdnimg.cn/20210717230441723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 把上图的结论写下来：<span class="math display">\[E(u)=\sum_{n=1}^N||x^n||^2-(u^Tx^n)^2=\sum^N_{n=1}||x^n||^2-(a^n)^2\]</span> 最小化这个函数就等同于最大化后面的那个部分，也可以称为最大化投影的方差，这也就是PCA的基本思想，可以想象成把数据投影到直线上（跟另一篇分类问题里提到的有些类似），然后让数据尽可能分开，也就是让方差尽量大。 所以现在我们有：<span class="math display">\[\max \frac{1}{N}\sum_{n=1}^{N}a_n^2\]</span>注意，此处我们是假设均值为0的情况，否则则用下面的式子：<span class="math display">\[\max \frac{1}{N}\sum_{n=1}^{N}(a_n-\mu)^2\]</span> 但一般我们不会用上面这个，因为计算太麻烦，所以会事先让每个数据都减去均值，以保证零均值的情况，即是：<span class="math display">\[x^n-\overline{x}\]</span> 现在就可以写出如下形式的方程了： <img src="https://img-blog.csdnimg.cn/2021071801252064.png#pic_center" alt="在这里插入图片描述" /> 根据这个图就能发现，把数据投影到<span class="math inline">\(u_1\)</span>上能保留数据更多的信息。现在的问题就是如何找到这条轴，以及沿这条轴的数据的方差。 以下图为例： <img src="https://img-blog.csdnimg.cn/20210718012915445.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 这里<span class="math inline">\(\lambda_i\)</span>是沿方向<span class="math inline">\(u_i\)</span>的边际方差（marginal variance）。</p>
+<p>现假设如下数据，<span class="math display">\[X=[x^1,...,x^n]\in \R^{M\times N}\]</span>是一个有<span class="math inline">\(N\)</span>个<span class="math inline">\(M\)</span>维向量的矩阵，即<span class="math inline">\(x^i\in\R^M\)</span>。另<span class="math inline">\(u\in\R^M\)</span>为一个输入空间的方向，则第<span class="math inline">\(j\)</span>个向量<span class="math inline">\(x^j\)</span>在这个向量<span class="math inline">\(u\)</span>上的投影为：<span class="math display">\[a_j=u^Tx^j=\sum_{i=1}{M}X_{ij}u_i\]</span>目标是找到一个方向<span class="math inline">\(u\)</span>，使所有输入向量的投影的方差达到最大。 首先计算所有投影的均值：<span class="math display">\[\overline{a}=\frac{1}{N}\sum^N_{j=1}a_j=\frac{1}{N}\sum_{j=1}^{N}\sum_{i=1}^{M}X_{ij}u_i=\sum^M_{i=1}u_i\mu_i\]</span>其中<span class="math inline">\(\mu_i=\frac{1}{N}\sum^{N}_{j=1}X_{ij}\)</span> 计算方差为： <img src="https://img-blog.csdnimg.cn/20210718045939294.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 上面的方差也可以用另一个推导，意思一样但比较 简洁： <img src="https://img-blog.csdnimg.cn/20210718050457581.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+<p>其中<span class="math inline">\(\pmb{C}\)</span>为协方差矩阵。在约束<span class="math inline">\(||u||^2=1\)</span>下最大化这个方差，带约束的优化问题就得看拉格朗日了。如下： <img src="https://img-blog.csdnimg.cn/2021071805054020.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 然后就很神奇地出现了特征值-特征向量的等式，其中最大的特征值就是最大方差，其对应的特征向量就是最大方差的方向。 根据上面的结论可得：<span class="math inline">\(\pmb{CU}=\pmb{U}\Lambda\)</span>，其中<span class="math inline">\(\Lambda=diag(\lambda_1,...,\lambda_m)\)</span>，<span class="math inline">\(\pmb{U}=[\pmb{u_1,...,u_M}]\)</span>，分别为特征值构成的对角矩阵以及特征向量构成的矩阵 &gt;注意，这里我们假设矩阵<span class="math inline">\(\pmb{U}\)</span>是正交的，也就是范数为1，且这个对角矩阵的特征值已经按照从大到小排列了</p>
+<p>然后我们就能把协方差矩阵<span class="math inline">\(\pmb{C}\)</span>进行分解：<span class="math display">\[\pmb{C}=\pmb{U}\Lambda\pmb{U}^{-1}\]</span><span class="math display">\[\pmb{C}=\pmb{U}\Lambda\pmb{U}^{T}\]</span> 如下图： <img src="https://img-blog.csdnimg.cn/20210718062453710.png#pic_center" alt="在这里插入图片描述" /> 根据协方差矩阵的定义我们还知道，矩阵<span class="math inline">\(\pmb{C}\)</span>是一个正的实对称矩阵。 对于极小（约等于0）的特征值以及其对应的特征向量，我们就直接舍去，因为他们对于矩阵的信息作用不大。借助提取的特征值我们就能重新构造新的数据集，如下： <img src="https://img-blog.csdnimg.cn/20210718063540655.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" />这种方法计算出来的满足 最小均方误差，即：<span class="math display">\[\min E(\pmb{u_1,...,u_D})=\sum_{n=1}^{N}||\pmb{x}^n-\tilde{\pmb{x}}^n||^2\]</span> 现在这个降维过程就以及大致结束了，做个总结，其步骤大致是：</p>
+<blockquote>
+<ol type="1">
+<li>数据标准化（求解并减去均值）</li>
+<li>求解协方差矩阵并进行分解，提取前<span class="math inline">\(D\)</span>个特征值对应的特征向量（特征值已从大到小排列）</li>
+<li>用如下方法重构数据： <img src="https://img-blog.csdnimg.cn/20210718064537281.png#pic_center" alt="在这里插入图片描述" /></li>
+<li>有时也会将每个维度的方差归一.</li>
+</ol>
+</blockquote>
+<p>现在还剩最后一个问题：怎么选择维度<span class="math inline">\(D\)</span>？ <span class="math inline">\(D\)</span>越大的话近似效果越好，极端情况就是<span class="math inline">\(D=M\)</span>，但这就没意义了。 选择维度<span class="math inline">\(D\)</span>一般有以下两种考量：</p>
+<ol type="1">
+<li>看表现效果，当选取某维度达到我们需要的效果时，就选这个维度<span class="math inline">\(D\)</span>；</li>
+<li>事先定一个值，比如0.9，然后按照下面公式选取所需维度： <img src="https://img-blog.csdnimg.cn/20210718065326292.png#pic_center" alt="在这里插入图片描述" /></li>
+</ol>
+<h2 id="pca的总结与应用">PCA的总结与应用</h2>
+<p>总结：</p>
+<blockquote>
+<p>PCA将数据映射到线性子空间内 PCA最大化映射的方差 PCA最小化重构误差</p>
+</blockquote>
+<p>应用：</p>
+<blockquote>
+<p>PCA允许我们将高维的输入空间转化为低维的特征空间，同时捕捉到数据的本质 PCA为数据找到一个更自然的坐标系(more natural coordinate) PCA 常用于高维输入数据的预处理</p>
+</blockquote>
+<h1 id="统计学习理论statistical-learning-theory">统计学习理论（Statistical Learning Theory）</h1>
+<p>统计学习理论的目的是：我们一开始并不知道正确的模型，而是需要从一组模型中选一个最优的。 这里的最优指的是模型的泛化能力，即不能只在训练数据上误差最小。 既然提到了这类优化，就得引入一个概念——风险（Risk）。 现在我们有一个损失函数：<span class="math display">\[L(y,f(x,w))\]</span>则其经验风险（Empirical risk）为：<span class="math display">\[R_{emp}(w)=\frac{1}{N}\sum_{i=1}^{N}L(y_i,f(x_i,w))\]</span>这里的<span class="math inline">\(N\)</span>是数据点的数量。 举个例子，对于二次方的损失函数，可表示为：<span class="math display">\[R_{emp}(w)=\frac{1}{N}\sum_{i=1}^{N}(y_i-f(x_i,w))^2\]</span></p>
+<p>但在现实中，我们更关注真实风险（True Risk）：<span class="math display">\[R(w)=\int L(y,f(x,w))p(x,y)dxdy=E_{x,y\sim p(x,y)}[L(y,f(x,w))]\]</span>这里的<span class="math inline">\(p(\pmb{x},y)\)</span>是<span class="math inline">\(\pmb{x}\)</span>和<span class="math inline">\(y\)</span>的联合概率密度。 由这个式子可以看出，这个风险是所有数据集的预期误差，是泛化误差的均值。 但这里有一个问题，虽然<span class="math inline">\(p(x,y)\)</span>是确定的，但我们通常无法知道，也就是说我们不能直接计算这个真实风险。</p>
+<p>关于经验误差和真实误差，下面这个图就能很好说明了： <img src="https://img-blog.csdnimg.cn/20210718174731487.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 这三条边界都很好地把数据分开了，也就是说经验误差都是0，但用于测试时效果很可能会有很大差别。 ## 经验风险与真实风险的对比 <img src="https://img-blog.csdnimg.cn/20210718182451841.png#pic_center" alt="在这里插入图片描述" /></p>
+<blockquote>
+<p>真实风险： 优点：具有衡量泛化的能力 缺点：通常我们不知道<span class="math inline">\(p(\pmb{x},y)\)</span></p>
+</blockquote>
+<blockquote>
+<p>经验风险： 优点：不需要知道<span class="math inline">\(p(\pmb{x},y)\)</span> 缺点：无法直接衡量泛化能力 （学习算法通常时最小化经验误差）</p>
+</blockquote>
+<p>当数据的分布非常集中，经验风险可以通过蒙特卡洛采样和求平均近似表示真实风险，当数据集无限大时，这种近似效果会很好。 现给出如下这个图： <img src="https://img-blog.csdnimg.cn/20210718220214545.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 有如下两个假设：</p>
+<ol type="1">
+<li>当训练数据越来越多时，经验风险会收敛于真实风险；</li>
+<li>收敛是均匀的。</li>
+</ol>
+<p>也就是说有如下两个式子： <img src="https://img-blog.csdnimg.cn/20210718220521913.png#pic_center" alt="在这里插入图片描述" /> <img src="https://img-blog.csdnimg.cn/20210718220529526.png#pic_center" alt="在这里插入图片描述" /> 其中的inf, sup分别表示下限和上限。 如果收敛是均匀的，则： <img src="https://img-blog.csdnimg.cn/20210718221008431.png#pic_center" alt="在这里插入图片描述" /> （这里多说一句，如果训练数据很多的话，这个<span class="math inline">\(p^*\)</span>是趋近于0的） 对于<span class="math inline">\((1-p^*)\)</span>的情况，则有： <img src="https://img-blog.csdnimg.cn/20210718221431296.png#pic_center" alt="在这里插入图片描述" /> 根据上面式子以及那副曲线图，可得： <img src="https://img-blog.csdnimg.cn/20210718221600918.png#pic_center" alt="在这里插入图片描述" /> 以上就是收敛特性的推导过程。这里有个重要的<strong>充要</strong>条件：==均匀收敛==。 <strong>经验风险最小化保证了当<span class="math inline">\(N\rightarrow \infty\)</span>时真实风险也最小。</strong></p>
+<h2 id="风险边界risk-bound">风险边界（Risk Bound）</h2>
+<p>思想就是：根据经验风险确定真实风险的上限，也就是说：<span class="math display">\[R(w)\leq R_{emp}(w)+\epsilon(N,p^*,h)\]</span>其中：<span class="math inline">\(N\)</span>是训练数据总数；<span class="math inline">\(p^*\)</span>是遇到边界的概率；<span class="math inline">\(h\)</span>是学习机的学习能力，称为VC维度（VC-dimension）。 学习能力（Learning Power）可用下面这幅图解释： <img src="https://img-blog.csdnimg.cn/20210718222837981.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 就是模型的复杂程度</p>
+<h3 id="vc-dimension">VC-dimension</h3>
+<p>VC全程是Vapnik-Chervonenkis，大概定义就是：</p>
+<blockquote>
+<p>一个函数族的VC维度是指能够被该函数族正确分类的数据点的最大数量（无论数据点的标签配置如何）。 VC维度是对一个分类器的分类能力或者说 "学习能力 "的衡量。</p>
+</blockquote>
+<p>VC维度的确定：对于<span class="math inline">\(\R^n\)</span>的线性分类器（超平面），VC维度为<span class="math inline">\(n+1\)</span>。比如说，对于下图所示的线性分类器(<span class="math inline">\(\R^2\)</span>)，维度为3. <img src="https://img-blog.csdnimg.cn/20210718223543362.png#pic_center" alt="在这里插入图片描述" /> （注：上面这种确定方法只能说是对大多数情况都有效的，但不是全部。）</p>
+<p>==这篇还未写完，后面关于VC维度的其余概念，不太明白在干嘛，先放着，以后有想法了再补充 ==</p>
+
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+      
+    </div>
+
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/03/%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%EF%BC%88Classification%EF%BC%89/" rel="prev" title="分类问题（Classification）">
+      <i class="fa fa-chevron-left"></i> 分类问题（Classification）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/08/03/%E5%90%84%E7%A7%8D%E7%A9%BA%E9%97%B4%E7%9A%84%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/" rel="next" title="【学习随记】各种空间的简单介绍">
+      【学习随记】各种空间的简单介绍 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E9%99%8D%E7%BB%B4linear-dimensionality-reduction%E4%BB%A5pca%E4%B8%BA%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">线性降维（Linear Dimensionality Reduction）（以PCA为例）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E8%AE%B2%E8%A7%A3"><span class="nav-number">1.2.</span> <span class="nav-text">具体讲解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pca%E7%9A%84%E6%80%BB%E7%BB%93%E4%B8%8E%E5%BA%94%E7%94%A8"><span class="nav-number">1.3.</span> <span class="nav-text">PCA的总结与应用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E7%90%86%E8%AE%BAstatistical-learning-theory"><span class="nav-number">2.</span> <span class="nav-text">统计学习理论（Statistical Learning Theory）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A3%8E%E9%99%A9%E8%BE%B9%E7%95%8Crisk-bound"><span class="nav-number">2.1.</span> <span class="nav-text">风险边界（Risk Bound）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#vc-dimension"><span class="nav-number">2.1.1.</span> <span class="nav-text">VC-dimension</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="super_wzl"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">super_wzl</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">super_wzl</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

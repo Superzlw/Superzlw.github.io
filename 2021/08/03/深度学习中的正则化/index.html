@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引入 与其它机器学习方法类似，DNN在训练过程中也会遇到过拟合的现象，尤其是当参数数量多于输入数据量时。为了防止过拟合现象，除了增加训练样本外，最常见的就是各种正则化方法，比如：数据增强、\(L1\) 正则化、\(L2\) 正则化、Dropout、DropConnect 和早停法（Early stopping）等。 下面对这些方法进行逐一介绍。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深度学习中的正则化">
+<meta property="og:url" content="https://superzlw.github.io/2021/08/03/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E5%8C%96/index.html">
+<meta property="og:site_name" content="SuperZLW&#39;s Blog">
+<meta property="og:description" content="引入 与其它机器学习方法类似，DNN在训练过程中也会遇到过拟合的现象，尤其是当参数数量多于输入数据量时。为了防止过拟合现象，除了增加训练样本外，最常见的就是各种正则化方法，比如：数据增强、\(L1\) 正则化、\(L2\) 正则化、Dropout、DropConnect 和早停法（Early stopping）等。 下面对这些方法进行逐一介绍。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-03T21:59:24.919Z">
+<meta property="article:modified_time" content="2021-08-03T22:17:17.463Z">
+<meta property="article:author" content="super_wzl">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://superzlw.github.io/2021/08/03/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E5%8C%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>深度学习中的正则化 | SuperZLW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SuperZLW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">小咸鱼的学习历程</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/2021/08/03/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="super_wzl">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuperZLW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深度学习中的正则化
+        </h1>
+
+        <div class="post-meta">
+          <span class="post-time">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-08-03 23:59:24" itemprop="dateCreated datePublished" datetime="2021-08-03T23:59:24+02:00">2021-08-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-04 00:17:17" itemprop="dateModified" datetime="2021-08-04T00:17:17+02:00">2021-08-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引入">引入</h1>
+<p>与其它机器学习方法类似，DNN在训练过程中也会遇到过拟合的现象，尤其是当参数数量多于输入数据量时。为了防止过拟合现象，除了增加训练样本外，最常见的就是各种正则化方法，比如：数据增强、<span class="math inline">\(L1\)</span> 正则化、<span class="math inline">\(L2\)</span> 正则化、Dropout、DropConnect 和早停法（Early stopping）等。 下面对这些方法进行逐一介绍。 <span id="more"></span> # 正则化方法</p>
+<h2 id="数据增强">1. 数据增强</h2>
+<p>以图像处理为例，我们可以预先将图像做翻转拉伸，亮度调节，随机平移等操作，从而增大模型的训练数据集，增加模型的泛化能力。一般来说，现在在进行深度学习时数据增强已经成为一个必要的操作了。 但要注意的是，这种方法也不能用得太过分，一般来说用这种方法将数据集拓展到两倍已经很够了，如果再继续拓展，意义不大而且会浪费很多时间。 对于图像的数据增强方法可参见另一篇博文【图像的各种预处理方式】。</p>
+<h2 id="l1-l2正则">2. <span class="math inline">\(L1 / L2\)</span>正则</h2>
+<p>L1 / L2正则原理相似，是在损失函数后面加个正则化项，以此对损失函数进行约束，感觉就是用拉格朗日解带约束的优化问题。现假设我们的损失函数为<span class="math inline">\(L(y_i,\hat{y}_i)\)</span>。 这里先写三个概念：</p>
+<ol type="1">
+<li><span class="math inline">\(L0\)</span>正则：向量中非零元素的个数，记作：<span class="math inline">\(||W||_0\)</span>；</li>
+<li><span class="math inline">\(L1\)</span>正则：向量中元素绝对值之和，记作：<span class="math inline">\(||W||_1\)</span>；</li>
+<li><span class="math inline">\(L2\)</span>正则：也就是模，记作：<span class="math inline">\(||W||_2\)</span></li>
+</ol>
+<p>对于单个数据，假设其特征项<span class="math inline">\(X\)</span>为：<span class="math inline">\(x_0,x_1,...,x_N\)</span>，对应的权重项<span class="math inline">\(W\)</span>为：<span class="math inline">\(w_0,w_1,...,w_N\)</span>，为了防止过拟合，即是要减少数据的特征项数<span class="math inline">\(N\)</span>，这里选择通过控制权重项<span class="math inline">\(W\)</span>来控制特征项数<span class="math inline">\(N\)</span>，为什么不通过特征项<span class="math inline">\(X\)</span>呢？因为我们不确定下一个输入数据的特征项有多少，没法控制。也就是说，现在我们要做的就是控制权重项<span class="math inline">\(W\)</span>的项数，使其数目最少。</p>
+<h3 id="l1正则">2.1 <span class="math inline">\(L1\)</span>正则</h3>
+<p>最开始用的其实是<span class="math inline">\(L0\)</span>正则，也就是说我们要同时让损失函数<span class="math inline">\(L(y_i,\hat{y}_i)\)</span>以及<span class="math inline">\(||W||_0\)</span>正则项最小，即是求它们之和最小，</p>
+<blockquote>
+<p><em>补充一点点东西</em> 1. 这里我们也就是要实现参数矩阵<span class="math inline">\(W\)</span>稀疏，现在实现稀疏基本都是用<span class="math inline">\(L1\)</span>正则，不用<span class="math inline">\(L0\)</span>正则； 2. 参数矩阵稀疏通常是为了特征选择和易于解释方面的考虑</p>
+</blockquote>
+<p>但由于<span class="math inline">\(L0\)</span>正则不好计算，所以我们转而求<span class="math inline">\(L1\)</span>正则，通过上面两概念可以知道，这两者在这里的计算意义是类似的，也就是最优凸近似（具体推导看不下去，有兴趣的参看Emmanuel Candes的paper）。 加上<span class="math inline">\(L1\)</span>正则项后新的损失函数如下：<span class="math display">\[L^{new}=L(y_i,\hat{y}_i)+\alpha ||W||_1\]</span>有些地方会写得更具体，如下：<span class="math display">\[J(w,b)=\frac{1}{m}\sum_{i=1}^mL(y_i,\hat{y}_i)+\frac{\lambda}{2m}||w||_1\]</span>反正意思都一样。这里的<span class="math inline">\(\lambda\)</span>属于超参数，也就是我们要自己调的，越大正则化越明显。 由于损失函数变化了，梯度也会跟着变化，也就是会带来梯度更新方向的不同，之后的计算跟以前一样。</p>
+<h3 id="l2正则">2.2 <span class="math inline">\(L2\)</span>正则</h3>
+<p><span class="math inline">\(L2\)</span>是求模，也就是矩阵各元素求平方和再开方，采用<span class="math inline">\(L2\)</span>正则的目的是让各参数趋近于<span class="math inline">\(0\)</span>，也就是让他们最小化。（<span class="math inline">\(L1\)</span>则是让它们等于<span class="math inline">\(0\)</span>，也就是稀疏） 那为什么让参数最小化可以有效防止过拟合呢？通过<span class="math inline">\(L2\)</span>正则可以构造出一个参数都比较小的模型，一方面，对于那些实在不重要的特征，其权重会非常接近于0，但没有等于，影响已经很小了；另一方面，当参数很小时，既使数据变化比较大，其对结果的影响也不会很大，即模型的抗干扰能力会比较强。 其形式和<span class="math inline">\(L1\)</span>基本一样，只要把后面的项改成<span class="math inline">\(L2\)</span>正则即可。</p>
+<h3 id="l1与l2的总结比较">2.3 <span class="math inline">\(L1\)</span>与<span class="math inline">\(L2\)</span>的总结比较</h3>
+<p><span class="math inline">\(L1\)</span>,<span class="math inline">\(L2\)</span>在一些地方也写作LASSO和岭回归（在之前的<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36350188/article/details/118783225">【线性回归】</a>也有提到一些）。 在各种防止过拟合的正则化中，<span class="math inline">\(L2\)</span>防过拟合效果都要优于<span class="math inline">\(L1\)</span>正则，所以与<span class="math inline">\(L1\)</span>相比，正则化一般都是用<span class="math inline">\(L2\)</span>，但当<span class="math inline">\(L1\)</span>正则中的系数<span class="math inline">\(\alpha\)</span>比较大时，也会得到系数极小的最优解，这时的<span class="math inline">\(L1\)</span>也具有防止过拟合的作用。 <span class="math inline">\(L1\)</span>正则由于可以实现稀疏矩阵，所以可以用来当作特征的选择。 有一点或许是需要注意的，在进行<span class="math inline">\(L2\)</span>正则化中，我们把权重变得很小，所以在进入激活函数的时候值是在<span class="math inline">\(0\)</span>附近的，以Sigmoid函数为例，当值在<span class="math inline">\(0\)</span>附近时，其激活函数可看作线性，也就是说整个深度神经网络进行线性化近似了（不确定能不能用这种说法），这即是优点也是缺点，优点是我们把神经网络简化了，这也是实现这种正则化方法的基础；但，由于我们计算的是这种近似线性的东西，当我们要做非常复杂的决策时，这种正则化方法是不适用的。</p>
+<h2 id="dropout">3. Dropout</h2>
+<p>这个就简单写了，因为基本思路不难。Dropout的基本思路是随机去掉神经元，也就是在进行一批数据训练时，我们随机去掉一些神经元，既可以是隐藏层的，也可以是输入层的，然后进行训练，更新参数；然后在下一批数据进来的时候我们要先恢复回最原来的网络结构，再随机去掉一些神经元，更新参数，继续。。。。 需要注意的是，Dropout方法每次更新的都是同一套参数，也就是不会产生新的参数（这点跟Bagging不同，Bagging是每次训练都有自己单独的一套）。 因为Dropout将原始数据分批迭代，用这种正则化方法前提是训练样本足够大，否则会产生欠拟合现象。</p>
+<h2 id="dropconnect">4. DropConnect</h2>
+<p>DropConnect跟Dropout其实很像，Dropout是通过去掉一些神经元来防止过拟合的，而DropConnect则是通过随机选择权重的子集设为<span class="math inline">\(0\)</span>，两种方法都能增强模型的泛化能力，都在模型中引入了稀疏性，但不同的是DropConnect是在权重中引入稀疏性而不是在层的输出向量中引入。</p>
+<h2 id="早停法early-stopping">5. 早停法（Early stopping）</h2>
+<p>训练过神经网络的都知道，当训练次数过多时，模型容易发生过拟合现象，那么我们只要在过拟合之前停止训练就可以了。这就是早停法，也是深度学习中非常常用的一种方法，因为简单又有效。用这种方法我们就要时刻检测验证集的损失，当其开始<strong>持续</strong>上升时，就该停止训练了。</p>
+<p><strong><em>END</em></strong> 先写到这，另外写到后面总觉得这篇有点问题，我好像把正则化和防止过拟合这两个概念混为一谈了？</p>
+<h1 id="参考网站来源">参考网站来源</h1>
+<p>网站1：https://developer.aliyun.com/article/632944</p>
+<p>网站2：https://cloud.tencent.com/developer/article/1486732</p>
+<p>网站3：http://imgtec.eetrend.com/blog/2019/100045162.html</p>
+
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+      
+    </div>
+
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/03/%E3%80%90ML-2020-21%E3%80%91CNN-Self-Attention/" rel="prev" title="【ML-2020/21】CNN & Self-Attention">
+      <i class="fa fa-chevron-left"></i> 【ML-2020/21】CNN & Self-Attention
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/08/03/%E3%80%90ML-2020-21%E3%80%91Generative-Adversarial-Network-GAN-Part-1-%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D/" rel="next" title="【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍">
+      【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA"><span class="nav-number">1.1.</span> <span class="nav-text">1. 数据增强</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#l1-l2%E6%AD%A3%E5%88%99"><span class="nav-number">1.2.</span> <span class="nav-text">2. \(L1 &#x2F; L2\)正则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#l1%E6%AD%A3%E5%88%99"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 \(L1\)正则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#l2%E6%AD%A3%E5%88%99"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 \(L2\)正则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#l1%E4%B8%8El2%E7%9A%84%E6%80%BB%E7%BB%93%E6%AF%94%E8%BE%83"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 \(L1\)与\(L2\)的总结比较</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dropout"><span class="nav-number">1.3.</span> <span class="nav-text">3. Dropout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dropconnect"><span class="nav-number">1.4.</span> <span class="nav-text">4. DropConnect</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A9%E5%81%9C%E6%B3%95early-stopping"><span class="nav-number">1.5.</span> <span class="nav-text">5. 早停法（Early stopping）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E7%BD%91%E7%AB%99%E6%9D%A5%E6%BA%90"><span class="nav-number">2.</span> <span class="nav-text">参考网站来源</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="super_wzl"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">super_wzl</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">super_wzl</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

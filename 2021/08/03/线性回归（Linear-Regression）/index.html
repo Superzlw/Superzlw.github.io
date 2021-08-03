@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引入 回归问题和分类问题以前老是弄混，最直接的记法就是，分类问题是针对离散空间的，就比如说给定一张图片，根据其特征判断这张图片是猫还是狗，这就是分类问题；回归问题的话是针对连续空间的，比如预测距离，概率等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线性回归（Linear Regression）">
+<meta property="og:url" content="https://superzlw.github.io/2021/08/03/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%EF%BC%88Linear-Regression%EF%BC%89/index.html">
+<meta property="og:site_name" content="SuperZLW&#39;s Blog">
+<meta property="og:description" content="引入 回归问题和分类问题以前老是弄混，最直接的记法就是，分类问题是针对离散空间的，就比如说给定一张图片，根据其特征判断这张图片是猫还是狗，这就是分类问题；回归问题的话是针对连续空间的，比如预测距离，概率等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716080914567.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716084632249.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716094220653.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716094315769.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716094531974.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716202619384.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716203235914.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716204651957.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716205115573.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021071621150373.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716212004115.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716212611934.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716213954811.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716214450502.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716215303870.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716222918384.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716231602167.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716231922529.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716232000630.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716232025659.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716232731384.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716232742944.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210716232759263.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="article:published_time" content="2021-08-03T21:23:27.481Z">
+<meta property="article:modified_time" content="2021-08-03T21:33:30.867Z">
+<meta property="article:author" content="super_wzl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210716080914567.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+
+<link rel="canonical" href="https://superzlw.github.io/2021/08/03/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%EF%BC%88Linear-Regression%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>线性回归（Linear Regression） | SuperZLW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SuperZLW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">小咸鱼的学习历程</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/2021/08/03/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%EF%BC%88Linear-Regression%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="super_wzl">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuperZLW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          线性回归（Linear Regression）
+        </h1>
+
+        <div class="post-meta">
+          <span class="post-time">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-08-03 23:23:27 / 修改时间：23:33:30" itemprop="dateCreated datePublished" datetime="2021-08-03T23:23:27+02:00">2021-08-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">学习总结</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引入">引入</h1>
+<p>回归问题和分类问题以前老是弄混，最直接的记法就是，分类问题是针对离散空间的，就比如说给定一张图片，根据其特征判断这张图片是猫还是狗，这就是分类问题；回归问题的话是针对连续空间的，比如预测距离，概率等。 <span id="more"></span></p>
+<h1 id="最小二乘法线性回归least-squares-linear-regression">最小二乘法线性回归（Least Squares Linear Regression）</h1>
+<h2 id="一次项回归">一次项回归</h2>
+<p>给定一组训练数据以及相关的函数值<span class="math inline">\((x_i, y_i)\)</span>（这里的<span class="math inline">\(x_i\)</span>是一组向量）如下：<span class="math display">\[X=\left\{x_1 \in R^d,...,x_n\right\}\]</span><span class="math display">\[Y=\left\{y_1 \in R,...,y_n\right\}\]</span>线性回归的方程如下：<span class="math display">\[x_i^Tw+w_0=y_i\   \forall i =1,...n \]</span>这个等式与最小二乘法分类的等式一样，唯一的区别就是值是连续的。 <span class="math inline">\(w_0\)</span>在这里是一个偏置，即是常见的<span class="math inline">\(bias\)</span>，一般我们会把它整合到权重里，既方便也好算。 最小二乘法线性回归的一般性步骤如下：</p>
+<p><strong>Step 1</strong>：Define： <span class="math display">\[\hat{x}_i=\begin{bmatrix} x_i\\ 1\end{bmatrix}\]</span><span class="math display">\[\hat{w}=\begin{bmatrix} w\\ w_0\end{bmatrix}\]</span> <strong>Step 2</strong>: Rewrite: <span class="math display">\[\hat{x}_i^T\hat{w}=y_i\ \forall i=1,...,n\]</span> <strong>Step 3</strong>: Matrix-vector notation <span class="math display">\[\hat{X}^T\hat{w}=y\]</span>这里<span class="math inline">\(\hat{X}=[\hat{x}_1,...,\hat{x}_n]\)</span>，每个<span class="math inline">\(\hat{x}_i\)</span>都是一个向量，且<span class="math inline">\(y=[y_1,...,y_n]^T\)</span>。 <strong>Step 4</strong>: Fine the least squares solution <img src="https://img-blog.csdnimg.cn/20210716080914567.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 这里就直接解出权重<span class="math inline">\(w\)</span>了，在这一系列的计算里，计算量最大的就是那个<span class="math inline">\(R^{D\times D}\)</span>的逆矩阵，直接计算逆矩阵的话，其复杂度是<span class="math inline">\(O(D^3)\)</span>，所以当<span class="math inline">\(D\)</span>很大时计算成本就很高了，所以一般我们会用下面两种方法：</p>
+<pre><code>1. Gradient descent
+2. Work with fewer dimensions</code></pre>
+<p>这两种方法应该都挺熟悉了，所以这里不做介绍。</p>
+<h2 id="多项式回归polynomial-regression">多项式回归（Polynomial Regression）</h2>
+<p>这是建立在最小二乘回归上的，等式形式跟上面的类似：<span class="math display">\[y(x)=w^T\phi(x)=\sum_{i=0}^{M}w_i\phi_i(x)\]</span> 并且<span class="math inline">\(\phi_0(x)=1\)</span>，<span class="math inline">\(\phi_i(.)\)</span>叫基础方程（basis functions），对于<span class="math inline">\(w\)</span>来说这依旧是个线性方程。 此处的<span class="math inline">\(\phi(x)\)</span>代表多项式，比如说：<span class="math display">\[\phi(x)=(1,x,x^2,x^3)^T\]</span> 举个例子，对于不同degree的多项式，其拟合效果如下： <img src="https://img-blog.csdnimg.cn/20210716084632249.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 对于不同的多项式会出现欠拟合或者过拟合的现象。</p>
+<h1 id="回归的最大似然法maximum-likelihood-approach-to-regression">回归的最大似然法（Maximum Likelihood Approach to Regression）</h1>
+<h2 id="概率回归probabilistic-regression">概率回归（Probabilistic Regression）</h2>
+<p>对于概率回归有以下两个假设：</p>
+<p><strong>Assumption 1</strong>：我们的目标函数值是通过向方程添加噪声产生的，即是：<span class="math display">\[y = f(x,w)+\epsilon\]</span> <span class="math inline">\(y\)</span>：目标函数值； <span class="math inline">\(x\)</span>：输入值 <span class="math inline">\(f\)</span>： 回归方程； <span class="math inline">\(w\)</span>：权重或者说参数；<span class="math inline">\(\epsilon\)</span>：噪声 <strong>Assumption 2</strong>：这个噪声是服从高斯分布的随机变量，即：<span class="math display">\[\epsilon \sim N(0,\beta^{-1})\]</span><span class="math display">\[p(y|x,w,\beta)=N(y|f(x,w),\beta^{-1})\]</span>其中<span class="math inline">\(f(x,w)\)</span>是均值，<span class="math inline">\(\beta^{-1}\)</span>是方差（<span class="math inline">\(\beta\)</span>是precision），注意，现在<span class="math inline">\(y\)</span>是一个随机变量，其基本概率分布为<span class="math inline">\(p(y|x,w,\beta)\)</span>。</p>
+<p><strong>具体说明</strong> 现在给定一组数据点<span class="math inline">\(X=[x_1,...,x_n]\in \R^{d\times n}\)</span>以及相关的函数值<span class="math inline">\(Y=[y_1,...,y_n]^T\)</span> 其条件似然为（设数据是i.i.d.的）：<span class="math display">\[p(y|X,w,\beta)=\prod_{i=1}^n N(y_i|f(x_i,w),\beta^{-1})\]</span>带入线性模型：<span class="math display">\[=\prod_{i=1}^n N(y_i|w^T\phi(x_i),\beta^{-1})\]</span>其中<span class="math inline">\(w^T\phi(x_i)\)</span>是广义的线性回归方程，然后现在我们就要计算关于<span class="math inline">\(\beta\)</span>和<span class="math inline">\(w\)</span>的最大化似然了。 用对数似然如下： <img src="https://img-blog.csdnimg.cn/20210716094220653.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 对于<span class="math inline">\(w\)</span>的梯度为： <img src="https://img-blog.csdnimg.cn/20210716094315769.png#pic_center" alt="在这里插入图片描述" /> 我们做如下定义： <img src="https://img-blog.csdnimg.cn/20210716094531974.png#pic_center" alt="在这里插入图片描述" /> 求解上面的式子可以得到： <img src="https://img-blog.csdnimg.cn/20210716202619384.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 由此可见，用最大似然求解的权重值和前面最小二乘法回归的结果一样，我们也可得出这么一个结论：</p>
+<blockquote>
+<p><strong>最小二乘法等同于假设目标是高斯分布。</strong></p>
+</blockquote>
+<p>所以要注意，运用最小二乘法是有假设前提的。 然而，与最小二乘法相比，最大似然的运用更广法，因为除了权重<span class="math inline">\(w\)</span>，我们还可以用这个方法估计<span class="math inline">\(\beta\)</span>： <img src="https://img-blog.csdnimg.cn/20210716203235914.png#pic_center" alt="在这里插入图片描述" /> 而且可以衡量我们的估计的不确定性（用loss function）。</p>
+<h2 id="回归中的损失函数loss-functions-in-regression">回归中的损失函数（Loss Functions in Regression）</h2>
+<p>如果我们现在有一个新的数据<span class="math inline">\(x_t\)</span>，在最小二乘回归中，其对应的值为：<span class="math inline">\(y_t=\hat{x}_t^T\hat{w}\)</span> 但在最大似然回归中，我们则是要计算相关概率值：<span class="math inline">\(p(y|x,w,\beta)\)</span>。我们如何准确地估计<span class="math inline">\(y_t\)</span>呢？这就要引入损失函数（loss function）了。 <span class="math display">\[L: \R\times \R \rightarrow \R^+\]</span><span class="math display">\[(y_t,f(x_t))\rightarrow L(y_t,f(x_t))\]</span> 然后我们最小化<strong>预期</strong>损失：<span class="math display">\[E_{x,y\sim p(x,y)}[L]=\int \int L(y,f(x))p(x,y)dxdy\]</span> 举个例子，比如说损失函数是squared loss的话，可进行如下计算： <img src="https://img-blog.csdnimg.cn/20210716204651957.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> <img src="https://img-blog.csdnimg.cn/20210716205115573.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 由此可见，对于squared loss，其最佳回归方程为后验<span class="math inline">\(p(y|x)\)</span>的均值<span class="math inline">\(E[y|x]\)</span>，这也称为均值预测。 所以对于我们的广泛线性回归方程，可写为： <span class="math display">\[f(x)=\int yN(y|w^T\phi(x),\beta^{-1})dy=w^T\phi(x)\]</span>这又可以跟前面 产生联系了。</p>
+<h1 id="贝叶斯线性回归bayesian-linear-regression">贝叶斯线性回归（Bayesian Linear Regression）</h1>
+<p>现在回到最原来的问题，我们想要避免过拟合和不稳定，然而用最大似然法依旧可能造成过拟合现象（比如说只有一个数据点的情况）。为了解决这个问题，现在就要引入贝叶斯线性回归。 我们在参数<span class="math inline">\(w\)</span>上放置一个先验，以控制不稳定性：<span class="math display">\[p(w|X,y)= p(y|X,w)p(w)\]</span>其中：</p>
+<p><span class="math inline">\(p(w)\)</span>为参数先验；</p>
+<p><span class="math inline">\(p(y|X,w)\)</span>为给定数据和参数下目标的似然（跟前面定义的一样）；</p>
+<p><span class="math inline">\(p(w|X,y)\)</span>为参数后验。</p>
+<blockquote>
+<p><strong>注：这里得到的不再是参数的单一值，而是参数的概率分布</strong></p>
+</blockquote>
+<p>最简单的想法就是假设参数<span class="math inline">\(w\)</span>的先验符合高斯分布：<span class="math display">\[w\sim p(w|\alpha)=N(w|0,\alpha^{-1}I)\]</span>这里通过放置一个”软“限制，也就是<span class="math inline">\(\alpha\)</span>，来避免不稳定性。另外，这里设均值为0只是为了方便后面计算，均值可为其它数。 然后就有如下关系： <img src="https://img-blog.csdnimg.cn/2021071621150373.png#pic_center" alt="在这里插入图片描述" /> 求解上面的参数概率可有多种方法，这里介绍两种：</p>
+<h2 id="最大后验map">最大后验（MAP）</h2>
+<p>取对数后验，然后最大化，如下： <img src="https://img-blog.csdnimg.cn/20210716212004115.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 然后对<span class="math inline">\(w\)</span>求导： <img src="https://img-blog.csdnimg.cn/20210716212611934.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> （注：上面这个图里的式子有错，右边<span class="math inline">\(\beta\)</span>应该在括号里，但我实在不想手打这些式子，只是计算过程而已。。。） 这就得出参数的等式了： <span class="math display">\[w_{map}=(\Phi \Phi^T+\frac{\alpha}{\beta})^{-1}\Phi y\]</span> 与前面的结论不同，这里多了个<span class="math inline">\(\frac{\alpha}{\beta}\)</span>，先验的作用是可以正则化这个伪逆，这个也叫岭回归（ridge regression）。 &gt;既然说到了这个概念，就顺道提一下另一个跟它很像的<span class="math inline">\(LASSO\)</span> 回归，Lasso回归跟岭回归非常相似，它们的差别在于使用了不同的正则化项（LASSO是<span class="math inline">\(l1\)</span>正则化，岭回归是<span class="math inline">\(l2\)</span>）。最终都实现了约束参数从而防止过拟合的效果。另外，Lasso能够将一些作用比较小的特征的参数训练为0，从而获得稀疏解。也就是说用这种方法，在训练模型的过程中实现了降维(特征筛选)的目的。</p>
+<p>下面这张图可以直观显示岭回归和最小二乘回归的差别： <img src="https://img-blog.csdnimg.cn/20210716213954811.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+<h3 id="map与正则化的最小二乘法的比较">MAP与正则化的最小二乘法的比较</h3>
+<p>现在我们在前面的最小二乘法的结论等式上加一个正则化项：<img src="https://img-blog.csdnimg.cn/20210716214450502.png#pic_center" alt="在这里插入图片描述" /> 求解<span class="math inline">\(w\)</span>我们得到一个新的估计：<span class="math display">\[\hat{w}=(\hat{X}\hat{X}^T+\lambda I)^{-1}\hat{X}y\]</span> 此处 <span class="math inline">\(\lambda = \alpha / \beta\)</span>。 也就是说，如果我们在最小二乘回归上添加一个正则化项<span class="math inline">\(\lambda\)</span>，则意味着我们假设目标有一个符合高斯分布的噪音，而且参数也是符合高斯分布的。 以前面的9次多项式回归为例，加上不同的正则化项<span class="math inline">\(\lambda\)</span>后，其效果为： <img src="https://img-blog.csdnimg.cn/20210716215303870.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 由此可见，<span class="math inline">\(\lambda=\alpha / \beta\)</span>控制模型的复杂程度，并决定过拟合的程度。</p>
+<h2 id="完全贝叶斯回归full-bayesian-regression">完全贝叶斯回归（Full Bayesian Regression）</h2>
+<p>换个思路，其实我们也不是非得求出参数<span class="math inline">\(w\)</span>，我们只需要通过训练数据来预测对应的函数值即可。也就是说可用边缘概率进行计算：<span class="math display">\[$p(y_t|x_t,X,y)=\int p(y_t,w|x_t,X,y)dw\]</span> 用贝叶斯公式可将上面等式写为： <img src="https://img-blog.csdnimg.cn/20210716222918384.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 若先验之类的都是高斯的话，则这个预测分布也将服从高斯分布，即： <img src="https://img-blog.csdnimg.cn/20210716231602167.png#pic_center" alt="在这里插入图片描述" /> （注：上图的等式有一个错误，中间那个等式最右边的<span class="math inline">\(\Phi\)</span>没有转置。）</p>
+<h1 id="附作业相关代码">（附）作业相关代码</h1>
+<p><img src="https://img-blog.csdnimg.cn/20210716231922529.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> <img src="https://img-blog.csdnimg.cn/20210716232000630.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> <img src="https://img-blog.csdnimg.cn/20210716232025659.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 大概就是按照这篇博文全部实现一遍：（这次的代码大的方面应该是没问题的，但一些细节上可能会有问题，改得有点心累，先这样吧） (a): <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">linear_features</span>(<span class="params">X_train, X_test, y_train, y_test, _lambda = <span class="number">0.01</span></span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        X_train(ndarray): shape = (N, 1)</span></span><br><span class="line"><span class="string">        y_train(ndarray): shape = (N, 1)</span></span><br><span class="line"><span class="string">        _lambda(float)</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        </span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add_dim_bias</span>(<span class="params">X</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        [x1, x2, x3, ... , xn] -&gt; [[x1,1], [x2,1], ... ,[xn,1]]</span></span><br><span class="line"><span class="string">        param:</span></span><br><span class="line"><span class="string">            X(ndarray): train_data (N_train, 1)</span></span><br><span class="line"><span class="string">        return:</span></span><br><span class="line"><span class="string">            new_X(ndarray): train_data (2, N_train)</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        N_x = X.shape[<span class="number">0</span>]</span><br><span class="line">        bias_dim = np.ones((N_x, <span class="number">1</span>))</span><br><span class="line">        new_X = np.c_[X, bias_dim].T</span><br><span class="line">        <span class="keyword">return</span> new_X</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">loss_fn</span>(<span class="params">X, y, N</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        calculate RMSE</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        rmse = np.sqrt(np.<span class="built_in">sum</span>((X.T @ w - y) ** <span class="number">2</span>) / N)</span><br><span class="line">        <span class="keyword">return</span> rmse</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">    X_train = add_dim_bias(X_train)</span><br><span class="line">    X_test = add_dim_bias(X_test)</span><br><span class="line">    N_train = X_train.shape[<span class="number">1</span>]</span><br><span class="line">    N_test = X_test.shape[<span class="number">1</span>]</span><br><span class="line">    w = np.linalg.inv(X_train @ X_train.T + _<span class="keyword">lambda</span> * np.eye(X_train.shape[<span class="number">0</span>])) @ X_train @ y_train <span class="comment"># w(2, 1)</span></span><br><span class="line">    rmse_train = loss_fn(X_train, y_train, N_train)</span><br><span class="line">    rmse_test = loss_fn(X_test, y_test, N_test)</span><br><span class="line"></span><br><span class="line">    plt.figure()</span><br><span class="line">    x = np.linspace(X_train[<span class="number">0</span>,:].<span class="built_in">min</span>(), X_train[<span class="number">0</span>,:].<span class="built_in">max</span>(), <span class="number">100</span>)</span><br><span class="line">    x = add_dim_bias(x)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(X_train.shape[<span class="number">1</span>]):</span><br><span class="line">        plt.scatter(X_train[<span class="number">0</span>,i], y_train[i, <span class="number">0</span>], marker = <span class="string">&quot;o&quot;</span>, color = <span class="string">&quot;black&quot;</span>)</span><br><span class="line">    plt.plot(x[[<span class="number">0</span>]].flatten(), (w.T @ x).flatten(), color = <span class="string">&quot;blue&quot;</span>)</span><br><span class="line">    plt.title(<span class="string">&quot;linear_features&quot;</span>)</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> rmse_train, rmse_test</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main_a</span>():</span></span><br><span class="line">    rmse_train, rmse_test = linear_features(X_train, X_test, y_train, y_test, _<span class="keyword">lambda</span> = <span class="number">0.01</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;root mean squared error of the training data: &quot;</span>, rmse_train)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;root mean squared error of the test data: &quot;</span>,rmse_test)</span><br></pre></td></tr></table></figure> (b): <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">polynomial_features</span>(<span class="params">X_train, X_test, y_train, y_test, _lambda = <span class="number">0.01</span>, degrees = [<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        X_train(ndarray): shape(N, 1)</span></span><br><span class="line"><span class="string">        y_train(ndarray): shape(N, 1)</span></span><br><span class="line"><span class="string">        _lambda(floar): ridge coefficient</span></span><br><span class="line"><span class="string">        degrees(list): list of degrees</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add_degree</span>(<span class="params">X, degree</span>):</span></span><br><span class="line">        N = X.shape[<span class="number">0</span>]</span><br><span class="line">        new_X = np.ones((N, <span class="number">1</span>))</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, degree+<span class="number">1</span>):</span><br><span class="line">            temp = X ** i</span><br><span class="line">            new_X = np.c_[new_X, temp]</span><br><span class="line">        new_X = new_X.T </span><br><span class="line">        <span class="keyword">return</span> new_X</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">loss_fn</span>(<span class="params">w, X, y</span>):</span></span><br><span class="line">        N = <span class="built_in">len</span>(y)</span><br><span class="line">        rmse = np.sqrt(np.<span class="built_in">sum</span>((X.T @ w - y) ** <span class="number">2</span>) / N)</span><br><span class="line">        <span class="keyword">return</span> rmse</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    w_lst = []</span><br><span class="line">    rmse_train = []</span><br><span class="line">    rmse_test = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(degrees)):</span><br><span class="line">        tmp_X = add_degree(X_train, degrees[i])</span><br><span class="line">        tmp_w = np.linalg.inv(tmp_X @ tmp_X.T + _<span class="keyword">lambda</span> * np.eye(tmp_X.shape[<span class="number">0</span>])) @ tmp_X @ y_train</span><br><span class="line">        w_lst.append(tmp_w)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(degrees)):</span><br><span class="line">        tmp_X_train = add_degree(X_train, degrees[i])</span><br><span class="line">        tmp_X_test = add_degree(X_test, degrees[i])</span><br><span class="line">        tmp_rmse_train = loss_fn(w_lst[i], tmp_X_train, y_train)</span><br><span class="line">        tmp_rmse_test = loss_fn(w_lst[i], tmp_X_test, y_test)</span><br><span class="line">        rmse_train.append(tmp_rmse_train)</span><br><span class="line">        rmse_test.append(tmp_rmse_test)</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(degrees)):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;polynomials of degrees=&#123;&#125;, root mean squared error of the training data is: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(degrees[i], rmse_train[i]))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(degrees)):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;polynomials of degrees=&#123;&#125;, root mean squared error of the test data is: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(degrees[i], rmse_test[i]))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(w_lst)):</span><br><span class="line">        x = np.linspace(X_train[:,<span class="number">0</span>].<span class="built_in">min</span>(), X_train[:,<span class="number">0</span>].<span class="built_in">max</span>(), <span class="number">100</span>)</span><br><span class="line">        plt.figure()</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(X_train.shape[<span class="number">0</span>]):</span><br><span class="line">            plt.scatter(X_train[j,<span class="number">0</span>], y_train[j, <span class="number">0</span>], marker = <span class="string">&quot;o&quot;</span>, color = <span class="string">&quot;black&quot;</span>)</span><br><span class="line">        x = add_degree(x, degrees[i])</span><br><span class="line">        plt.plot(x[<span class="number">1</span>].flatten(), (w_lst[i].T @ x).flatten(), color = <span class="string">&quot;blue&quot;</span>)</span><br><span class="line">        plt.title(<span class="string">&quot;polynomial_features with degree = &#123;&#125;&quot;</span>.<span class="built_in">format</span>(degrees[i]))</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main_b</span>():</span></span><br><span class="line">    polynomial_features(X_train, X_test, y_train, y_test)</span><br></pre></td></tr></table></figure> (c): <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bayesian_linear_regression</span>(<span class="params">X_train, y_train, X_test, y_test, mu = <span class="number">0</span>, sigma = <span class="number">0.1</span>, _lambda = <span class="number">0.01</span>, std = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span>):</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add_dim_bias</span>(<span class="params">X</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        [x1, x2, x3, ... , xn] -&gt; [[x1,1], [x2,1], ... ,[xn,1]]</span></span><br><span class="line"><span class="string">        param:</span></span><br><span class="line"><span class="string">            X(ndarray): train_data (N_train, 1)</span></span><br><span class="line"><span class="string">        return:</span></span><br><span class="line"><span class="string">            new_X(ndarray): train_data (2, N_train)</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        N_x = X.shape[<span class="number">0</span>]</span><br><span class="line">        bias_dim = np.ones((N_x, <span class="number">1</span>))</span><br><span class="line">        new_X = np.c_[X, bias_dim].T</span><br><span class="line">        <span class="keyword">return</span> new_X</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">prediction_mu_sigma</span>(<span class="params">X</span>):</span></span><br><span class="line">        <span class="comment">#X_bias = add_dim_bias(X)#(2,50)</span></span><br><span class="line">        mu_or_pred = X.T @ w<span class="comment">#(50,1)</span></span><br><span class="line">        sigma_2 = <span class="number">1</span> / beta + X.T @ np.linalg.inv(alpha * np.eye(X.shape[<span class="number">0</span>]) + beta *</span><br><span class="line">                                                          X @ X.T) @ X</span><br><span class="line">        <span class="comment"># Here take attention</span></span><br><span class="line">        sigma_2 += sigma * np.eye(sigma_2.shape[<span class="number">1</span>])</span><br><span class="line">        <span class="keyword">return</span> mu_or_pred, np.sqrt(sigma_2.diagonal())</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">loss_fn</span>(<span class="params">X, y</span>):</span></span><br><span class="line">        N = <span class="built_in">len</span>(y)</span><br><span class="line">        pred, _ = prediction_mu_sigma(X)</span><br><span class="line">        rmse = np.sqrt(np.<span class="built_in">sum</span>((pred - y) ** <span class="number">2</span>) / N)</span><br><span class="line">        <span class="keyword">return</span> rmse</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">log_likelihood_fn</span>(<span class="params">X, y</span>):</span></span><br><span class="line">        n = <span class="built_in">len</span>(y)</span><br><span class="line">        log_likelihood = n / <span class="number">2</span> * (np.log(beta) - np.log(<span class="number">2</span> * np.pi)) - beta / <span class="number">2</span> * (np.linalg.norm(y - w.T @ X) ** <span class="number">2</span>)</span><br><span class="line">        average_ll = log_likelihood / n</span><br><span class="line">        <span class="keyword">return</span> average_ll</span><br><span class="line">        </span><br><span class="line">    </span><br><span class="line">    beta = <span class="number">1</span> / (sigma ** <span class="number">2</span>)</span><br><span class="line">    alpha = _<span class="keyword">lambda</span> * beta</span><br><span class="line">    X_train = add_dim_bias(X_train)<span class="comment">#(2,50)   y_train (50,1)</span></span><br><span class="line">    X_test = add_dim_bias(X_test)<span class="comment">#(2,100)   y_test  (100,1)</span></span><br><span class="line"></span><br><span class="line">    w = np.linalg.inv(X_train @ X_train.T + _<span class="keyword">lambda</span> * np.eye(X_train.shape[<span class="number">0</span>])) @ X_train @ y_train <span class="comment"># w(2, 1)</span></span><br><span class="line"></span><br><span class="line">    rmse_train = loss_fn(X_train, y_train)</span><br><span class="line">    rmse_test = loss_fn(X_test, y_test)</span><br><span class="line"></span><br><span class="line">    log_ll_train = log_likelihood_fn(X_train, y_train)</span><br><span class="line">    log_ll_test = log_likelihood_fn(X_test, y_test)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;the RMSE of the train data is: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(rmse_train))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;the RMSE of the test data is: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(rmse_test))</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;the average log-likelihood of the train data is: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(log_ll_train))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;the average log-likelihood of the test data is: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(log_ll_test))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    pred, x_std = prediction_mu_sigma(X_train)</span><br><span class="line">    </span><br><span class="line">    plt.figure()</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(X_train.shape[<span class="number">1</span>]):</span><br><span class="line">        plt.scatter(X_train[<span class="number">0</span>,j], y_train[j, <span class="number">0</span>], marker = <span class="string">&quot;o&quot;</span>, color = <span class="string">&quot;black&quot;</span>)</span><br><span class="line">    plt.plot(X_train[<span class="number">0</span>], pred.flatten(), color = <span class="string">&quot;blue&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(std)):</span><br><span class="line">        plt.fill_between(X_train[<span class="number">0</span>], pred.flatten()+std[i]*x_std, pred.flatten()-std[i]*x_std,</span><br><span class="line">                          color = <span class="string">&quot;blue&quot;</span>, alpha = <span class="number">0.2</span>)</span><br><span class="line">    plt.title(<span class="string">&quot;bayesian_linear_regression&quot;</span>)</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main_c</span>():</span></span><br><span class="line">    bayesian_linear_regression(X_train, y_train, X_test, y_test)</span><br></pre></td></tr></table></figure> (d): <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">squared_exponential_features</span>(<span class="params">X_train, y_train, X_test, y_test, _lambda = <span class="number">0.01</span>, k = <span class="number">20</span>, sigma = <span class="number">0.1</span>, beta = <span class="number">10</span>, std = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">new_data</span>(<span class="params">X</span>):</span></span><br><span class="line">        n = <span class="built_in">len</span>(X)</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        new_x = np.zeros((n, k))</span></span><br><span class="line"><span class="string">        for i in range(n):</span></span><br><span class="line"><span class="string">            for j in range(k):</span></span><br><span class="line"><span class="string">                alpha_j = j * 0.1 - 1</span></span><br><span class="line"><span class="string">                tmp = np.exp(-0.5 * beta * (X[i] - alpha_j) ** 2)</span></span><br><span class="line"><span class="string">                new_x[i][j] = tmp</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        X_poly = np.ones(X.shape)</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, k+<span class="number">1</span>):</span><br><span class="line">                X_poly = np.hstack((X_poly, np.exp(-beta/<span class="number">2</span>*np.power(X-(j*<span class="number">0.1</span> -<span class="number">1</span>), <span class="number">2</span>))))</span><br><span class="line">        <span class="keyword">return</span> X_poly.T</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">prediction_mu_sigma</span>(<span class="params">X</span>):</span></span><br><span class="line">        mu_or_pred = X.T @ w</span><br><span class="line">        sigma_2 = <span class="number">1</span> / beta + X.T @ np.linalg.inv(alpha * np.eye(X.shape[<span class="number">0</span>]) + beta *</span><br><span class="line">                                                          X @ X.T) @ X</span><br><span class="line">        sigma_2 += sigma * np.eye(sigma_2.shape[<span class="number">1</span>])</span><br><span class="line">        <span class="keyword">return</span> mu_or_pred, np.sqrt(sigma_2.diagonal())</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">loss_fn</span>(<span class="params">X, y</span>):</span></span><br><span class="line">        N = <span class="built_in">len</span>(y_test)</span><br><span class="line">        pred, _ = prediction_mu_sigma(X)</span><br><span class="line">        rmse = np.sqrt(np.<span class="built_in">sum</span>((pred - y) ** <span class="number">2</span>) / N)</span><br><span class="line">        <span class="keyword">return</span> rmse</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">log_likelihood_fn</span>(<span class="params">X, y</span>):</span></span><br><span class="line">        _beta = <span class="number">1</span> / (sigma ** <span class="number">2</span>)</span><br><span class="line">        n = <span class="built_in">len</span>(y)</span><br><span class="line">        log_likelihood = n / <span class="number">2</span> * (np.log(_beta) - np.log(<span class="number">2</span> * np.pi)) - _beta / <span class="number">2</span> * (np.linalg.norm(y - w.T @ X) ** <span class="number">2</span>)</span><br><span class="line">        average_ll = log_likelihood / n</span><br><span class="line">        <span class="keyword">return</span> average_ll    </span><br><span class="line"></span><br><span class="line">    orignal_data = X_train.copy()</span><br><span class="line">    X_train = new_data(X_train)</span><br><span class="line">    X_test = new_data(X_test)</span><br><span class="line">    alpha = _<span class="keyword">lambda</span> * beta</span><br><span class="line">    w = np.linalg.pinv(X_train @ X_train.T + _<span class="keyword">lambda</span> * np.eye(X_train.shape[<span class="number">0</span>])) @ X_train @ y_train</span><br><span class="line">    rmse_train = loss_fn(X_train, y_train)</span><br><span class="line">    rmse_test = loss_fn(X_test, y_test)</span><br><span class="line"></span><br><span class="line">    log_ll_train = log_likelihood_fn(X_train, y_train)</span><br><span class="line">    log_ll_test = log_likelihood_fn(X_test, y_test)</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;the RMSE of the train data is: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(rmse_train))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;the RMSE of the test data is: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(rmse_test))</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;the average log-likelihood of the train data is: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(log_ll_train))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;the average log-likelihood of the test data is: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(log_ll_test))</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    pred, x_std = prediction_mu_sigma(X_train)</span><br><span class="line">    sorted_idx = np.argsort(X_train[<span class="number">0</span>])</span><br><span class="line">    orignal_data = orignal_data[sorted_idx]</span><br><span class="line">    pred = pred.flatten()[sorted_idx]</span><br><span class="line">    y_train = y_train[sorted_idx]</span><br><span class="line">    plt.figure()</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(orignal_data.shape[<span class="number">0</span>]):</span><br><span class="line">        plt.scatter(orignal_data[j, <span class="number">0</span>], y_train[j, <span class="number">0</span>], marker = <span class="string">&quot;o&quot;</span>, color = <span class="string">&quot;black&quot;</span>)</span><br><span class="line">    plt.plot(orignal_data[:,<span class="number">0</span>], pred.flatten(), color = <span class="string">&quot;blue&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(std)):</span><br><span class="line">        plt.fill_between(orignal_data[<span class="number">0</span>], pred.flatten()+std[i]*x_std, pred.flatten()-std[i]*x_std,</span><br><span class="line">                          color = <span class="string">&quot;blue&quot;</span>, alpha = <span class="number">0.2</span>)</span><br><span class="line">    plt.title(<span class="string">&quot;bayesian_linear_regression&quot;</span>)</span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure></p>
+<p>效果图如下： <img src="https://img-blog.csdnimg.cn/20210716232731384.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> <img src="https://img-blog.csdnimg.cn/20210716232742944.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> <img src="https://img-blog.csdnimg.cn/20210716232759263.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+      
+    </div>
+
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/03/%E6%A6%82%E7%8E%87%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1%EF%BC%88Probability-Density-Estimation%EF%BC%89-Part3%EF%BC%9A%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B/" rel="prev" title="概率密度估计（Probability Density Estimation）--Part 3：混合模型">
+      <i class="fa fa-chevron-left"></i> 概率密度估计（Probability Density Estimation）--Part 3：混合模型
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/08/03/%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%EF%BC%88Classification%EF%BC%89/" rel="next" title="分类问题（Classification）">
+      分类问题（Classification） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92least-squares-linear-regression"><span class="nav-number">2.</span> <span class="nav-text">最小二乘法线性回归（Least Squares Linear Regression）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E6%AC%A1%E9%A1%B9%E5%9B%9E%E5%BD%92"><span class="nav-number">2.1.</span> <span class="nav-text">一次项回归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E9%A1%B9%E5%BC%8F%E5%9B%9E%E5%BD%92polynomial-regression"><span class="nav-number">2.2.</span> <span class="nav-text">多项式回归（Polynomial Regression）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9E%E5%BD%92%E7%9A%84%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6%E6%B3%95maximum-likelihood-approach-to-regression"><span class="nav-number">3.</span> <span class="nav-text">回归的最大似然法（Maximum Likelihood Approach to Regression）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E7%8E%87%E5%9B%9E%E5%BD%92probabilistic-regression"><span class="nav-number">3.1.</span> <span class="nav-text">概率回归（Probabilistic Regression）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9E%E5%BD%92%E4%B8%AD%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0loss-functions-in-regression"><span class="nav-number">3.2.</span> <span class="nav-text">回归中的损失函数（Loss Functions in Regression）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92bayesian-linear-regression"><span class="nav-number">4.</span> <span class="nav-text">贝叶斯线性回归（Bayesian Linear Regression）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8Cmap"><span class="nav-number">4.1.</span> <span class="nav-text">最大后验（MAP）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#map%E4%B8%8E%E6%AD%A3%E5%88%99%E5%8C%96%E7%9A%84%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">4.1.1.</span> <span class="nav-text">MAP与正则化的最小二乘法的比较</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E5%85%A8%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%9B%9E%E5%BD%92full-bayesian-regression"><span class="nav-number">4.2.</span> <span class="nav-text">完全贝叶斯回归（Full Bayesian Regression）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E4%BD%9C%E4%B8%9A%E7%9B%B8%E5%85%B3%E4%BB%A3%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">（附）作业相关代码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="super_wzl"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">super_wzl</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">super_wzl</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
