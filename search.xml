@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍</title>
-    <url>/2021/08/03/%E3%80%90ML-2020-21%E3%80%91Generative-Adversarial-Network-GAN-Part-1-%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D/</url>
+    <url>/posts/18.html</url>
     <content><![CDATA[<h1 id="写在前面的说明">写在前面的说明</h1>
 <p>这个系列【ML-2020/21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接<span class="math inline">\(\rightarrow\)</span><a href="https://www.youtube.com/watch?v=OP5HcXJg2Aw">这里</a>。 <span id="more"></span> # 基本概念 Generative Adversarial Network (GAN) 中文名是【生成式对抗网络】，用这个网络的目的是为了让机器生成东西（比如图片，文章等），其基本网络结构包括两大部分：</p>
 <ol type="1">
@@ -100,7 +100,7 @@
   </entry>
   <entry>
     <title>深度学习中的正则化</title>
-    <url>/2021/08/03/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E5%8C%96/</url>
+    <url>/posts/17.html</url>
     <content><![CDATA[<h1 id="引入">引入</h1>
 <p>与其它机器学习方法类似，DNN在训练过程中也会遇到过拟合的现象，尤其是当参数数量多于输入数据量时。为了防止过拟合现象，除了增加训练样本外，最常见的就是各种正则化方法，比如：数据增强、<span class="math inline">\(L1\)</span> 正则化、<span class="math inline">\(L2\)</span> 正则化、Dropout、DropConnect 和早停法（Early stopping）等。 下面对这些方法进行逐一介绍。 <span id="more"></span> # 正则化方法</p>
 <h2 id="数据增强">1. 数据增强</h2>
@@ -141,7 +141,7 @@
   </entry>
   <entry>
     <title>【ML-2020/21】CNN &amp; Self-Attention</title>
-    <url>/2021/08/03/%E3%80%90ML-2020-21%E3%80%91CNN-Self-Attention/</url>
+    <url>/posts/16.html</url>
     <content><![CDATA[<h1 id="写在前面的说明">写在前面的说明</h1>
 <p>这个系列【ML-2020/21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接<span class="math inline">\(\rightarrow\)</span><a href="https://www.youtube.com/watch?v=OP5HcXJg2Aw">这里</a>。</p>
 <p>这里介绍两个常见的Network架构，分别为CNN 和 Self-Attention。 <span id="more"></span></p>
@@ -192,7 +192,7 @@
   </entry>
   <entry>
     <title>非线性优化</title>
-    <url>/2021/08/03/%E9%9D%9E%E7%BA%BF%E6%80%A7%E4%BC%98%E5%8C%96/</url>
+    <url>/posts/15.html</url>
     <content><![CDATA[<h1 id="引入">引入</h1>
 <p>一个经典的SLAM模型由一个运动方程和一个观测方程构成</p>
 <span id="more"></span>
@@ -283,7 +283,7 @@ H\Delta x=g
   </entry>
   <entry>
     <title>【学习随记】时间空间复杂度</title>
-    <url>/2021/08/03/%E3%80%90%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0%E3%80%91%E6%97%B6%E9%97%B4%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6/</url>
+    <url>/posts/14.html</url>
     <content><![CDATA[<h1 id="时间复杂度">时间复杂度</h1>
 <p>常用的时间复杂度有7种： <span id="more"></span> &gt;1. 常数时间复杂度；<span class="math inline">\(O(1)\)</span> &gt;2. 对数时间复杂度；<span class="math inline">\(O(\log n)\)</span> &gt;3. 线性时间复杂度；<span class="math inline">\(O(n)\)</span> &gt;4. 平方时间复杂度；<span class="math inline">\(O(n^2)\)</span> &gt;5. 立方时间复杂度；<span class="math inline">\(O(n^3)\)</span> &gt;6. 指数时间复杂度；<span class="math inline">\(O(2^n)\)</span> &gt;7. 阶乘时间复杂度；<span class="math inline">\(O(n!)\)</span></p>
 <p><strong>注：从上到下时间复杂度越来越大</strong> 常规的时间复杂度都容易分析，麻烦的是递归，遇到递归时一般需要把状态树画出来。比如说代码是：</p>
@@ -325,7 +325,7 @@ H\Delta x=g
   </entry>
   <entry>
     <title>支持向量机（SVM）</title>
-    <url>/2021/08/03/%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA%EF%BC%88SVM%EF%BC%89/</url>
+    <url>/posts/13.html</url>
     <content><![CDATA[<h1 id="引入">引入</h1>
 <p>对于上一篇提到的风险（Risk）：<span class="math display">\[R(w)\leq R_{emp}(w)+\epsilon(N,p^*,h)\]</span>其中<span class="math inline">\(N\)</span>是训练数据量，<span class="math inline">\(p^*\)</span>是到达边界的概率，<span class="math inline">\(h\)</span>是VC维度。 <span id="more"></span> 为了最小化风险，经典的机器学习算法是：</p>
 <blockquote>
@@ -433,7 +433,7 @@ H\Delta x=g
   </entry>
   <entry>
     <title>【学习随记】各种空间的简单介绍</title>
-    <url>/2021/08/03/%E5%90%84%E7%A7%8D%E7%A9%BA%E9%97%B4%E7%9A%84%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/</url>
+    <url>/posts/12.html</url>
     <content><![CDATA[<p>因为经常遇到各种特定的空间，有些没接触过，有些又容易弄混，这里做个记录，这篇应该会不断更新，毕竟空间概念这么多。（注：这里只是最简单的介绍） <span id="more"></span> 先解释相关概念。</p>
 <h1 id="相关概念">相关概念：</h1>
 <h2 id="完备性">完备性</h2>
@@ -517,7 +517,7 @@ H\Delta x=g
   </entry>
   <entry>
     <title>线性降维与统计学习理论（Linear Dimensionality Reduction &amp; Statistical Learning Theory）</title>
-    <url>/2021/08/03/%E7%BA%BF%E6%80%A7%E9%99%8D%E7%BB%B4%E4%B8%8E%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E7%90%86%E8%AE%BA%EF%BC%88Linear-Dimensionality-Reduction-Statistical-Learning-Theory%EF%BC%89/</url>
+    <url>/posts/11.html</url>
     <content><![CDATA[<h1 id="线性降维linear-dimensionality-reduction以pca为例">线性降维（Linear Dimensionality Reduction）（以PCA为例）</h1>
 <h2 id="引入">引入</h2>
 <p>主成分分析（Principal Component Analysis，PCA）是最常见的线性降维方法。 <span id="more"></span> 拿之前的线性回归举例，对于最小二乘法的线性回归，其求解参数为：<span class="math display">\[\hat{w}=(\hat{X}\hat{X})^{-1}\hat{X}y\]</span>其中<span class="math inline">\(\hat{X}\in \R^{d\times n}\)</span>，<span class="math inline">\(y\in \R^{n\times 1}\)</span>。 若直接求解<span class="math inline">\(d\times d\)</span>的逆矩阵，其复杂度为<span class="math inline">\(O(d^3)\)</span>，所以我们就想找到一个新的维度<span class="math inline">\(d^{new}\)</span>，使其远小于原维度，即<span class="math inline">\(d^{new}&lt;&lt;d\)</span>，但又不能对结果造成很大的影响。 这就引出了PCA，我们要抓住数据的”本质“。</p>
@@ -584,7 +584,7 @@ H\Delta x=g
   </entry>
   <entry>
     <title>分类问题（Classification）</title>
-    <url>/2021/08/03/%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%EF%BC%88Classification%EF%BC%89/</url>
+    <url>/posts/10.html</url>
     <content><![CDATA[<h1 id="引入">引入</h1>
 <p>开始前先回顾一下贝叶斯决策理论。 <span id="more"></span> 给定观测变量<span class="math inline">\(x\)</span>，我们要找到类别<span class="math inline">\(C_k\)</span>的后验概率，有如下关系： <img src="https://img-blog.csdnimg.cn/20210717001003505.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 决策的条件是： 如果<span class="math inline">\(p(C_1|x)&gt;p(C_2|x)\)</span>，则选择<span class="math inline">\(C_1\)</span>，否则<span class="math inline">\(C_2\)</span>。用上面的条件概率则可以写成： <img src="https://img-blog.csdnimg.cn/20210717001233629.png#pic_center" alt="在这里插入图片描述" /> 遵从这一规则的分类器称为贝叶斯最优分类器（Bayes optimal classifier）。 以前我们要计算计算这个分类后验的话，需要根据贝叶斯公式，建立模型并估计条件密度<span class="math inline">\(p(x|C_k)\)</span>和类别先验<span class="math inline">\(p(C_k)\)</span>，通过最大化<span class="math inline">\(p(C_k|x)\)</span>来使错误概率最小。 但现在我们不再需要对密度进行建模，而是直接编码决策边界，然后最小化错误概率。</p>
 <h1 id="判别函数discriminant-functions">判别函数（Discriminant Functions）</h1>
@@ -633,7 +633,7 @@ H\Delta x=g
   </entry>
   <entry>
     <title>线性回归（Linear Regression）</title>
-    <url>/2021/08/03/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%EF%BC%88Linear-Regression%EF%BC%89/</url>
+    <url>/posts/9.html</url>
     <content><![CDATA[<h1 id="引入">引入</h1>
 <p>回归问题和分类问题以前老是弄混，最直接的记法就是，分类问题是针对离散空间的，就比如说给定一张图片，根据其特征判断这张图片是猫还是狗，这就是分类问题；回归问题的话是针对连续空间的，比如预测距离，概率等。 <span id="more"></span></p>
 <h1 id="最小二乘法线性回归least-squares-linear-regression">最小二乘法线性回归（Least Squares Linear Regression）</h1>
@@ -683,7 +683,7 @@ H\Delta x=g
   </entry>
   <entry>
     <title>概率密度估计（Probability Density Estimation）--Part 3：混合模型</title>
-    <url>/2021/08/03/%E6%A6%82%E7%8E%87%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1%EF%BC%88Probability-Density-Estimation%EF%BC%89-Part3%EF%BC%9A%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B/</url>
+    <url>/posts/8.html</url>
     <content><![CDATA[<h1 id="引入">引入</h1>
 <p>在结束了有参估计，无参估计后，现在记录混合模型（Mixture models）。这里附一张有参和无参的对比图（本来应该附在Part 2的，不想回去改了。。）： <span id="more"></span> <img src="https://img-blog.csdnimg.cn/20210703061913869.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
 <blockquote>
@@ -744,7 +744,7 @@ H\Delta x=g
   </entry>
   <entry>
     <title>概率密度估计（Probability Density Estimation）--Part 2：无参估计</title>
-    <url>/2021/08/03/%E6%A6%82%E7%8E%87%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1%EF%BC%88Probability-Density-Estimation%EF%BC%89-Part-2%EF%BC%9A%E6%97%A0%E5%8F%82%E4%BC%B0%E8%AE%A1/</url>
+    <url>/posts/7.html</url>
     <content><![CDATA[<h1 id="引入">引入</h1>
 <p>接上一篇的【有参估计】，这篇介绍无参估计，也就是说在这里我们事先不知道数据的模型，而要求数据进行划分，这也是实际中比较常见的情况。 <span id="more"></span> 这主要介绍三种无参估计方法，分别是：</p>
 <pre><code>1. 直方图（Histograms）
@@ -804,7 +804,7 @@ H\Delta x=g
   </entry>
   <entry>
     <title>概率密度估计（Probability Density Estimation）--Part 1：参数估计</title>
-    <url>/2021/08/03/%E6%A6%82%E7%8E%87%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1%EF%BC%88Probability-Density-Estimation%EF%BC%89-Part-1%EF%BC%9A%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/</url>
+    <url>/posts/6.html</url>
     <content><![CDATA[<h1 id="概率密度的引入">概率密度的引入</h1>
 <span id="more"></span>
 <p>当我们有如下的点分布 <img src="https://img-blog.csdnimg.cn/20210623072951840.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_2,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 为了能区分它们，我们需要知道这些点的概率分布。常见的有贝叶斯最优分类(Bayes optimal classification)，这是基于如下的概率分布：<span class="math display">\[
@@ -837,7 +837,7 @@ p(x|C_k)p(C_k)\]</span> 其中的先验<span class="math inline">\(p(C_k)\)</spa
   </entry>
   <entry>
     <title>李代数和扰动模型</title>
-    <url>/2021/08/03/%E6%9D%8E%E4%BB%A3%E6%95%B0%E6%B1%82%E5%AF%BC%E5%92%8C%E6%89%B0%E5%8A%A8%E6%A8%A1%E5%9E%8B/</url>
+    <url>/posts/5.html</url>
     <content><![CDATA[<p>前一篇大概介绍了【李群李代数】的相关性质，这里主要介绍李代数在SLAM中的作用。 <span id="more"></span></p>
 <h2 id="bch公式及其近似形式">BCH公式及其近似形式</h2>
 <p>李代数在SLAM中的作用主要是进行优化，优化过程就不可避免地需要涉及到求导的过程。 与标量不同，在矩阵中指数的运算法则并不适用，即是说在矩阵中：<span class="math display">\[ln(exp(A)exp(B))\ne A+B\]</span> 取而代之的时BCH公式：<span class="math display">\[ln(exp(A)exp(B))=A+B+\frac{1}{2}[A,B]+\frac{1}{12}[A,[A,B]]-\frac{1}{12}[B,[A,B]]+...\]</span> 其中的"[,]"为李括号，也就是说，两个矩阵指数之积会由这两个矩阵的和与一系列由李括号组成的余项组成。对于SO(3)，当<span class="math inline">\(\phi_{1}\)</span>或<span class="math inline">\(\phi_{2}\)</span>为小量时，小量二次以上的项都可以被忽略，即是有以下关系： <img src="https://img-blog.csdnimg.cn/2021050722481379.png#pic_center" alt="在这里插入图片描述" /> 以第一个近似为例，当对一个旋转向量<span class="math inline">\(R_{2}\)</span>（对应的李代数为<span class="math inline">\(\phi_{2}\)</span>）左乘一个微小旋转矩阵<span class="math inline">\(R_{1}\)</span>，可以近似看作在原有李代数<span class="math inline">\(\phi_{2}\)</span>的基础上加上了<span class="math inline">\(J_{l}(\phi_{2})^{-1}\phi_{1}\)</span>（第二个近似同理，但是是右乘）。 李代数在BCH近似下分为左乘和右乘两种，注意区分。 这里的<span class="math inline">\(J\)</span>就是在上一篇关于李群李代数里提到的式子： <img src="https://img-blog.csdnimg.cn/20210507230638737.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 右乘的话只需要改变自变量的符号即可：<span class="math display">\[J_{r}(\phi)=J_{l}(-\phi)\]</span> 现在对于一个旋转<span class="math inline">\(R\)</span>(对应李代数为<span class="math inline">\(\phi\)</span>)，给之左乘一个微小旋转<span class="math inline">\(\triangle R\)</span>(对应于<span class="math inline">\(\triangle \phi\)</span>)，我们就有了如下关系： <img src="https://img-blog.csdnimg.cn/20210507231646273.png#pic_center" alt="在这里插入图片描述" /> 反之，当我们在李代数上做加法运算时则有： <img src="https://img-blog.csdnimg.cn/20210507231729943.png#pic_center" alt="在这里插入图片描述" /> 对于SE(3)，也有类似的关系： <img src="https://img-blog.csdnimg.cn/20210507231854489.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 这里的<span class="math inline">\(\jmath\)</span>是一个<span class="math inline">\(6\times6\)</span>的矩阵。</p>
@@ -857,7 +857,7 @@ p(x|C_k)p(C_k)\]</span> 其中的先验<span class="math inline">\(p(C_k)\)</spa
   </entry>
   <entry>
     <title>李群和李代数</title>
-    <url>/2021/08/03/%E6%9D%8E%E7%BE%A4%E5%92%8C%E6%9D%8E%E4%BB%A3%E6%95%B0/</url>
+    <url>/posts/4.html</url>
     <content><![CDATA[<h2 id="群的定义">1. 群的定义</h2>
 <p>群(Group)是<strong>一种集合</strong>加上<strong>一种运算</strong>的代数结构，以A表示集合，“·”表示运算，则群一般写作 G(A, ·)。群要求满足以下四个条件： <span id="more"></span> <img src="https://img-blog.csdnimg.cn/20210429051226112.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 举个例子，旋转矩阵和乘法可以构成旋转矩阵群，因为其满足：</p>
 <pre><code>1). 旋转矩阵相乘后仍是旋转矩阵；
@@ -897,7 +897,7 @@ p(x|C_k)p(C_k)\]</span> 其中的先验<span class="math inline">\(p(C_k)\)</spa
   </entry>
   <entry>
     <title>学习记录_Computer Vision1_作业1_(2) Projective Transformation</title>
-    <url>/2021/08/03/%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-Computer-Vision1-%E4%BD%9C%E4%B8%9A1-2-Projective-Transformation/</url>
+    <url>/posts/1.html</url>
     <content><![CDATA[<h1 id="projective-transformation">（2）Projective Transformation</h1>
 <span id="more"></span>
 <p>作业要求： <img src="https://img-blog.csdnimg.cn/2020121818034961.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 简单总结一下，就是说：给２Ｄ点核其他一些信息重构回３Ｄ图。然后再回构２Ｄ图。</p>
@@ -930,7 +930,7 @@ p(x|C_k)p(C_k)\]</span> 其中的先验<span class="math inline">\(p(C_k)\)</spa
   </entry>
   <entry>
     <title>学习记录_Computer Vision1_作业1_(1) Bayer Interpolation</title>
-    <url>/2021/08/03/%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-Computer-Vision1-%E4%BD%9C%E4%B8%9A1-1-Bayer-Interpolation/</url>
+    <url>/posts/2.html</url>
     <content><![CDATA[<p>这次作业需要记录的有三道题，包括： 1. Bayer Interpolation 2. Projective Transformation 3. Image Filtering and Edge Detection</p>
 <h1 id="bayer-interpolation">（1）Bayer Interpolation</h1>
 <span id="more"></span>
@@ -971,7 +971,7 @@ p(x|C_k)p(C_k)\]</span> 其中的先验<span class="math inline">\(p(C_k)\)</spa
   </entry>
   <entry>
     <title>四元数（三维旋转）</title>
-    <url>/2021/08/03/%E5%9B%9B%E5%85%83%E6%95%B0-%E4%B8%89%E7%BB%B4%E6%97%8B%E8%BD%AC/</url>
+    <url>/posts/3.html</url>
     <content><![CDATA[<h1 id="用四元数表示三维旋转">用四元数表示三维旋转</h1>
 <h2 id="四元数的基本知识">1.四元数的基本知识：</h2>
 <p>与复数类似，四元数也由实部和虚部组成，但四元数有三个虚部，通常表示为： <span class="math display">\[q=q_{0} + q_{1}i + q_{2}j + q_{3}k\]</span> 或:<br />
