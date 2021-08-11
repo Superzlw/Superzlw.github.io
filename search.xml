@@ -36,13 +36,56 @@
 <blockquote>
 <ol type="1">
 <li>高分（1分）：<br />
-  a). 输入文字信息与真实图片相符合。<br />
+  a). 正确的文字与真实的图片。<br />
 </li>
 <li>低分（0分）：<br />
   a). 正确的文字与生成的图片；<br />
   b). 错误的文字与真实的图片。</li>
 </ol>
 </blockquote>
+<p>基本的训练流程如下：</p>
+<blockquote>
+<p><strong>D-Learning:</strong><br />
+  1. 从database中取<span class="math inline">\(m\)</span>个样本：<span class="math inline">\(\left\{ (c^1,x^1),(c^2,x^2),...,(c^m,x^m)\right\}\)</span> (这个对于Discriminator来说是要给高分的)；<br />
+  2. 随机取样<span class="math inline">\(m\)</span>个噪音样本：{<span class="math inline">\(z^1,...,z^m\)</span>}，这<span class="math inline">\(m\)</span>个样本加上上面的文字信息<span class="math inline">\(c\)</span>组成新的数据<span class="math inline">\((c^i,z^i)\)</span>；<br />
+  3. 通过Generation获取生成数据：{<span class="math inline">\(\widetilde{x}^1,...,\widetilde{x}^m\)</span>}，<span class="math inline">\(\widetilde{x}^i=G(c^i,z^i)\)</span><br />
+  4. 从database中取样新的<span class="math inline">\(m\)</span>个数据{<span class="math inline">\(\hat{x}^1,...,\hat{x}^m\)</span>}<br />
+  5. 更新Discriminator的参数<span class="math inline">\(\theta_d\)</span>，以最大化下面这个方程：<span class="math display">\[\widetilde{V}=\frac{1}{m}\sum_{i=1}^m\log D(c^i,x^i)+\frac{1}{m}\sum_{i=1}^m\log(1 - D(c^i,\widetilde{x}^i))-\frac{1}{m}\sum_{i=1}^m\log(1 - D(c^i,\hat{x}^i))\]</span> <span class="math display">\[\theta_d \leftarrow \theta_d +\eta \nabla \widetilde{V}(\theta_d)\]</span></p>
+</blockquote>
+<blockquote>
+<p><strong>G-Leaarning:</strong><br />
+  1. 取样<span class="math inline">\(m\)</span>个噪声样本：{<span class="math inline">\(z^1,...,z^m\)</span>}；<br />
+  2. 从database中取<span class="math inline">\(m\)</span>个condition：{<span class="math inline">\(c^1,...,c^m\)</span>}；<br />
+  3. 更新Generator的参数<span class="math inline">\(\theta_g\)</span>，以最大化下面这个方程：<span class="math display">\[\widetilde{V}=\frac{1}{m}\sum_{i=1}^m\log(D(G()c^i,z^i))\]</span> <span class="math display">\[\theta_g \leftarrow \theta_g +\eta \nabla \widetilde{V}(\theta_g)\]</span></p>
+</blockquote>
+<h2 id="discriminator-架构">Discriminator 架构</h2>
+<p>常见的Discriminator架构如下： <img src="/images/246.png" /> 同时，又有人提出另一种架构： <img src="/images/247.png" /></p>
+<h2 id="更进一步-stack-gan">更进一步 —— Stack GAN</h2>
+<p>Stack-GAN技术能让模型的性能更加优秀，其基本的想法是：先产生小张的图，再根据小张的图产生大张的图。<br />
+比如说，我们要产生<span class="math inline">\(256\times 256\)</span>的图，但如果直接生成这么大的图，图很可能会坏，所以Stack-GAN在train的时候把整个训练过程拆分为两部分，大概流程是：</p>
+<blockquote>
+<ol type="1">
+<li>输入一个文字以及一段噪声，拼接，通过第一个Generator产生一个<span class="math inline">\(64\times 64\)</span>的图；<br />
+</li>
+<li>这个图片进入第一个Discriminator，判断其和文字是否match；<br />
+</li>
+<li>然后第二部分，输入一个文字信息以及<span class="math inline">\(64\times 64\)</span>的图片，产生一张<span class="math inline">\(256\times 256\)</span>的图片；<br />
+</li>
+<li>最后第二个Discriminator判断这个<span class="math inline">\(256\times 256\)</span>的图片是不是足够真实。</li>
+</ol>
+</blockquote>
+<p><em>具体可参看paper：StackGAN:Text to Photo-realistic Image Synthesis with Stack Generative Adversarial Network. 【ICCV, 2017】</em></p>
+<h1 id="image-to-image">Image-to-Image</h1>
+<p>这种即是：输入图片，输出也是图片。比如说黑白图片变彩色，白天变黑夜。</p>
+<h2 id="traditional-supervised-approach-1">Traditional Supervised Approach</h2>
+<p>理论上也是可以用传统的监督学习实现，但也会遇到跟上面类似的问题，导致最终产生出来的图片特别模糊。</p>
+<h2 id="conditional-gan-1">Conditional GAN</h2>
+<p>用GAN的话，以下图为例<img src="/images/249.png" /> 也就是输入左边简单的图片，希望产生右边真实复杂的图。<br />
+其基本流程就是：将简单的图片与噪音一起输入Generator，产生一张图片；接着将这张图片与原来简单的图片一起输入Discriminator，产生一个标量。这个标量可参看上面的解释。<br />
+单单这么做的话，产生的图像虽然清晰，正确率也不错，但图片里可能会产生一些奇奇怪怪的部分。为了消除这种现象，我们可以加额外的约束，比如：在Generator的输出中，我们将产生的图片与真实图片作对比，也就是说，我们希望Generator产生的图片，既能骗过Discriminator，又跟目标图片相差不要太大，如此以来，模型性能会好很多。<br />
+</p>
+<h2 id="patch-gan">Patch GAN</h2>
+<p>如果图片很大张，那么Discriminator就不能直接接受整张Image，因为参数会很多，容易过拟合。所以措施是分区域输入，每次检查一小块，看这一小块是好的还是坏的，至于区域设置多大，这个就自己调了。</p>
 ]]></content>
       <categories>
         <category>ML-2020/21</category>
