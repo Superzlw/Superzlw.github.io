@@ -20,16 +20,16 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="用四元数表示三维旋转 1.四元数的基本知识： 与复数类似，四元数也由实部和虚部组成，但四元数有三个虚部，通常表示为： \[q&#x3D;q_{0} + q_{1}i + q_{2}j + q_{3}k\] 或: \[q&#x3D;[s, v]^{T}, 其中: s&#x3D;q_{0} \in R, v&#x3D;[q_{1},q_{2},q_{3}]^{T} \in R^{3}\]">
+  <meta name="description" content="用四元数表示三维旋转 四元数的基本知识： 与复数类似，四元数也由实部和虚部组成，但四元数有三个虚部，通常表示为： \[q&#x3D;q_{0} + q_{1}i + q_{2}j + q_{3}k\] 或: \[q&#x3D;[s, v]^{T}, 其中: s&#x3D;q_{0} \in R, v&#x3D;[q_{1},q_{2},q_{3}]^{T} \in R^{3}\]">
 <meta property="og:type" content="article">
 <meta property="og:title" content="四元数（三维旋转）">
 <meta property="og:url" content="https://superzlw.github.io/posts/3.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="用四元数表示三维旋转 1.四元数的基本知识： 与复数类似，四元数也由实部和虚部组成，但四元数有三个虚部，通常表示为： \[q&#x3D;q_{0} + q_{1}i + q_{2}j + q_{3}k\] 或: \[q&#x3D;[s, v]^{T}, 其中: s&#x3D;q_{0} \in R, v&#x3D;[q_{1},q_{2},q_{3}]^{T} \in R^{3}\]">
+<meta property="og:description" content="用四元数表示三维旋转 四元数的基本知识： 与复数类似，四元数也由实部和虚部组成，但四元数有三个虚部，通常表示为： \[q&#x3D;q_{0} + q_{1}i + q_{2}j + q_{3}k\] 或: \[q&#x3D;[s, v]^{T}, 其中: s&#x3D;q_{0} \in R, v&#x3D;[q_{1},q_{2},q_{3}]^{T} \in R^{3}\]">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210402045509774.png#pic_center">
 <meta property="article:published_time" content="2021-08-02T22:07:07.305Z">
-<meta property="article:modified_time" content="2021-08-03T20:49:40.564Z">
+<meta property="article:modified_time" content="2021-08-11T01:29:29.590Z">
 <meta property="article:author" content="super_wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210402045509774.png#pic_center">
@@ -215,10 +215,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-08-03 00:07:07 / 修改时间：22:49:40" itemprop="dateCreated datePublished" datetime="2021-08-03T00:07:07+02:00">2021-08-03</time>
+              <time title="创建时间：2021-08-03 00:07:07" itemprop="dateCreated datePublished" datetime="2021-08-03T00:07:07+02:00">2021-08-03</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-11 03:29:29" itemprop="dateModified" datetime="2021-08-11T03:29:29+02:00">2021-08-11</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -241,11 +247,13 @@
 
       
         <h1 id="用四元数表示三维旋转">用四元数表示三维旋转</h1>
-<h2 id="四元数的基本知识">1.四元数的基本知识：</h2>
+<h2 id="四元数的基本知识">四元数的基本知识：</h2>
 <p>与复数类似，四元数也由实部和虚部组成，但四元数有三个虚部，通常表示为： <span class="math display">\[q=q_{0} + q_{1}i + q_{2}j + q_{3}k\]</span> 或:<br />
-<span class="math display">\[q=[s, v]^{T}, 其中: s=q_{0} \in R, v=[q_{1},q_{2},q_{3}]^{T} \in R^{3}\]</span> <span id="more"></span> 这三个虚部满足下面关系： <img src="https://img-blog.csdnimg.cn/20210402045509774.png#pic_center" /> <span class="math display">\[图1\]</span> 在复数中，乘以一个 <span class="math inline">\(i\)</span> 相当于旋转90度，但四元数中不同，乘以<span class="math inline">\(i\)</span> 表示对应旋转180度，这样才能保证 <span class="math inline">\(ij = k\)</span>，而<span class="math inline">\(i^2 = -1\)</span>表明，旋转360度后会得到一个相反的东西，<strong>要旋转两周才能回到原来的样子</strong>（看着挺反常识的。。。。。。）</p>
-<h2 id="四元数的运算">2.四元数的运算</h2>
-<p>(这里介绍加减，乘，模，共轭，逆，数乘) 现定义两个四元数<span class="math display">\[q_{a}= [s_{a},v_{a}]^{T}=s_{a}+x_{a}i+y_{a}j+z_{a}k\]</span> <span class="math display">\[q_{b}= [s_{b},v_{b}]^{T}=s_{b}+x_{b}i+y_{b}j+z_{b}k  \]</span></p>
+<span class="math display">\[q=[s, v]^{T}, 其中: s=q_{0} \in R, v=[q_{1},q_{2},q_{3}]^{T} \in R^{3}\]</span> <span id="more"></span></p>
+<p>这三个虚部满足下面关系： <img src="https://img-blog.csdnimg.cn/20210402045509774.png#pic_center" /> 在复数中，乘以一个 <span class="math inline">\(i\)</span> 相当于旋转90度，但四元数中不同，乘以<span class="math inline">\(i\)</span> 表示对应旋转180度，这样才能保证 <span class="math inline">\(ij = k\)</span>，而<span class="math inline">\(i^2 = -1\)</span>表明，旋转360度后会得到一个相反的东西，<strong>要旋转两周才能回到原来的样子</strong>（看着挺反常识的。。。。。。）</p>
+<h2 id="四元数的运算">四元数的运算</h2>
+<p>(这里介绍加减，乘，模，共轭，逆，数乘)<br />
+现定义两个四元数<span class="math display">\[q_{a}= [s_{a},v_{a}]^{T}=s_{a}+x_{a}i+y_{a}j+z_{a}k\]</span> <span class="math display">\[q_{b}= [s_{b},v_{b}]^{T}=s_{b}+x_{b}i+y_{b}j+z_{b}k  \]</span></p>
 <h3 id="加减">1).加减</h3>
 <p><span class="math display">\[q_{a} \pm q_{b} = [s_{a} \pm s_{b}, v_{a} \pm v_{b}]^{T}\]</span></p>
 <h3 id="乘法">2). 乘法</h3>
@@ -261,11 +269,24 @@
 <h3 id="数乘">6). 数乘</h3>
 <p><span class="math display">\[kq_{a} = [ks_{a},kv_{a}]^{T}\]</span></p>
 <h2 id="旋转表示">旋转表示</h2>
-<p>首先有一个待旋转点<span class="math inline">\(p\)</span>，表示成一个纯四元数为：<span class="math display">\[ p=[0,x,y,z]^{T}=[0,v]^{T}\]</span>其三个虚部分别对应<span class="math inline">\(x,y,z\)</span>三个坐标轴，旋转四元数表示为<span class="math inline">\(q\)</span>，是一个单位四元数。对于旋转后的点<span class="math inline">\(p&#39;\)</span>表示如下：<span class="math display">\[ p&#39;=qp\]</span> 对于旋转有如下要求： 1. 旋转前后的模应相等； 2. 旋转后的点<span class="math inline">\(p&#39;\)</span>应该也为纯四元数。</p>
-<p>由于<span class="math inline">\(q\)</span>为单位四元数，模为<span class="math inline">\(1\)</span>，对应上面四元数模的性质可知<span class="math inline">\(p&#39;\)</span>满足条件1，但对于条件2则只有当<span class="math inline">\(p\)</span>和<span class="math inline">\(q\)</span>虚部正交时才能满足（原因的话网上有很多篇文章都有对其展开计算，这里就懒得写了......）。 一般情况下会把旋转表示成下面这种形似：<span class="math display">\[p&#39;=qpq^{-1}\]</span> （有些地方这个逆也会用共轭代替，这无所谓，因为<span class="math inline">\(q\)</span>是单位四元数） 至于为什么是这种形式，因为Hamilton发现，如果右乘一个<span class="math inline">\(p\)</span>的逆，则可以同时满足上面两个条件（可具体展开乘一下或者直接用特殊值法）。</p>
+<p>首先有一个待旋转点<span class="math inline">\(p\)</span>，表示成一个纯四元数为：<span class="math display">\[ p=[0,x,y,z]^{T}=[0,v]^{T}\]</span>其三个虚部分别对应<span class="math inline">\(x,y,z\)</span>三个坐标轴，旋转四元数表示为<span class="math inline">\(q\)</span>，是一个单位四元数。对于旋转后的点<span class="math inline">\(p&#39;\)</span>表示如下：<span class="math display">\[ p&#39;=qp\]</span> 对于旋转有如下要求：</p>
+<blockquote>
+<ol type="1">
+<li>旋转前后的模应相等；<br />
+</li>
+<li>旋转后的点<span class="math inline">\(p&#39;\)</span>应该也为纯四元数。</li>
+</ol>
+</blockquote>
+<p>由于<span class="math inline">\(q\)</span>为单位四元数，模为<span class="math inline">\(1\)</span>，对应上面四元数模的性质可知<span class="math inline">\(p&#39;\)</span>满足条件1，但对于条件2则只有当<span class="math inline">\(p\)</span>和<span class="math inline">\(q\)</span>虚部正交时才能满足（原因的话网上有很多篇文章都有对其展开计算，这里就懒得写了......）。<br />
+一般情况下会把旋转表示成下面这种形似：<span class="math display">\[p&#39;=qpq^{-1}\]</span> （有些地方这个逆也会用共轭代替，这无所谓，因为<span class="math inline">\(q\)</span>是单位四元数）<br />
+至于为什么是这种形式，因为Hamilton发现，如果右乘一个<span class="math inline">\(p\)</span>的逆，则可以同时满足上面两个条件（可具体展开乘一下或者直接用特殊值法）。</p>
 <h2 id="四元数与其它旋转方式之间的转换">四元数与其它旋转方式之间的转换</h2>
-<p>任意一个单位四元数可以表示一个旋转，这个旋转也可以用旋转矩阵或者旋转向量来表示，这里主要讨论这三者的关系。<br />
-（现在把四元数乘法表示为矩阵乘法） 设<span class="math inline">\(q=[s,v]^{T}\)</span>，首先定义两种新的符号<span class="math inline">\(^{+}\)</span>和<span class="math inline">\(^{\oplus}\)</span>。<span class="math display">\[ q^{+}=\begin{bmatrix} s &amp; -v^{T} \\ v &amp; sI+v^{\land} \end{bmatrix}\]</span> <span class="math display">\[ q^{\oplus}=\begin{bmatrix} s &amp; -v^{T} \\ v &amp; sI-v^{\land} \end{bmatrix}\]</span> 其中的符号<span class="math inline">\(^{\land}\)</span>表示反对称矩阵，即：<span class="math inline">\(A&#39;=-A\)</span>，举个例子，设：<span class="math display">\[ a=\begin{bmatrix} a_{1} \\ a_{2} \\ a_{3} \end{bmatrix}\]</span> 则<span class="math inline">\(a^{\land}\)</span>为：<span class="math display">\[ a^{\land}=\begin{bmatrix} 0 &amp; -a_{3} &amp; a_{2} \\ a_{3} &amp; 0 &amp; -a_{1} \\ -a_{2} &amp; a_{1} &amp; 0 \end{bmatrix}\]</span> 这两个符号将四元数映射成一个<span class="math inline">\(4\times4\)</span>矩阵。 所以，四元数乘法写成矩阵形式如下：<span class="math display">\[ q_{1}^{+}q_{2}=\begin{bmatrix} s_{1} &amp; -v_{1}^{T} \\ v_{1} &amp; s_{1}I+v_{1}^{\land} \end{bmatrix} \begin{bmatrix} s_{2} \\ v_{2} \end{bmatrix}=\begin{bmatrix} -v_{1}^{T}v_{2}+s_{1}s_{2}  \\ s_{1}v_{2}+s_{2}v_{1}+v_{1}^{\land}v_{2} \end{bmatrix}=q_{1}q_{2}\]</span> 同理：<span class="math display">\[ q_{1}q_{2}=q_{1}^{+}q_{2}=q_{2}^{\oplus}q_{1}\]</span> 进一步：<span class="math display">\[ p&#39;=qpq^{-1}=q^{+}p^{+}q^{-1}=q^{+}q^{-1 ^{\oplus}}p\]</span> 代入对应矩阵：<span class="math display">\[ q^{+}(q^{-1})^{\oplus}=\begin{bmatrix} s &amp; -v^{T} \\ v &amp; sI+v^{\land} \end{bmatrix} \begin{bmatrix} s &amp; v^{T} \\ -v &amp; sI+v^{\land} \end{bmatrix}=\begin{bmatrix} 1 &amp; 0 \\ 0^{T} &amp; vv^{T}+s^{2}I+2sv^{\land}+(v^{\land})^{2} \end{bmatrix}\]</span> 由于<span class="math inline">\(p\)</span>和<span class="math inline">\(p&#39;\)</span>都是纯四元数，所以上面矩阵的右下角即是从四元数到旋转矩阵的变换关系：<span class="math display">\[ R=vv^{T}+s^{2}I+2sv^{\land}+(v^{\land})^{2}\]</span> 然后现在是四元数到旋转向量的变换，对上式两侧求迹（对角线的总和）：<span class="math display">\[tr(R)=tr(vv^{T}+s^{2}I+2sv^{\land}+tr((v^{\land})^{2}))\\ =v_{1}^{2}+v_{2}^{2}+v_{3}^{2}+3s^{2}-2(v_{1}^{2}+v_{2}^{2}+v_{3}^{2}) \\ =(1-s^{2})+3s^{2}-2(1-s^{2}) \\ =4s^{2}-1 \]</span> 转角<span class="math inline">\(\theta\)</span>为：<span class="math display">\[ \theta=arccos\frac{tr(R-1)}{2}=arccos(2s^{2}-1)\]</span> 即：<span class="math display">\[ cos\theta =2s^{2}-1=2cos^{2}\frac{\theta}{2}-1\]</span> 所以：<span class="math display">\[\theta = 2arccos s\]</span> 然后是旋转轴： 上面最后一个矩阵那，如果用<span class="math inline">\(q\)</span> 的虚部代替<span class="math inline">\(p\)</span>，则表示<span class="math inline">\(q\)</span>的虚部组成的向量在旋转时是不变的，即为旋转轴。此时只要把它除以它的模长即可。 最后，四元数到旋转向量的转换如下：<span class="math display">\[\begin{cases} \theta = 2arccos q_{0} \\ [n_{x},n_{y},n_{z}]^{T}=[q_{1},q_{2},q_{3}]^{T} / sin\frac{\theta}{2}\end{cases}\]</span> <strong><em>注：本文主要参考《视觉SLAM十四讲》</em></strong></p>
+<p>任意一个单位四元数可以表示一个旋转，这个旋转也可以用旋转矩阵或者旋转向量来表示，这里主要讨论这三者的关系。  <br />
+（现在把四元数乘法表示为矩阵乘法）<br />
+设<span class="math inline">\(q=[s,v]^{T}\)</span>，首先定义两种新的符号<span class="math inline">\(^{+}\)</span>和<span class="math inline">\(^{\oplus}\)</span>。<span class="math display">\[ q^{+}=\begin{bmatrix} s &amp; -v^{T} \\ v &amp; sI+v^{\land} \end{bmatrix}\]</span> <span class="math display">\[ q^{\oplus}=\begin{bmatrix} s &amp; -v^{T} \\ v &amp; sI-v^{\land} \end{bmatrix}\]</span> 其中的符号<span class="math inline">\(^{\land}\)</span>表示反对称矩阵，即：<span class="math inline">\(A&#39;=-A\)</span>，举个例子，设：<span class="math display">\[ a=\begin{bmatrix} a_{1} \\ a_{2} \\ a_{3} \end{bmatrix}\]</span> 则<span class="math inline">\(a^{\land}\)</span>为：<span class="math display">\[ a^{\land}=\begin{bmatrix} 0 &amp; -a_{3} &amp; a_{2} \\ a_{3} &amp; 0 &amp; -a_{1} \\ -a_{2} &amp; a_{1} &amp; 0 \end{bmatrix}\]</span> 这两个符号将四元数映射成一个<span class="math inline">\(4\times4\)</span>矩阵。<br />
+所以，四元数乘法写成矩阵形式如下：<span class="math display">\[ q_{1}^{+}q_{2}=\begin{bmatrix} s_{1} &amp; -v_{1}^{T} \\ v_{1} &amp; s_{1}I+v_{1}^{\land} \end{bmatrix} \begin{bmatrix} s_{2} \\ v_{2} \end{bmatrix}=\begin{bmatrix} -v_{1}^{T}v_{2}+s_{1}s_{2}  \\ s_{1}v_{2}+s_{2}v_{1}+v_{1}^{\land}v_{2} \end{bmatrix}=q_{1}q_{2}\]</span> 同理：<span class="math display">\[ q_{1}q_{2}=q_{1}^{+}q_{2}=q_{2}^{\oplus}q_{1}\]</span> 进一步：<span class="math display">\[ p&#39;=qpq^{-1}=q^{+}p^{+}q^{-1}=q^{+}q^{-1 ^{\oplus}}p\]</span> 代入对应矩阵：<span class="math display">\[ q^{+}(q^{-1})^{\oplus}=\begin{bmatrix} s &amp; -v^{T} \\ v &amp; sI+v^{\land} \end{bmatrix} \begin{bmatrix} s &amp; v^{T} \\ -v &amp; sI+v^{\land} \end{bmatrix}=\begin{bmatrix} 1 &amp; 0 \\ 0^{T} &amp; vv^{T}+s^{2}I+2sv^{\land}+(v^{\land})^{2} \end{bmatrix}\]</span> 由于<span class="math inline">\(p\)</span>和<span class="math inline">\(p&#39;\)</span>都是纯四元数，所以上面矩阵的右下角即是从四元数到旋转矩阵的变换关系：<span class="math display">\[ R=vv^{T}+s^{2}I+2sv^{\land}+(v^{\land})^{2}\]</span> 然后现在是四元数到旋转向量的变换，对上式两侧求迹（对角线的总和）：<span class="math display">\[tr(R)=tr(vv^{T}+s^{2}I+2sv^{\land}+tr((v^{\land})^{2}))\\ =v_{1}^{2}+v_{2}^{2}+v_{3}^{2}+3s^{2}-2(v_{1}^{2}+v_{2}^{2}+v_{3}^{2}) \\ =(1-s^{2})+3s^{2}-2(1-s^{2}) \\ =4s^{2}-1 \]</span> 转角<span class="math inline">\(\theta\)</span>为：<span class="math display">\[ \theta=arccos\frac{tr(R-1)}{2}=arccos(2s^{2}-1)\]</span> 即：<span class="math display">\[ cos\theta =2s^{2}-1=2cos^{2}\frac{\theta}{2}-1\]</span> 所以：<span class="math display">\[\theta = 2arccos s\]</span> 然后是旋转轴：<br />
+上面最后一个矩阵那，如果用<span class="math inline">\(q\)</span> 的虚部代替<span class="math inline">\(p\)</span>，则表示<span class="math inline">\(q\)</span>的虚部组成的向量在旋转时是不变的，即为旋转轴。此时只要把它除以它的模长即可。<br />
+最后，四元数到旋转向量的转换如下：<span class="math display">\[\begin{cases} \theta = 2arccos q_{0} \\ [n_{x},n_{y},n_{z}]^{T}=[q_{1},q_{2},q_{3}]^{T} / sin\frac{\theta}{2}\end{cases}\]</span> <strong><em>注：本文主要参考《视觉SLAM十四讲》</em></strong></p>
 
     </div>
 
@@ -354,7 +375,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%A8%E5%9B%9B%E5%85%83%E6%95%B0%E8%A1%A8%E7%A4%BA%E4%B8%89%E7%BB%B4%E6%97%8B%E8%BD%AC"><span class="nav-number">1.</span> <span class="nav-text">用四元数表示三维旋转</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86"><span class="nav-number">1.1.</span> <span class="nav-text">1.四元数的基本知识：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0%E7%9A%84%E8%BF%90%E7%AE%97"><span class="nav-number">1.2.</span> <span class="nav-text">2.四元数的运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E5%87%8F"><span class="nav-number">1.2.1.</span> <span class="nav-text">1).加减</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B9%98%E6%B3%95"><span class="nav-number">1.2.2.</span> <span class="nav-text">2). 乘法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E9%95%BF"><span class="nav-number">1.2.3.</span> <span class="nav-text">3). 模长</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B1%E8%BD%AD"><span class="nav-number">1.2.4.</span> <span class="nav-text">4). 共轭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%86"><span class="nav-number">1.2.5.</span> <span class="nav-text">5). 逆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E4%B9%98"><span class="nav-number">1.2.6.</span> <span class="nav-text">6). 数乘</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E8%A1%A8%E7%A4%BA"><span class="nav-number">1.3.</span> <span class="nav-text">旋转表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E5%85%B6%E5%AE%83%E6%97%8B%E8%BD%AC%E6%96%B9%E5%BC%8F%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.4.</span> <span class="nav-text">四元数与其它旋转方式之间的转换</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%A8%E5%9B%9B%E5%85%83%E6%95%B0%E8%A1%A8%E7%A4%BA%E4%B8%89%E7%BB%B4%E6%97%8B%E8%BD%AC"><span class="nav-number">1.</span> <span class="nav-text">用四元数表示三维旋转</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86"><span class="nav-number">1.1.</span> <span class="nav-text">四元数的基本知识：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0%E7%9A%84%E8%BF%90%E7%AE%97"><span class="nav-number">1.2.</span> <span class="nav-text">四元数的运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E5%87%8F"><span class="nav-number">1.2.1.</span> <span class="nav-text">1).加减</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B9%98%E6%B3%95"><span class="nav-number">1.2.2.</span> <span class="nav-text">2). 乘法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E9%95%BF"><span class="nav-number">1.2.3.</span> <span class="nav-text">3). 模长</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B1%E8%BD%AD"><span class="nav-number">1.2.4.</span> <span class="nav-text">4). 共轭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%86"><span class="nav-number">1.2.5.</span> <span class="nav-text">5). 逆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E4%B9%98"><span class="nav-number">1.2.6.</span> <span class="nav-text">6). 数乘</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E8%A1%A8%E7%A4%BA"><span class="nav-number">1.3.</span> <span class="nav-text">旋转表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E5%85%B6%E5%AE%83%E6%97%8B%E8%BD%AC%E6%96%B9%E5%BC%8F%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.4.</span> <span class="nav-text">四元数与其它旋转方式之间的转换</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -370,7 +391,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
