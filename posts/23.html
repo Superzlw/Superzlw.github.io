@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引入 拟合优度检验是用来检测提出的模型与数据是否一致，这在数据科学领域很重要，因为通过这种检测可以知道：   数据是否符合我们提出的假设（比如高斯性）;  两个数据集的分布是否可以假定为相同。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="拟合优度检验">
+<meta property="og:url" content="https://superzlw.github.io/posts/23.html">
+<meta property="og:site_name" content="SuperZLW&#39;s Blog">
+<meta property="og:description" content="引入 拟合优度检验是用来检测提出的模型与数据是否一致，这在数据科学领域很重要，因为通过这种检测可以知道：   数据是否符合我们提出的假设（比如高斯性）;  两个数据集的分布是否可以假定为相同。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://superzlw.github.io/images/265.png">
+<meta property="og:image" content="https://superzlw.github.io/images/266.png">
+<meta property="og:image" content="https://superzlw.github.io/images/267.png">
+<meta property="og:image" content="https://superzlw.github.io/images/268.png">
+<meta property="og:image" content="https://superzlw.github.io/images/269.png">
+<meta property="og:image" content="https://superzlw.github.io/images/270.png">
+<meta property="article:published_time" content="2021-08-19T22:23:45.585Z">
+<meta property="article:modified_time" content="2021-08-20T15:28:11.277Z">
+<meta property="article:author" content="super_wzl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://superzlw.github.io/images/265.png">
+
+<link rel="canonical" href="https://superzlw.github.io/posts/23.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>拟合优度检验 | SuperZLW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SuperZLW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">贩卖咸鱼の海边小店</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/posts/23.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="super_wzl">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuperZLW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          拟合优度检验
+        </h1>
+
+        <div class="post-meta">
+          <span class="post-time">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-08-20 00:23:45 / 修改时间：17:28:11" itemprop="dateCreated datePublished" datetime="2021-08-20T00:23:45+02:00">2021-08-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Data-Science/" itemprop="url" rel="index"><span itemprop="name">Data Science</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/posts/23.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/posts/23.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引入">引入</h1>
+<p>拟合优度检验是用来检测提出的模型与数据是否一致，这在数据科学领域很重要，因为通过这种检测可以知道：</p>
+<blockquote>
+<ol type="1">
+<li>数据是否符合我们提出的假设（比如高斯性）;<br />
+</li>
+<li>两个数据集的分布是否可以假定为相同。 <span id="more"></span></li>
+</ol>
+</blockquote>
+<p>一般来说：</p>
+<blockquote>
+<ol type="1">
+<li><strong>离散分布</strong>对应于<strong>Chi-square test</strong> ;<br />
+</li>
+<li><strong>连续分布</strong>对应于<strong>Kolmogorov Smirnov</strong>。</li>
+</ol>
+</blockquote>
+<h1 id="chi-square-test">Chi-square test</h1>
+<p>这个就是经常能听到的卡方检测，卡方检测一般有两种，分别为拟合度的卡方检验和卡方独立性检验，这里重点介绍第一种。<br />
+</p>
+<h2 id="拟合度卡方检测">拟合度卡方检测</h2>
+<p>简单定义的话，就是使用样本数据检验总体分布形态或者比例的假说，或者说得再清楚一点，检验该样本的分布比例与总体分布比例的拟合程度。<br />
+拟合度卡方检测又分为如下两种情况：<br />
+</p>
+<h3 id="case-1-所有参数都是确定的">case 1: 所有参数都是确定的</h3>
+<p>由于这是检验分布比例的，所以零假设和备选假设可以写成这样：</p>
+<blockquote>
+<ol type="1">
+<li><span class="math inline">\(H_0\)</span>: <span class="math inline">\(P\left\{ Y=i\right\}=p_i\)</span> vs <span class="math inline">\(H_1\)</span>: <span class="math inline">\(P\left\{ Y=i\right\}\neq p_i\)</span>, <span class="math inline">\(i\in\)</span> {<span class="math inline">\(k\)</span> discrete outcomes}。<br />
+</li>
+</ol>
+</blockquote>
+<p>定义如下变量：<br />
+</p>
+<blockquote>
+<p><span class="math inline">\(X_i\)</span> 为输出结果 <span class="math inline">\(i\)</span> 在 <span class="math inline">\(n\)</span> 次重复试验中出现的次数，单看结果 <span class="math inline">\(i\)</span> 的话，可以看成是二项分布，所以有 <span class="math inline">\(E[X_i]=np_i\)</span>。<br />
+</p>
+</blockquote>
+<p>检测统计量为： <span class="math display">\[
+T=\sum_i\frac{(x_i-np_i)^2}{np_i}
+\]</span> 当次数 <span class="math inline">\(n\)</span> 很大，且零假设成立时，<span class="math inline">\(T\)</span> 可近似看作是 <span class="math inline">\(k-1\)</span> 个自由度的卡方分布，就可以查阅卡方表进行比较了。<br />
+</p>
+<p>最后根据设置的 <span class="math inline">\(\alpha\)</span> 值，当 <span class="math inline">\(T \geq \chi_{\alpha,k-1}^2\)</span> 时，拒绝零假设，否则接受。<br />
+</p>
+<h4 id="一个例子">一个例子</h4>
+<p>在一个试验中共有6个可能的输出分别是 <span class="math inline">\(a,b,c,d,e,f\)</span>，现假设其出现概率分别为：0.1，0.1，0.05，0.4，0.2，0.15，试验重复40次所得到的各结果频数分别是：3，3，5，18，4，7。问：一开始那个频率假设是否合理？<br />
+<strong>零假设<span class="math inline">\(H_0\)</span></strong>：<br />
+<span class="math display">\[
+P\left\{ Y=a\right\}=0.1, \quad P\left\{ Y=b\right\}=0.1, \quad P\left\{ Y=c\right\}=0.05
+\]</span> <span class="math display">\[
+P\left\{ Y=d\right\}=0.4, \quad P\left\{ Y=e\right\}=0.2, \quad P\left\{ Y=f\right\}=0.15
+\]</span> <strong>计算统计量</strong><br />
+将 <span class="math inline">\(n=40\)</span>，6个<span class="math inline">\(p_i\)</span>代入 <span class="math inline">\(T=\sum_i\frac{(x_i-np_i)^2}{np_i}\)</span> 求出 <span class="math inline">\(T=7.416666667\)</span>。<br />
+<strong>查表</strong><br />
+设<span class="math inline">\(\alpha=0.05\)</span>，自由度<span class="math inline">\(df=6-1=5\)</span>，查表得: <span class="math inline">\(\chi_{0.05,5}^2=11.070\)</span>。<br />
+<strong>决策</strong><br />
+由于 <span class="math inline">\(T \leq \chi_{0.05,5}^2\)</span>，所以接受零假设。</p>
+<h3 id="case-2-某些参数都是未确定的">case 2: 某些参数都是未确定的</h3>
+<p>与上面<span class="math inline">\(n\)</span>和<span class="math inline">\(p_i\)</span>都确定的情况不同，这里有些参数是不确定的，需要我们根据其它办法(比如MLE)近似确定。<br />
+假设我们有 <span class="math inline">\(m\)</span> 个未指定的参数，需要我们用MLE来确定，比如说泊松分布 <span class="math inline">\(Y\sim Pois(\lambda)\)</span> 的均值的MLE估计为: <span class="math inline">\(\hat{\lambda}=\frac{1}{n}\sum_{j=1}^ny_j\)</span>;<br />
+测试统计量为： <span class="math display">\[
+T=\sum_i\frac{(x_i-n\hat{p}_i)^2}{n\hat{p}_i}
+\]</span> 这里的<span class="math inline">\(\hat{p}_i\)</span>是估计参数。<br />
+比如说泊松分布的<span class="math inline">\(pmf\)</span>为： <span class="math inline">\(P(Y=i)=\frac{e^{-\lambda}\lambda^i}{i!}\)</span><br />
+将数据分为<span class="math inline">\(k\)</span>组，每组进行分布统计。<br />
+若试验次数<span class="math inline">\(n\)</span>足够大且零假设为真，则<span class="math inline">\(T\)</span>近似为卡方分布，自由度为 <span class="math inline">\(k-1-m\)</span>。<br />
+对于设定值<span class="math inline">\(\alpha\)</span>，若 <span class="math inline">\(T \geq \chi_{\alpha,k-1-m}^2\)</span>，则拒绝零假设，否则接受。</p>
+<h4 id="一个例子-1">一个例子</h4>
+<p>我们有下面30个数据，表明30周里每周车祸发生的次数，现在需要验证一周事故发生次数服从泊松分布。<img src="/images/265.png" /> 我们将数据分成如下5组： <span class="math display">\[
+(1).Y=0,\quad (2).Y=1,\quad (3).Y=2\;or\; 3, \quad (4). Y=4\;or\;5,\quad (5). Y&gt;5
+\]</span></p>
+<p><strong>步骤1</strong><br />
+首先我们对数据根据分组进行统计，结果如下： <img src="/images/266.png" /> <strong>步骤2</strong><br />
+计算估计参数 <span class="math inline">\(\hat{\lambda}\)</span>；<br />
+根据上面泊松分布的MLE计算，这个参数就是数据的均值了，等于：<span class="math inline">\(\hat{\lambda}=3.167\)</span>；<br />
+<strong>步骤3</strong><br />
+根据求出的估计参数，代入泊松分布的 <span class="math inline">\(pmf\)</span> 中，计算各个组的概率： <span class="math display">\[
+\hat{p}_1=0.042,\quad \hat{p}_2=0.133,\quad \hat{p}_3=0.434,\quad \hat{p}_4=0.288, \quad \hat{p}_5=0.102
+\]</span> <strong>步骤4</strong><br />
+计算验证统计量： <span class="math display">\[
+T=\sum_{i=1}^5=\frac{(x_i-30\hat{p}_i)^2}{30\hat{p}_i}=21.99
+\]</span> <strong>步骤5</strong><br />
+查卡方表，根据 <span class="math inline">\(\alpha=0.05\)</span>，自由度<span class="math inline">\(df=k-1-m=5-1-1=3\)</span> 查得：<span class="math inline">\(\chi_{0.05,3}^2=7.815\)</span>。<br />
+<strong>步骤6</strong><br />
+决策，由于<span class="math inline">\(21.99\geq 7.815\)</span>，所以拒绝零假设，一周事故频数不服从泊松分布。<br />
+</p>
+<h2 id="卡方独立性检验">卡方独立性检验</h2>
+<p>这里只是简单介绍怎么用这个检验，要具体推导的话看<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/131286213">这里</a>。<br />
+卡方独立性检验是为了检验两个变量是否独立，比如说性别与考试通过率是否独立，或者会不会说英语与收到的offer是否独立等。<br />
+这里直接用链接里的这个例子，两个变量分别是性别与分期与否。<br />
+观测值如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">分期</th>
+<th style="text-align: center;">不分期</th>
+<th style="text-align: center;"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">男</td>
+<td style="text-align: center;">90</td>
+<td style="text-align: center;">110</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">女</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">70</td>
+<td style="text-align: center;">100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">120</td>
+<td style="text-align: center;">180</td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<p>这里的 90，110，30，70分别用<span class="math inline">\(o_1,o_2,o_3,o_4\)</span>表示。<br />
+做零假设：两变量独立。<br />
+根据这个零假设，我们期望的值应该是（就是比例相同）：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">分期</th>
+<th style="text-align: center;">不分期</th>
+<th style="text-align: center;"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">男</td>
+<td style="text-align: center;">80</td>
+<td style="text-align: center;">120</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">女</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">120</td>
+<td style="text-align: center;">180</td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<p>这里的80，120，40，60分别用<span class="math inline">\(e_1,e_2,e_3,e_4\)</span>表示。<br />
+计算卡方统计量： <span class="math display">\[
+X=\sum_{i=1}^4\frac{(o_i-e_i)^2}{e_i}=6.25
+\]</span> 查表验证。</p>
+<h1 id="kolmogorov-smirnov">Kolmogorov Smirnov</h1>
+<p>这种检测方法是基本思路就是，比较理论的经验累积分布与观测的经验累积分布，求出最大偏离值，然后判断这种偏离值是不是偶然出现的。<br />
+比如说现在有一个连续分布的样本数据：<span class="math inline">\(y_1,...,y_n\)</span>。<br />
+我们做出零假设：<span class="math inline">\(F\)</span> 是总体连续分布。<br />
+现在验证这个零假设，有两种方法：</p>
+<blockquote>
+<ol type="1">
+<li>将该分布分成不同区间，然后用上面的卡方检测；<br />
+</li>
+<li>用 K-S 检验。</li>
+</ol>
+</blockquote>
+<p>举个例子，现在有<span class="math inline">\(n=5\)</span>个数据：<span class="math inline">\(y_1,y_2,y_3,y_4,y_5\)</span>，根据这5个数据得出的经验累积函数为： <span class="math display">\[
+F_e(x)=\frac{\#i:y_i \leq x}{n}
+\]</span> 零假设对应的函数为<span class="math inline">\(F\)</span>，画图如下：<img src="/images/267.png" /> 如果零假设成立，则<span class="math inline">\(F_e(x)\)</span>应该很接近于<span class="math inline">\(F(x)\)</span>。<br />
+K-S 检测的统计量为（就是最大距离）： <span class="math display">\[
+D \equiv Maximum_x |F_e(x)-F(x)|
+\]</span> 下图是sample test: Use the One sample Kolmogorov Smirnov table：<img src="/images/268.png" /> (至于sample tests use the two sample Kolmorogov Smirnov table ，在<a target="_blank" rel="noopener" href="https://www.real-statistics.com/statistics-tables/two-sample-kolmogorov-smirnov-table/">这里</a>)<br />
+根据<span class="math inline">\(\alpha\)</span>和<span class="math inline">\(n\)</span>就可以读出临界值，两者比较，当最大值小于临界值时，接受零假设，否则拒绝。<br />
+<strong>简单说一下双样本的</strong> 双样本检测也差不多，只是多了一组样本，表也多了一个维度，计算距离也不太一样，就，样本数据很大时，距离公式为： <span class="math display">\[
+D_{\alpha}=c(\alpha)\sqrt{\frac{n_1+n_2}{n_1n_2}}
+\]</span> 系数<span class="math inline">\(c(\alpha)\)</span>为：<img src="/images/269.png" /></p>
+<h1 id="总结">总结</h1>
+<p>直接附图了这里 <img src="/images/270.png" /></p>
+<h1 id="参考">参考</h1>
+<p>【1】：https://zhuanlan.zhihu.com/p/131286213</p>
+<p>【2】：https://qinqianshan.com/math/significance_test/kolmogorovsmirnov/</p>
+
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+      
+    </div>
+
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/22.html" rel="prev" title="方差分析">
+      <i class="fa fa-chevron-left"></i> 方差分析
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#chi-square-test"><span class="nav-number">2.</span> <span class="nav-text">Chi-square test</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%9F%E5%90%88%E5%BA%A6%E5%8D%A1%E6%96%B9%E6%A3%80%E6%B5%8B"><span class="nav-number">2.1.</span> <span class="nav-text">拟合度卡方检测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#case-1-%E6%89%80%E6%9C%89%E5%8F%82%E6%95%B0%E9%83%BD%E6%98%AF%E7%A1%AE%E5%AE%9A%E7%9A%84"><span class="nav-number">2.1.1.</span> <span class="nav-text">case 1: 所有参数都是确定的</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">一个例子</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#case-2-%E6%9F%90%E4%BA%9B%E5%8F%82%E6%95%B0%E9%83%BD%E6%98%AF%E6%9C%AA%E7%A1%AE%E5%AE%9A%E7%9A%84"><span class="nav-number">2.1.2.</span> <span class="nav-text">case 2: 某些参数都是未确定的</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90-1"><span class="nav-number">2.1.2.1.</span> <span class="nav-text">一个例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%A1%E6%96%B9%E7%8B%AC%E7%AB%8B%E6%80%A7%E6%A3%80%E9%AA%8C"><span class="nav-number">2.2.</span> <span class="nav-text">卡方独立性检验</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#kolmogorov-smirnov"><span class="nav-number">3.</span> <span class="nav-text">Kolmogorov Smirnov</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="super_wzl"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">super_wzl</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">super_wzl</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'JbTCzSGo7EeV9tTlVHeWHuWx-MdYXbMMI',
+      appKey     : '3yO7D6U6pVQy4RVNcsKIxy4m',
+      placeholder: "来唠两句吗？",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

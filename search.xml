@@ -1,7 +1,310 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>假设性检测 (t-test, z-test, F-test)</title>
+    <title>拟合优度检验</title>
+    <url>/posts/23.html</url>
+    <content><![CDATA[<h1 id="引入">引入</h1>
+<p>拟合优度检验是用来检测提出的模型与数据是否一致，这在数据科学领域很重要，因为通过这种检测可以知道：</p>
+<blockquote>
+<ol type="1">
+<li>数据是否符合我们提出的假设（比如高斯性）;<br />
+</li>
+<li>两个数据集的分布是否可以假定为相同。 <span id="more"></span></li>
+</ol>
+</blockquote>
+<p>一般来说：</p>
+<blockquote>
+<ol type="1">
+<li><strong>离散分布</strong>对应于<strong>Chi-square test</strong> ;<br />
+</li>
+<li><strong>连续分布</strong>对应于<strong>Kolmogorov Smirnov</strong>。</li>
+</ol>
+</blockquote>
+<h1 id="chi-square-test">Chi-square test</h1>
+<p>这个就是经常能听到的卡方检测，卡方检测一般有两种，分别为拟合度的卡方检验和卡方独立性检验，这里重点介绍第一种。<br />
+</p>
+<h2 id="拟合度卡方检测">拟合度卡方检测</h2>
+<p>简单定义的话，就是使用样本数据检验总体分布形态或者比例的假说，或者说得再清楚一点，检验该样本的分布比例与总体分布比例的拟合程度。<br />
+拟合度卡方检测又分为如下两种情况：<br />
+</p>
+<h3 id="case-1-所有参数都是确定的">case 1: 所有参数都是确定的</h3>
+<p>由于这是检验分布比例的，所以零假设和备选假设可以写成这样：</p>
+<blockquote>
+<ol type="1">
+<li><span class="math inline">\(H_0\)</span>: <span class="math inline">\(P\left\{ Y=i\right\}=p_i\)</span> vs <span class="math inline">\(H_1\)</span>: <span class="math inline">\(P\left\{ Y=i\right\}\neq p_i\)</span>, <span class="math inline">\(i\in\)</span> {<span class="math inline">\(k\)</span> discrete outcomes}。<br />
+</li>
+</ol>
+</blockquote>
+<p>定义如下变量：<br />
+</p>
+<blockquote>
+<p><span class="math inline">\(X_i\)</span> 为输出结果 <span class="math inline">\(i\)</span> 在 <span class="math inline">\(n\)</span> 次重复试验中出现的次数，单看结果 <span class="math inline">\(i\)</span> 的话，可以看成是二项分布，所以有 <span class="math inline">\(E[X_i]=np_i\)</span>。<br />
+</p>
+</blockquote>
+<p>检测统计量为： <span class="math display">\[
+T=\sum_i\frac{(x_i-np_i)^2}{np_i}
+\]</span> 当次数 <span class="math inline">\(n\)</span> 很大，且零假设成立时，<span class="math inline">\(T\)</span> 可近似看作是 <span class="math inline">\(k-1\)</span> 个自由度的卡方分布，就可以查阅卡方表进行比较了。<br />
+</p>
+<p>最后根据设置的 <span class="math inline">\(\alpha\)</span> 值，当 <span class="math inline">\(T \geq \chi_{\alpha,k-1}^2\)</span> 时，拒绝零假设，否则接受。<br />
+</p>
+<h4 id="一个例子">一个例子</h4>
+<p>在一个试验中共有6个可能的输出分别是 <span class="math inline">\(a,b,c,d,e,f\)</span>，现假设其出现概率分别为：0.1，0.1，0.05，0.4，0.2，0.15，试验重复40次所得到的各结果频数分别是：3，3，5，18，4，7。问：一开始那个频率假设是否合理？<br />
+<strong>零假设<span class="math inline">\(H_0\)</span></strong>：<br />
+<span class="math display">\[
+P\left\{ Y=a\right\}=0.1, \quad P\left\{ Y=b\right\}=0.1, \quad P\left\{ Y=c\right\}=0.05
+\]</span> <span class="math display">\[
+P\left\{ Y=d\right\}=0.4, \quad P\left\{ Y=e\right\}=0.2, \quad P\left\{ Y=f\right\}=0.15
+\]</span> <strong>计算统计量</strong><br />
+将 <span class="math inline">\(n=40\)</span>，6个<span class="math inline">\(p_i\)</span>代入 <span class="math inline">\(T=\sum_i\frac{(x_i-np_i)^2}{np_i}\)</span> 求出 <span class="math inline">\(T=7.416666667\)</span>。<br />
+<strong>查表</strong><br />
+设<span class="math inline">\(\alpha=0.05\)</span>，自由度<span class="math inline">\(df=6-1=5\)</span>，查表得: <span class="math inline">\(\chi_{0.05,5}^2=11.070\)</span>。<br />
+<strong>决策</strong><br />
+由于 <span class="math inline">\(T \leq \chi_{0.05,5}^2\)</span>，所以接受零假设。</p>
+<h3 id="case-2-某些参数都是未确定的">case 2: 某些参数都是未确定的</h3>
+<p>与上面<span class="math inline">\(n\)</span>和<span class="math inline">\(p_i\)</span>都确定的情况不同，这里有些参数是不确定的，需要我们根据其它办法(比如MLE)近似确定。<br />
+假设我们有 <span class="math inline">\(m\)</span> 个未指定的参数，需要我们用MLE来确定，比如说泊松分布 <span class="math inline">\(Y\sim Pois(\lambda)\)</span> 的均值的MLE估计为: <span class="math inline">\(\hat{\lambda}=\frac{1}{n}\sum_{j=1}^ny_j\)</span>;<br />
+测试统计量为： <span class="math display">\[
+T=\sum_i\frac{(x_i-n\hat{p}_i)^2}{n\hat{p}_i}
+\]</span> 这里的<span class="math inline">\(\hat{p}_i\)</span>是估计参数。<br />
+比如说泊松分布的<span class="math inline">\(pmf\)</span>为： <span class="math inline">\(P(Y=i)=\frac{e^{-\lambda}\lambda^i}{i!}\)</span><br />
+将数据分为<span class="math inline">\(k\)</span>组，每组进行分布统计。<br />
+若试验次数<span class="math inline">\(n\)</span>足够大且零假设为真，则<span class="math inline">\(T\)</span>近似为卡方分布，自由度为 <span class="math inline">\(k-1-m\)</span>。<br />
+对于设定值<span class="math inline">\(\alpha\)</span>，若 <span class="math inline">\(T \geq \chi_{\alpha,k-1-m}^2\)</span>，则拒绝零假设，否则接受。</p>
+<h4 id="一个例子-1">一个例子</h4>
+<p>我们有下面30个数据，表明30周里每周车祸发生的次数，现在需要验证一周事故发生次数服从泊松分布。<img src="/images/265.png" /> 我们将数据分成如下5组： <span class="math display">\[
+(1).Y=0,\quad (2).Y=1,\quad (3).Y=2\;or\; 3, \quad (4). Y=4\;or\;5,\quad (5). Y&gt;5
+\]</span></p>
+<p><strong>步骤1</strong><br />
+首先我们对数据根据分组进行统计，结果如下： <img src="/images/266.png" /> <strong>步骤2</strong><br />
+计算估计参数 <span class="math inline">\(\hat{\lambda}\)</span>；<br />
+根据上面泊松分布的MLE计算，这个参数就是数据的均值了，等于：<span class="math inline">\(\hat{\lambda}=3.167\)</span>；<br />
+<strong>步骤3</strong><br />
+根据求出的估计参数，代入泊松分布的 <span class="math inline">\(pmf\)</span> 中，计算各个组的概率： <span class="math display">\[
+\hat{p}_1=0.042,\quad \hat{p}_2=0.133,\quad \hat{p}_3=0.434,\quad \hat{p}_4=0.288, \quad \hat{p}_5=0.102
+\]</span> <strong>步骤4</strong><br />
+计算验证统计量： <span class="math display">\[
+T=\sum_{i=1}^5=\frac{(x_i-30\hat{p}_i)^2}{30\hat{p}_i}=21.99
+\]</span> <strong>步骤5</strong><br />
+查卡方表，根据 <span class="math inline">\(\alpha=0.05\)</span>，自由度<span class="math inline">\(df=k-1-m=5-1-1=3\)</span> 查得：<span class="math inline">\(\chi_{0.05,3}^2=7.815\)</span>。<br />
+<strong>步骤6</strong><br />
+决策，由于<span class="math inline">\(21.99\geq 7.815\)</span>，所以拒绝零假设，一周事故频数不服从泊松分布。<br />
+</p>
+<h2 id="卡方独立性检验">卡方独立性检验</h2>
+<p>这里只是简单介绍怎么用这个检验，要具体推导的话看<a href="https://zhuanlan.zhihu.com/p/131286213">这里</a>。<br />
+卡方独立性检验是为了检验两个变量是否独立，比如说性别与考试通过率是否独立，或者会不会说英语与收到的offer是否独立等。<br />
+这里直接用链接里的这个例子，两个变量分别是性别与分期与否。<br />
+观测值如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">分期</th>
+<th style="text-align: center;">不分期</th>
+<th style="text-align: center;"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">男</td>
+<td style="text-align: center;">90</td>
+<td style="text-align: center;">110</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">女</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">70</td>
+<td style="text-align: center;">100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">120</td>
+<td style="text-align: center;">180</td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<p>这里的 90，110，30，70分别用<span class="math inline">\(o_1,o_2,o_3,o_4\)</span>表示。<br />
+做零假设：两变量独立。<br />
+根据这个零假设，我们期望的值应该是（就是比例相同）：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">分期</th>
+<th style="text-align: center;">不分期</th>
+<th style="text-align: center;"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">男</td>
+<td style="text-align: center;">80</td>
+<td style="text-align: center;">120</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">女</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"></td>
+<td style="text-align: center;">120</td>
+<td style="text-align: center;">180</td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<p>这里的80，120，40，60分别用<span class="math inline">\(e_1,e_2,e_3,e_4\)</span>表示。<br />
+计算卡方统计量： <span class="math display">\[
+X=\sum_{i=1}^4\frac{(o_i-e_i)^2}{e_i}=6.25
+\]</span> 查表验证。</p>
+<h1 id="kolmogorov-smirnov">Kolmogorov Smirnov</h1>
+<p>这种检测方法是基本思路就是，比较理论的经验累积分布与观测的经验累积分布，求出最大偏离值，然后判断这种偏离值是不是偶然出现的。<br />
+比如说现在有一个连续分布的样本数据：<span class="math inline">\(y_1,...,y_n\)</span>。<br />
+我们做出零假设：<span class="math inline">\(F\)</span> 是总体连续分布。<br />
+现在验证这个零假设，有两种方法：</p>
+<blockquote>
+<ol type="1">
+<li>将该分布分成不同区间，然后用上面的卡方检测；<br />
+</li>
+<li>用 K-S 检验。</li>
+</ol>
+</blockquote>
+<p>举个例子，现在有<span class="math inline">\(n=5\)</span>个数据：<span class="math inline">\(y_1,y_2,y_3,y_4,y_5\)</span>，根据这5个数据得出的经验累积函数为： <span class="math display">\[
+F_e(x)=\frac{\#i:y_i \leq x}{n}
+\]</span> 零假设对应的函数为<span class="math inline">\(F\)</span>，画图如下：<img src="/images/267.png" /> 如果零假设成立，则<span class="math inline">\(F_e(x)\)</span>应该很接近于<span class="math inline">\(F(x)\)</span>。<br />
+K-S 检测的统计量为（就是最大距离）： <span class="math display">\[
+D \equiv Maximum_x |F_e(x)-F(x)|
+\]</span> 下图是sample test: Use the One sample Kolmogorov Smirnov table：<img src="/images/268.png" /> (至于sample tests use the two sample Kolmorogov Smirnov table ，在<a href="https://www.real-statistics.com/statistics-tables/two-sample-kolmogorov-smirnov-table/">这里</a>)<br />
+根据<span class="math inline">\(\alpha\)</span>和<span class="math inline">\(n\)</span>就可以读出临界值，两者比较，当最大值小于临界值时，接受零假设，否则拒绝。<br />
+<strong>简单说一下双样本的</strong> 双样本检测也差不多，只是多了一组样本，表也多了一个维度，计算距离也不太一样，就，样本数据很大时，距离公式为： <span class="math display">\[
+D_{\alpha}=c(\alpha)\sqrt{\frac{n_1+n_2}{n_1n_2}}
+\]</span> 系数<span class="math inline">\(c(\alpha)\)</span>为：<img src="/images/269.png" /></p>
+<h1 id="总结">总结</h1>
+<p>直接附图了这里 <img src="/images/270.png" /></p>
+<h1 id="参考">参考</h1>
+<p>【1】：https://zhuanlan.zhihu.com/p/131286213</p>
+<p>【2】：https://qinqianshan.com/math/significance_test/kolmogorovsmirnov/</p>
+]]></content>
+      <categories>
+        <category>Data Science</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>方差分析</title>
+    <url>/posts/22.html</url>
+    <content><![CDATA[<h1 id="引入">引入</h1>
+<p>对于比较两个总体的均值，t-test 是个不错的选择，但假如我们现在有很多个总体呢，t-test 好像就变得不那么理想了，毕竟比较所有成分效率太低。<br />
+我们需要一种检测方法，它可以告诉我们在这些总体的任意一个地方是否有任何显著的差异，如果没有的话，那我们就没必要进一步探究了。<br />
+要分析均值间的方差，可以用 F test，或者又叫方差分析（Way Analysis of Variance，ANOVA）。 <span id="more"></span></p>
+<h1 id="单因素方差分析">单因素方差分析</h1>
+<p>在试验过程中，只有一个因素在改变，称为单因素试验，而单因素方差分析主要用来验证这种试验中两组或两组以上的样本均值是否有显著性差异。<br />
+举个例子，工厂有5台机器生产同一种零件，我们想知道这几台机器生产的零件重量（或者其它指标）是否一致，就可以转化为验证这5个总体的均值是否一致，这里考察的就是机器这一因素对零件重量有无影响。<br />
+如下图（这个图跟这个例子不对应，但意思是一样的，即<strong>组内方差和组间方差</strong>，因为现在还不懂在这里要怎么画图。。）：<img src="/images/259.png" /> 也就是说，F可以写为： <span class="math display">\[
+F=\frac{Between \quad group\quad  variability}{Within \quad group\quad variability}=\frac{MS_b}{MS_w}
+\]</span> 当：</p>
+<blockquote>
+<ol type="1">
+<li><span class="math inline">\(F=1\)</span>: <span class="math inline">\(H_0\)</span> 为真，每组平均值之间有相同的变化量，与机器无关；</li>
+<li><span class="math inline">\(F&gt;1\)</span>: <span class="math inline">\(H_0\)</span> 为假，平均值之间的巨大差异可能不是偶然造成的，表明至少存在一个机器与其它机器不同。</li>
+</ol>
+</blockquote>
+<p>上面只是一个简单的例子，具体地，我们要根据样本的关系进行如下分类。</p>
+<h2 id="样本大小相等">样本大小相等</h2>
+<p>现假设我们有 <span class="math inline">\(m\)</span> 组独立样本，每组样本有 <span class="math inline">\(n\)</span> 个元素，即可以写成： <span class="math display">\[
+X_{ij}\sim \mathcal{N}(\mu_i,\sigma^2)\quad i=1,...,m;\quad j=1,...,n
+\]</span> 我们做出如下假设：</p>
+<blockquote>
+<p><span class="math inline">\(H_0\)</span>: <span class="math inline">\(\mu_1=\mu_2=...=\mu_m\)</span> vs <span class="math inline">\(H_1\)</span>: 并非所有均值都相等。<br />
+</p>
+</blockquote>
+<p>继续往下，方差分析这里最重要的就是计算组内以及组间方差，为此需要计算如下两种均值：</p>
+<blockquote>
+<ol type="1">
+<li>组内均值：令 <span class="math inline">\(\overline{x}_{i\cdot}\)</span> 为第 <span class="math inline">\(i\)</span> 组样本的均值，即： <span class="math display">\[
+\overline{x}_{i\cdot}=\sum_{j=1}^n\frac{x_{ij}}{n}
+\]</span></li>
+<li>总体均值：用<span class="math inline">\(\overline{x}_{\cdot \cdot}\)</span>表示对<span class="math inline">\(\mu\)</span>的估计，即： <span class="math display">\[
+\overline{x}_{\cdot \cdot} = \frac{\sum_{i=1}^m\sum_{j=1}^nx_{ij}}{nm}=\frac{\sum_{i=1}^m\overline{x}_{i\cdot}}{m}
+\]</span></li>
+</ol>
+</blockquote>
+<p>然后通过下面表格就可以计算出F的值：<img src="/images/260.png" /></p>
+<h2 id="样本大小不等">样本大小不等</h2>
+<p>现假设我们有 <span class="math inline">\(m\)</span> 组独立样本，每组样本有 <span class="math inline">\(n_1,...,n_m\)</span> 个元素，即可以写成： <span class="math display">\[
+X_{ij}\sim \mathcal{N}(\mu_i,\sigma^2)\quad i=1,...,m;\quad j=1,...,n
+\]</span> 同样我们做出如下假设：</p>
+<blockquote>
+<p><span class="math inline">\(H_0\)</span>: <span class="math inline">\(\mu_1=\mu_2=...=\mu_m\)</span> vs <span class="math inline">\(H_1\)</span>: 并非所有均值都相等。<br />
+</p>
+</blockquote>
+<p>依旧计算两种均值：</p>
+<blockquote>
+<ol type="1">
+<li>组内均值：<span class="math inline">\(\overline{x}_{i\cdot}=\sum_{j=1}^{n_i}\frac{x_{ij}}{n_i}\)</span><br />
+<br />
+</li>
+<li>总体均值：<span class="math inline">\(\overline{x}_{\cdot \cdot} = \frac{\sum_{i=1}^m\sum_{j=1}^{n_i}x_{ij}}{\sum_{i=1}^mn_i}\)</span></li>
+</ol>
+</blockquote>
+<p>令 <span class="math inline">\(N = \sum_in_i-m\)</span>。<br />
+然后通过下面表格就可以计算出F的值：<img src="/images/261.png" /></p>
+<h2 id="一个例子">一个例子</h2>
+<p>下图表示从5种不同的方法中采集的数据，现在我们要判断这5种不同的方法是否会给出不同的结果。<br />
+<img src="/images/262.png" /> 均值之类的都已经算好了，直接带入上面表格里的式子可得： <span class="math display">\[
+SS_b=150.50 \quad SS_w=87.43
+\]</span> 则均方根(mean Squares) 为： <span class="math display">\[
+MS_b=\frac{150.50}{4}=37.63 \quad MS_w=\frac{87.43}{26}=3.36
+\]</span> 测试统计量为：<span class="math inline">\(\frac{MS_b}{MS_w}=11.19\)</span><br />
+通过查找F分布表可得：<span class="math inline">\(F_{4,26,0.05}=2.743\)</span><br />
+由于11.19 &gt; 2.743，所以拒绝零假设。</p>
+<h1 id="双因素方差分析">双因素方差分析</h1>
+<p>字面意思，这里的方差分析涉及到两个因素，比如说，我们要探讨不同温度及营养元素对培养皿微生物繁殖的影响，就可以使用双因素方差分析。<br />
+另一个例子，如下图：<img src="/images/263.png" /> 给出的是不同温度与材料下发动机的寿命(月)。<br />
+计算跟单方差分析还是挺类似的，定义以下变量：<span class="math inline">\(\mu,\alpha_i,\beta_j,\gamma_{ij},i=1,...,m,j=1,...,n\)</span>，并有如下关系：</p>
+<blockquote>
+<ol type="1">
+<li><span class="math inline">\(\mu=\mu_{\cdot\cdot}\)</span>：总体平均值（即所有元素）;<br />
+</li>
+<li><span class="math inline">\(\alpha_i=\mu_{i\cdot}-\mu_{\cdot\cdot}\)</span>：第<span class="math inline">\(i\)</span>行的影响;<br />
+</li>
+<li><span class="math inline">\(\beta_j=\mu_{\cdot j}-\mu_{\cdot\cdot}\)</span>：第<span class="math inline">\(j\)</span>列的影响;<br />
+</li>
+<li><span class="math inline">\(\gamma_{ij}=\mu_{ij}-(\mu+\alpha_i+\beta_j)=\mu_{ij}-\mu_{i\cdot}-\mu_{\cdot j}+\mu_{\cdot\cdot}\)</span>：行𝑖和列𝑗的相互作用。<br />
+（这里 <span class="math inline">\(\mu_{ij}=E[X_{ij}]\)</span>）</li>
+</ol>
+</blockquote>
+<p>零假设这里有三个：</p>
+<blockquote>
+<ol type="1">
+<li><span class="math inline">\(H_0^r: \alpha_i=0\)</span>, for all i（即是行没有影响）;<br />
+</li>
+<li><span class="math inline">\(H_0^c: \beta_j=0\)</span>, for all j（即是列没有影响）;<br />
+</li>
+<li><span class="math inline">\(H_0^{int}: \gamma_{ij}=0\)</span>, for all i, j（即是行列没有相互作用）。</li>
+</ol>
+</blockquote>
+<p>更一般的情况，也就是每行每列多个观测值。<br />
+现假设每行每列有 <span class="math inline">\(l\)</span> 个观测值，比如上面那张图里 <span class="math inline">\(l=3\)</span>，并假设所有观测值都是独立的正态随机变量，方差均为 <span class="math inline">\(\sigma^2\)</span>。<br />
+假设数据表示为 <span class="math inline">\(X_{ijk}\)</span>, <span class="math inline">\(i=1,...,m \quad j=1,...,n \quad k=1,...,l\)</span>，则无偏估计为：</p>
+<blockquote>
+<p><span class="math inline">\(\hat{\mu}=\overline{x}_{\cdot\cdot\cdot}\)</span><br />
+<span class="math inline">\(\hat{\alpha}_i=\overline{x}_{i\cdot\cdot}-\overline{x}_{\cdot\cdot\cdot}\)</span><br />
+<span class="math inline">\(\hat{\beta}_j=\overline{x}_{\cdot j \cdot}-\overline{x}_{\cdot \cdot\cdot}\)</span><br />
+<span class="math inline">\(\hat{\gamma}_{ij}=\overline{x}_{ij\cdot}-\overline{x}_{\cdot j \cdot}+\overline{x}_{\cdot\cdot\cdot}\)</span></p>
+</blockquote>
+<p>最后就可以根据下图，计算，查表然后判断了：<img src="/images/264.png" /> 可以拿上面那个发动机的数据计算，这里就不写了，就只是代公式而已，最后结果会是：拒绝<span class="math inline">\(H_0^c\)</span>, 接受另外两个零假设。<br />
+</p>
+]]></content>
+      <categories>
+        <category>Data Science</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>假设性检测 (t-test, z-test)</title>
     <url>/posts/21.html</url>
     <content><![CDATA[<h1 id="引入">引入</h1>
 <p>在实际生活中，我们处理的往往是很大量的数据，分析时经常要对这些数据的某种规律提出一个假设，但我们有时没法直接用总数据来验证这个假设，而是通过样本数据来推断，决定是否拒绝这一假设，这样的统计活动成为假设检验。<br />
@@ -107,7 +410,7 @@ df = \frac{(s_{\overline{x}}^2+s_{\overline{y}}^2)^2}{\frac{(s_{\overline{x}}^2)
 <span class="math inline">\(s_{\overline{x}}^2=\frac{s_x^2}{n};\quad s_{\overline{y}}^2=\frac{s_y^2}{m}; \quad s_x^2=\frac{\sum_{i=1}^n(x_i-\overline{x})^2}{n-1}; \quad s_y^2=\frac{\sum_{j=1}^m(y_j-\overline{y})^2}{m-1}\)</span></p>
 <h3 id="case-3方差关系未知">case 3：方差关系未知</h3>
 <p>这里我们不知道 <span class="math inline">\(\sigma_X^2\)</span> 和 <span class="math inline">\(\sigma_Y^2\)</span> 相不相等，首先用 <span class="math inline">\(F_{\max} test\)</span> 检测方差的相等关系。<br />
-这里简单补充下 <span class="math inline">\(F_{\max}test\)</span> 的相关内容。<br />
+这里简单补充下 <span class="math inline">\(F_{\max}test\)</span> 的相关内容。(这里仅补充这里需要用到的，更具体的看另一篇【F-test 方差分析】)。<br />
 </p>
 <h4 id="f_maxtest"><span class="math inline">\(F_{\max}test\)</span></h4>
 <p>F 检测是一种方差差异性检测。<br />
@@ -125,9 +428,15 @@ F的临界值由以下三部分确定：<br />
 \frac{1}{F_{1-\frac{\alpha}{2}},m,n}=F_{\frac{\alpha}{2},n,m}
 \]</span> (注意这里 <span class="math inline">\(m,n\)</span> 的顺序)。<br />
 决策依据是：<br />
-&gt; 1. 拒绝<span class="math inline">\(H_0\)</span>: <span class="math inline">\(F&gt;F_{\frac{\alpha}{2}} \quad \rightarrow s_x^2 &gt; s_y^2\)</span>；<br />
-&gt; 2. 拒绝<span class="math inline">\(H_0\)</span>: <span class="math inline">\(F&lt; F_{1-\frac{\alpha}{2}} \quad \rightarrow s_x^2 &lt; s_y^2\)</span>；<br />
 </p>
+<blockquote>
+<ol type="1">
+<li>拒绝<span class="math inline">\(H_0\)</span>: <span class="math inline">\(F&gt;F_{\frac{\alpha}{2}} \quad \rightarrow s_x^2 &gt; s_y^2\)</span>；<br />
+</li>
+<li>拒绝<span class="math inline">\(H_0\)</span>: <span class="math inline">\(F&lt; F_{1-\frac{\alpha}{2}} \quad \rightarrow s_x^2 &lt; s_y^2\)</span>；<br />
+</li>
+</ol>
+</blockquote>
 <p>置信区域如下：<img src="/images/258.png" /> 这里简单推导一下这个等式的由来。<br />
 设<span class="math inline">\(F\sim F(n,m)\)</span>，则<span class="math inline">\(\frac{1}{F}\sim F(m,n)\)</span>。若 <span class="math display">\[
 P\left\{ F&gt;F_{1-\frac{\alpha}{2}}(n,m)\right\}=1-\frac{\alpha}{2}
@@ -359,7 +668,7 @@ P\left\{ \frac{1}{F}&gt;{F_{\frac{\alpha}{2}}(m,n)}\right\}=\frac{\alpha}{2}
 <blockquote>
 <p>问题2：能不能不用Generation, 就只用Discriminator来做生成？</p>
 </blockquote>
-<p>也是可以的。但也很麻烦，要穷举所有可能的<span class="math inline">\(x\)</span>，使<span class="math display">\[\widetilde{x}=\argmax D(x)\]</span>然后还要让Discriminator学会如何分别好的和坏的图片，但实际上我们的database里只有好的，不过这个问题有办法解决，如下：</p>
+<p>也是可以的。但也很麻烦，要穷举所有可能的<span class="math inline">\(x\)</span>，使<span class="math display">\[\widetilde{x}=arg\max D(x)\]</span>然后还要让Discriminator学会如何分别好的和坏的图片，但实际上我们的database里只有好的，不过这个问题有办法解决，如下：</p>
 <blockquote>
 <ol type="1">
 <li>随机产生一些坏的图片，比如随机噪音；<br />
@@ -370,7 +679,7 @@ P\left\{ \frac{1}{F}&gt;{F_{\frac{\alpha}{2}}(m,n)}\right\}=\frac{\alpha}{2}
 </ol>
 </blockquote>
 <p>步骤2-3循环。 效果如下： <img src="https://img-blog.csdnimg.cn/0ac5f9c70c8142c092fa644d0526eb5b.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
-<p>所以实际可以这么理解，generator就是用来解<span class="math inline">\(\argmax\)</span>问题的，也就是用generator产生坏的图片。 <strong>两者比较</strong> Generator：</p>
+<p>所以实际可以这么理解，generator就是用来解<span class="math inline">\(arg\max\)</span>问题的，也就是用generator产生坏的图片。 <strong>两者比较</strong> Generator：</p>
 <blockquote>
 <p>优点：<br />
   1. 容易生成东西。</p>
