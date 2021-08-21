@@ -22,26 +22,21 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="写在前面的说明 这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接\(\rightarrow\)这里。">
+  <meta name="description" content="写在前面的说明 本文总结自B站博主DR_CAN，他是整个B站我最喜欢的博主没有之一，推荐大家直接去看他的视频，这篇当作学后的回顾，链接在这\(\rightarrow\)【传送门】。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【ML-2020&#x2F;21】Generative Adversarial Network (GAN) --- Part-2 Conditional GAN">
-<meta property="og:url" content="https://superzlw.github.io/posts/19.html">
+<meta property="og:title" content="卡尔曼滤波（Kalman Filter）">
+<meta property="og:url" content="https://superzlw.github.io/posts/20.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="写在前面的说明 这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接\(\rightarrow\)这里。">
+<meta property="og:description" content="写在前面的说明 本文总结自B站博主DR_CAN，他是整个B站我最喜欢的博主没有之一，推荐大家直接去看他的视频，这篇当作学后的回顾，链接在这\(\rightarrow\)【传送门】。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://superzlw.github.io/images/243.jpg">
-<meta property="og:image" content="https://superzlw.github.io/images/244.png">
-<meta property="og:image" content="https://superzlw.github.io/images/245.png">
-<meta property="og:image" content="https://superzlw.github.io/images/246.png">
-<meta property="og:image" content="https://superzlw.github.io/images/247.png">
-<meta property="og:image" content="https://superzlw.github.io/images/249.png">
-<meta property="article:published_time" content="2021-08-10T20:28:46.696Z">
-<meta property="article:modified_time" content="2021-08-11T02:53:56.440Z">
+<meta property="og:image" content="https://superzlw.github.io/images/250.png">
+<meta property="article:published_time" content="2021-08-12T21:50:05.144Z">
+<meta property="article:modified_time" content="2021-08-20T23:00:39.863Z">
 <meta property="article:author" content="super_wzl">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://superzlw.github.io/images/243.jpg">
+<meta name="twitter:image" content="https://superzlw.github.io/images/250.png">
 
-<link rel="canonical" href="https://superzlw.github.io/posts/19.html">
+<link rel="canonical" href="https://superzlw.github.io/posts/20.html">
 
 
 <script id="page-configurations">
@@ -54,7 +49,7 @@
   };
 </script>
 
-  <title>【ML-2020/21】Generative Adversarial Network (GAN) --- Part-2 Conditional GAN | SuperZLW's Blog</title>
+  <title>卡尔曼滤波（Kalman Filter） | SuperZLW's Blog</title>
   
 
 
@@ -197,7 +192,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/posts/19.html">
+    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/posts/20.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -210,7 +205,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          【ML-2020/21】Generative Adversarial Network (GAN) --- Part-2 Conditional GAN
+          卡尔曼滤波（Kalman Filter）
         </h1>
 
         <div class="post-meta">
@@ -223,14 +218,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-08-10 22:28:46" itemprop="dateCreated datePublished" datetime="2021-08-10T22:28:46+02:00">2021-08-10</time>
+              <time title="创建时间：2021-08-12 23:50:05" itemprop="dateCreated datePublished" datetime="2021-08-12T23:50:05+02:00">2021-08-12</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-11 04:53:56" itemprop="dateModified" datetime="2021-08-11T04:53:56+02:00">2021-08-11</time>
+                <time title="修改时间：2021-08-21 01:00:39" itemprop="dateModified" datetime="2021-08-21T01:00:39+02:00">2021-08-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,7 +233,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ML-2020-21/" itemprop="url" rel="index"><span itemprop="name">ML-2020/21</span></a>
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">学习总结</span></a>
                 </span>
             </span>
 
@@ -258,8 +253,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/posts/19.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/posts/19.html" itemprop="commentCount"></span>
+    <a title="valine" href="/posts/20.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/posts/20.html" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -275,88 +270,210 @@
 
       
         <h1 id="写在前面的说明">写在前面的说明</h1>
-<p>这个系列【ML-2020/21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接<span class="math inline">\(\rightarrow\)</span><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OP5HcXJg2Aw">这里</a>。 <span id="more"></span></p>
-<h1 id="引入">引入</h1>
-<p>根据上一篇【基本介绍】的内容可知，给GAN输入是一个向量，但这在实际中很不实用，我们更习惯用的是输入常见的信息比如语言文字，这就是Conditional GAN 所研究的东西。 举个例子，比如输入‘The Dog is running’，我们就希望生成如下图片：<img src="/images/243.jpg" /> 这就是这篇要讲的东西。</p>
-<h1 id="text-to-image">Text-to-Image</h1>
-<h2 id="traditional-supervised-approach">Traditional Supervised Approach</h2>
-<p>首先，这可以看作是一个传统的监督学习，我们要的首先是一大堆数据集（图片），每张图片都需要一个对应的文字进行描述。简单来说流程如下：<img src="/images/244.png" /> 但用这种方法会产生一个问题，比如说我们现在有一个文字描述为“car”，可能同时对应到以下两张图片，它们都是汽车只是方向不同：<img src="/images/245.png" /> 我们用上面的方法训练出来的模型输出既要像左边也要像右边，最后就会产生这种现象：输入“car”，输出的图片是上面两种图片的平均，这可能会是一张没有意义的图。 所以这种传统的方法不行。</p>
-<h2 id="conditional-gan">Conditional GAN</h2>
-<p>然后现在就要引进今天的主角了。 回顾一下，如果按照之前介绍的最原始的GAN，这个训练流程大致是这样的：</p>
-<blockquote>
-<ol type="1">
-<li>首先输入一组随机向量给Generation，产生数据（图片）；<br />
-</li>
-<li>将产生的图片输入Discriminator，借助真实图片，利用定义的function更新Discriminator的参数;<br />
-</li>
-<li>随机再取一组噪音数据，利用上面更新后的Discriminator更新Generation的参数；<br />
-</li>
-<li>重复上面两个步骤。</li>
-</ol>
-</blockquote>
-<p>然而在Conditional-GAN中，我们输入给Generation的不再是单一的向量，同时还有（Condition）文字信息比如所“car”，借助这两个信息产生新的数据（图片）<span class="math inline">\(x\)</span>；<br />
-对于Discriminator，其输入除了之前产生的图片<span class="math inline">\(x\)</span>，还有(Condition)文字信息<span class="math inline">\(c\)</span>，输出是一个标量，这个标量描述以下两个方面：</p>
-<blockquote>
-<ol type="1">
-<li><span class="math inline">\(x\)</span>是否是一张真实的图片（这点跟最原始的GAN一样）；<br />
-</li>
-<li><span class="math inline">\(c\)</span>和<span class="math inline">\(x\)</span>是否符合。</li>
-</ol>
-</blockquote>
-<p>这个标量的评分标准如下：</p>
-<blockquote>
-<ol type="1">
-<li>高分（1分）：<br />
-  a). 正确的文字与真实的图片。<br />
-</li>
-<li>低分（0分）：<br />
-  a). 正确的文字与生成的图片；<br />
-  b). 错误的文字与真实的图片。</li>
-</ol>
-</blockquote>
-<p>基本的训练流程如下：</p>
-<blockquote>
-<p><strong>D-Learning:</strong><br />
-  1. 从database中取<span class="math inline">\(m\)</span>个样本：<span class="math inline">\(\left\{ (c^1,x^1),(c^2,x^2),...,(c^m,x^m)\right\}\)</span> (这个对于Discriminator来说是要给高分的)；<br />
-  2. 随机取样<span class="math inline">\(m\)</span>个噪音样本：{<span class="math inline">\(z^1,...,z^m\)</span>}，这<span class="math inline">\(m\)</span>个样本加上上面的文字信息<span class="math inline">\(c\)</span>组成新的数据<span class="math inline">\((c^i,z^i)\)</span>；<br />
-  3. 通过Generation获取生成数据：{<span class="math inline">\(\widetilde{x}^1,...,\widetilde{x}^m\)</span>}，<span class="math inline">\(\widetilde{x}^i=G(c^i,z^i)\)</span><br />
-  4. 从database中取样新的<span class="math inline">\(m\)</span>个数据{<span class="math inline">\(\hat{x}^1,...,\hat{x}^m\)</span>}<br />
-  5. 更新Discriminator的参数<span class="math inline">\(\theta_d\)</span>，以最大化下面这个方程：<span class="math display">\[\widetilde{V}=\frac{1}{m}\sum_{i=1}^m\log D(c^i,x^i)+\frac{1}{m}\sum_{i=1}^m\log(1 - D(c^i,\widetilde{x}^i))-\frac{1}{m}\sum_{i=1}^m\log(1 - D(c^i,\hat{x}^i))\]</span> <span class="math display">\[\theta_d \leftarrow \theta_d +\eta \nabla \widetilde{V}(\theta_d)\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>G-Leaarning:</strong><br />
-  1. 取样<span class="math inline">\(m\)</span>个噪声样本：{<span class="math inline">\(z^1,...,z^m\)</span>}；<br />
-  2. 从database中取<span class="math inline">\(m\)</span>个condition：{<span class="math inline">\(c^1,...,c^m\)</span>}；<br />
-  3. 更新Generator的参数<span class="math inline">\(\theta_g\)</span>，以最大化下面这个方程：<span class="math display">\[\widetilde{V}=\frac{1}{m}\sum_{i=1}^m\log(D(G()c^i,z^i))\]</span> <span class="math display">\[\theta_g \leftarrow \theta_g +\eta \nabla \widetilde{V}(\theta_g)\]</span></p>
-</blockquote>
-<h2 id="discriminator-架构">Discriminator 架构</h2>
-<p>常见的Discriminator架构如下： <img src="/images/246.png" /> 同时，又有人提出另一种架构： <img src="/images/247.png" /></p>
-<h2 id="更进一步-stack-gan">更进一步 —— Stack GAN</h2>
-<p>Stack-GAN技术能让模型的性能更加优秀，其基本的想法是：先产生小张的图，再根据小张的图产生大张的图。<br />
-比如说，我们要产生<span class="math inline">\(256\times 256\)</span>的图，但如果直接生成这么大的图，图很可能会坏，所以Stack-GAN在train的时候把整个训练过程拆分为两部分，大概流程是：</p>
-<blockquote>
-<ol type="1">
-<li>输入一个文字以及一段噪声，拼接，通过第一个Generator产生一个<span class="math inline">\(64\times 64\)</span>的图；<br />
-</li>
-<li>这个图片进入第一个Discriminator，判断其和文字是否match；<br />
-</li>
-<li>然后第二部分，输入一个文字信息以及<span class="math inline">\(64\times 64\)</span>的图片，产生一张<span class="math inline">\(256\times 256\)</span>的图片；<br />
-</li>
-<li>最后第二个Discriminator判断这个<span class="math inline">\(256\times 256\)</span>的图片是不是足够真实。</li>
-</ol>
-</blockquote>
-<p><em>具体可参看paper：StackGAN:Text to Photo-realistic Image Synthesis with Stack Generative Adversarial Network. 【ICCV, 2017】</em></p>
-<h1 id="image-to-image">Image-to-Image</h1>
-<p>这种即是：输入图片，输出也是图片。比如说黑白图片变彩色，白天变黑夜。</p>
-<h2 id="traditional-supervised-approach-1">Traditional Supervised Approach</h2>
-<p>理论上也是可以用传统的监督学习实现，但也会遇到跟上面类似的问题，导致最终产生出来的图片特别模糊。</p>
-<h2 id="conditional-gan-1">Conditional GAN</h2>
-<p>用GAN的话，以下图为例<img src="/images/249.png" /> 也就是输入左边简单的图片，希望产生右边真实复杂的图。<br />
-其基本流程就是：将简单的图片与噪音一起输入Generator，产生一张图片；接着将这张图片与原来简单的图片一起输入Discriminator，产生一个标量。这个标量可参看上面的解释。<br />
-单单这么做的话，产生的图像虽然清晰，正确率也不错，但图片里可能会产生一些奇奇怪怪的部分。为了消除这种现象，我们可以加额外的约束，比如：在Generator的输出中，我们将产生的图片与真实图片作对比，也就是说，我们希望Generator产生的图片，既能骗过Discriminator，又跟目标图片相差不要太大，如此以来，模型性能会好很多。<br />
+<p>本文总结自B站博主DR_CAN，他是整个B站我最喜欢的博主没有之一，推荐大家直接去看他的视频，这篇当作学后的回顾，链接在这<span class="math inline">\(\rightarrow\)</span><a target="_blank" rel="noopener" href="https://space.bilibili.com/230105574/channel/detail?cid=139198&amp;ctype=0">【传送门】</a>。 <span id="more"></span></p>
+<h1 id="引入-递归算法">引入 —— 递归算法</h1>
+<p>卡尔曼滤波器可看作是一种“Optimal Recursive Data Processing Algorithm”，即“最优的递归数字处理算法”。与滤波器相比它更像是一种观测器。<br />
+卡尔曼滤波器的应用非常广泛，尤其是导航中，这是因为现实生活中充满大量的不确定性，当我们描述一个系统的时候，这个不确定性主要体现在以下三个方面：<br />
 </p>
-<h2 id="patch-gan">Patch GAN</h2>
-<p>如果图片很大张，那么Discriminator就不能直接接受整张Image，因为参数会很多，容易过拟合。所以措施是分区域输入，每次检查一小块，看这一小块是好的还是坏的，至于区域设置多大，这个就自己调了。</p>
+<blockquote>
+<ol type="1">
+<li>不存在完美的数学模型；<br />
+</li>
+<li>系统的挠动是不可控的，也很难建模；<br />
+</li>
+<li>测量传感器存在误差。<br />
+</li>
+</ol>
+</blockquote>
+<p>举个例子：<br />
+当我们要测量一枚硬币的直径时，设第<span class="math inline">\(k\)</span>次测量结果为<span class="math inline">\(z_k\)</span>，假如三次测量分别为： <span class="math display">\[z_1=50.1mm\]</span> <span class="math display">\[z_2=50.4mm\]</span> <span class="math display">\[z_3=50.2mm\]</span> 若要估计真实数据，很自然地，我们会用平均值来表示，即第<span class="math inline">\(k\)</span>次的估计值<span class="math inline">\(\hat{x}_k\)</span>为：</p>
+<p><span class="math display">\[
+\begin{split}
+\hat{x}_k &amp;= \frac{1}{k}(z_1+...+z_k)\\\\ 
+ &amp;= \frac{1}{k}(z_1+...+z_{k-1})+\frac{1}{k}z_k\\\\ &amp;=
+\frac{1}{k}\frac{k-1}{k-1}(z_1+...+z_{k-1})+\frac{1}{k}z_k \\\\
+&amp;=\frac{k-1}{k}\hat{x}_{k-1}+\frac{1}{k}z_k\\\\
+&amp;=\hat{x}_{k-1}-\frac{1}{k}\hat{x}_{k-1}+\frac{1}{k}z_k
+\end{split}
+\]</span></p>
+<p>即是：</p>
+<p><span class="math display">\[
+\hat{x}_k=\hat{x}_{k-1}+\frac{1}{k}(z_k-\hat{x}_{k-1})
+\]</span></p>
+<p>由此可见，当<span class="math inline">\(k\)</span>逐渐增加时，<span class="math inline">\(\frac{1}{k}\rightarrow \infty\)</span>，也就是说<span class="math inline">\(\hat{x}_k\rightarrow \hat{x}_{k-1}\)</span>。<br />
+用文字描述的话，就是说随着<span class="math inline">\(k\)</span>的增加，之后测量结果也就不再重要了，也就是对前面的真实估计值已经非常有信心了。<br />
+相反，当<span class="math inline">\(k\)</span>比较小时，<span class="math inline">\(\frac{1}{k}\)</span>就会很大，也就是说此时<span class="math inline">\(z_k\)</span>的作用会很大。<br />
+现在改写一下上面的式子为： <span class="math display">\[
+\hat{x}_k=\hat{x}_{k-1}+K_k(z_k-\hat{x}_{k-1})
+\]</span> 在卡尔曼滤波器里，这个系数<span class="math inline">\(K_k\)</span>就叫Kalman Gain，中文称为卡尔曼增益/因数。<br />
+由这个式子可以看出，跟马尔科夫链类似，当前估计值只与该次测量值以及上一次的估计值有关，这体现了一种递归的思想。<br />
+这里先对这个系数作简单的讨论。首先引入两个变量：</p>
+<blockquote>
+<ol type="1">
+<li>估计误差：<span class="math inline">\(e_{EST}\)</span>；<br />
+</li>
+<li>测量误差：<span class="math inline">\(e_{MEA}\)</span>。</li>
+</ol>
+</blockquote>
+<p>卡尔曼增益就等于： <span class="math display">\[
+K_k=\frac{e_{EST_{k-1}}}{e_{EST_{k-1}}+e_{MEA_k}}
+\]</span> <strong>这个公式是卡尔曼滤波的核心公式，详细推导见后文。</strong><br />
+这里先简单讨论在<span class="math inline">\(k\)</span>时刻两个变量的作用：</p>
+<blockquote>
+<ol type="1">
+<li>当<span class="math inline">\(e_{EST_{k-1}} \gg e_{MEA_k}\)</span>，即<span class="math inline">\(k\rightarrow 1\)</span>时，<span class="math inline">\(\hat{x}_k=\hat{x}_{k-1}+z_k-\hat{x}_{k-1}=z_{k}\)</span>；<br />
+</li>
+<li>当<span class="math inline">\(e_{EST_{k-1}} \ll e_{MEA_k}\)</span>，即<span class="math inline">\(k\rightarrow 0\)</span>时，<span class="math inline">\(\hat{x}_k=\hat{x}_{k-1}\)</span>。</li>
+</ol>
+</blockquote>
+<p>运用卡尔曼滤波器，真实估计值就可以表示为以下三个步骤：</p>
+<blockquote>
+<ol type="1">
+<li><strong>Step 1</strong>：计算卡尔曼增益：<span class="math inline">\(K_k=\frac{e_{EST_{k-1}}}{e_{EST_{k-1}}+e_{MEA_k}}\)</span>；<br />
+</li>
+<li><strong>Step 2</strong>：计算当前估计值<span class="math inline">\(\hat{x}_k=\hat{x}_{k-1}+K_k(z_k-\hat{x}_{k-1})\)</span>；</li>
+<li><strong>Step 3</strong>：更新<span class="math inline">\(e_{EST_k}=(1-K_k)e_{EST_{k-1}}\)</span>（这个式子后面推导）。</li>
+</ol>
+</blockquote>
+<p>这里举个例子说明上面三个步骤：<br />
+假设我们要测量一个长度是<span class="math inline">\(50mm\)</span>的物体，第0次的估计值，也就是相当于先验吧，是<span class="math inline">\(\hat{x}_0=40mm\)</span>，第0次估计误差为<span class="math inline">\(e_{EST_0}=5mm\)</span>，第一次测量为<span class="math inline">\(z_1=51mm\)</span>，测量误差一直为<span class="math inline">\(e_{MEA_k}=3mm\)</span>。<br />
+填入起始值，如下表：<br />
+</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">\(k\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(z_k\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{MEA_k}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\hat{x}_k\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(K_k\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{EST_k}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">51</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<p>借助上面三个步骤：<br />
+<span class="math inline">\(k=1\)</span>时： <span class="math display">\[
+K_k=\frac{5}{5+3}=0.625
+\]</span> <span class="math display">\[
+\hat{x}_k=40+0.625(51-40)=46.875
+\]</span> <span class="math display">\[
+e_{EST}=(1-0.625)\times 5 = 1.875
+\]</span> 然后<span class="math inline">\(k=2\)</span>时，设此次测量值为<span class="math inline">\(z_2=48\)</span>，重复上面的步骤，就可以填满表格了。如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">\(k\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(z_k\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{MEA_k}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\hat{x}_k\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(K_k\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{EST_k}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">51</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">46.88</td>
+<td style="text-align: center;">0.625</td>
+<td style="text-align: center;">1.875</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">48</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">47.31</td>
+<td style="text-align: center;">0.385</td>
+<td style="text-align: center;">1.154</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">47</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">47.22</td>
+<td style="text-align: center;">0.278</td>
+<td style="text-align: center;">0.833</td>
+</tr>
+</tbody>
+</table>
+<p>这样不断下去，最后这个真实估计值会收敛于<span class="math inline">\(50mm\)</span>。<br />
+借用博主视频里的数值结果图片，其表现如下： <img src="/images/250.png" /> 其中蓝色线表示测量值，红色线表示估计值。</p>
+<h1 id="数据融合协方差矩阵状态空间方程观测器">数据融合，协方差矩阵，状态空间方程，观测器</h1>
+<h2 id="数据融合">数据融合</h2>
+<p>简单讲，就是从多个测量数据中找到一个最优的。<br />
+举个例子，我们在称量一个物体的时候，两次称量结果如下： <span class="math display">\[
+z_1=30g, \quad \sigma_1=2g
+\]</span> <span class="math display">\[
+z_2=32g, \quad \sigma_2=4g
+\]</span> 根据正态分布的性质，对于第一个测量结果，真实值落在区间[28,32]的概率是68.4%；对第二个测量结果，真实值落在区间[28,36]的概率是68.4%，如果这时候要我们估计真实值的话，我们会把真实值估计在区间[30,32]之间，而且由于第一个测量标准差较小，所以真实值会更靠近于30。<br />
+如果要我们在数学上得到一个比较准确的值，就可以用上面递归的方法，写出如下等式： <span class="math display">\[
+\hat{z}=z_i+K(z_2-z_1)
+\]</span> 其中 <span class="math inline">\(K\in [0,1]\)</span>，当<span class="math inline">\(K=0\)</span>时，<span class="math inline">\(\hat{z}=z_1\)</span>；当<span class="math inline">\(K=1\)</span>时，<span class="math inline">\(\hat{z}=z_2\)</span>。<br />
+现在我们要求<span class="math inline">\(K\)</span>，使得 <span class="math inline">\(\sigma_{\hat{z}}\)</span> 最小，即是要 <span class="math inline">\(Var(\hat{z})\)</span> 最小。<br />
+而这个方差我们可以写成： <span class="math display">\[
+\sigma_{\hat{z}}^2=Var(z_1+K(z_2-z_1))=Var((1-K)z_1+Kz_2)
+\]</span> 由于括号里的两项 <span class="math inline">\((1-K)z_1\)</span> 和 <span class="math inline">\(Kz_2\)</span> 相互独立(毕竟是两个不同的称，称量结果肯定不会相互影响)，根据方差的性质，上面式子可以继续往下写： <span class="math display">\[
+Var((1-K)z_1+Kz_2)=Var((1-K)z_1)+Var(Kz_2)=(1-K)^2Var(z_1)+K^2Var(z_2)
+\]</span> 将上面两个方差代入得： <span class="math display">\[
+(1-K)^2Var(z_1)+K^2Var(z_2)=(1-K)^2\sigma_1^2+K^2\sigma_2^2
+\]</span> 也就是说： <span class="math display">\[
+\sigma_{\hat{z}}^2=(1-K)^2\sigma_1^2+K^2\sigma_2^2
+\]</span> 现在要求最小值，所以就是对<span class="math inline">\(K\)</span>进行求导： <span class="math display">\[
+\frac{d\sigma_{\hat{z}}^2}{dK}=0
+\]</span> (中间过程自行计算)<br />
+最后求出<span class="math inline">\(K\)</span>的值为： <span class="math display">\[
+K=\frac{\sigma_1^2}{\sigma_1^2+\sigma_2^2}=0.2
+\]</span> 把<span class="math inline">\(K\)</span>代入上面式子，其最佳估计值为： <span class="math display">\[
+\hat{z}=z_1+K(z_2-z_1)=30+0.2(32-30)=30.4
+\]</span> 其方差为： <span class="math display">\[
+\sigma_{\hat{z}}^2=(1-0.2)^22^2+0.2^24^2=3.2
+\]</span> 标准差为：<span class="math inline">\(\sqrt{3.2}=1.79\)</span><br />
+这个计算过程就是数据融合。<br />
+</p>
+<h2 id="协方差矩阵">协方差矩阵</h2>
 
     </div>
 
@@ -383,12 +500,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/posts/18.html" rel="prev" title="【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍">
-      <i class="fa fa-chevron-left"></i> 【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍
+    <a href="/posts/19.html" rel="prev" title="【ML-2020/21】Generative Adversarial Network (GAN) --- Part-2 Conditional GAN">
+      <i class="fa fa-chevron-left"></i> 【ML-2020/21】Generative Adversarial Network (GAN) --- Part-2 Conditional GAN
     </a></div>
       <div class="post-nav-item">
-    <a href="/posts/20.html" rel="next" title="卡尔曼滤波（Kalman Filter）">
-      卡尔曼滤波（Kalman Filter） <i class="fa fa-chevron-right"></i>
+    <a href="/posts/21.html" rel="next" title="假设性检测 (t-test, z-test)">
+      假设性检测 (t-test, z-test) <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -449,7 +566,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">写在前面的说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#text-to-image"><span class="nav-number">3.</span> <span class="nav-text">Text-to-Image</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#traditional-supervised-approach"><span class="nav-number">3.1.</span> <span class="nav-text">Traditional Supervised Approach</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conditional-gan"><span class="nav-number">3.2.</span> <span class="nav-text">Conditional GAN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#discriminator-%E6%9E%B6%E6%9E%84"><span class="nav-number">3.3.</span> <span class="nav-text">Discriminator 架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E8%BF%9B%E4%B8%80%E6%AD%A5-stack-gan"><span class="nav-number">3.4.</span> <span class="nav-text">更进一步 —— Stack GAN</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#image-to-image"><span class="nav-number">4.</span> <span class="nav-text">Image-to-Image</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#traditional-supervised-approach-1"><span class="nav-number">4.1.</span> <span class="nav-text">Traditional Supervised Approach</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conditional-gan-1"><span class="nav-number">4.2.</span> <span class="nav-text">Conditional GAN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#patch-gan"><span class="nav-number">4.3.</span> <span class="nav-text">Patch GAN</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">写在前面的说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5-%E9%80%92%E5%BD%92%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">引入 —— 递归算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%9E%8D%E5%90%88%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5%E7%8A%B6%E6%80%81%E7%A9%BA%E9%97%B4%E6%96%B9%E7%A8%8B%E8%A7%82%E6%B5%8B%E5%99%A8"><span class="nav-number">3.</span> <span class="nav-text">数据融合，协方差矩阵，状态空间方程，观测器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%9E%8D%E5%90%88"><span class="nav-number">3.1.</span> <span class="nav-text">数据融合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5"><span class="nav-number">3.2.</span> <span class="nav-text">协方差矩阵</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
