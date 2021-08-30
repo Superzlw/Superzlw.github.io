@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>光流三部曲---1. LK光流</title>
+    <url>/posts/25.html</url>
+    <content><![CDATA[<p>三部分：LK光流，HS光流，概率法。（占个位，考完试再写）</p>
+]]></content>
+      <categories>
+        <category>图像处理</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>数据分析中的一些常用Python指令</title>
+    <url>/posts/24.html</url>
+    <content><![CDATA[<h1 id="引入">引入</h1>
+<p>这里就是杂七杂八地记，方便自己查询。顺序基本没什么规律，或者以后可能会整理，看心情~~。总之就善用"ctrl+f"查询。 <span id="more"></span></p>
+<h1 id="可视化">可视化</h1>
+<h1 id="参考">参考</h1>
+<p>【网址1】：https://www.xiaoheidiannao.com/70120.html</p>
+]]></content>
+      <categories>
+        <category>Data Science</category>
+      </categories>
+  </entry>
+  <entry>
     <title>拟合优度检验</title>
     <url>/posts/23.html</url>
     <content><![CDATA[<h1 id="引入">引入</h1>
