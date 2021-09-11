@@ -3,15 +3,18 @@
   <entry>
     <title>相机模型与标定</title>
     <url>/posts/26.html</url>
-    <content><![CDATA[<h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>相机模型化的话，说白了就是一个函数，把一个三维场景转化为二维图像。这里主要是介绍基本相机模型，世界、相机、图像坐标系之间的转换以及相机的标定。<br><span id="more"></span></p>
-<h1 id="相机模型"><a href="#相机模型" class="headerlink" title="相机模型"></a>相机模型</h1><p>这里用最简单也是最广泛的针孔相机模型，单目的，也就是下面这个：<img src="/images/272.png" alt=""><br>从3D到2D的转换中我们遗失了<strong>角度</strong>以及<strong>距离</strong>信息。\<br>假设点$P$的三维坐标是$[x,y,z]$，其对应图像坐标为$[x^,,y^,]$，有如下关系：<img src="/images/273.png" alt=""><br>（就是简单的相似三角形）\<br>也就是说:</p>
-<script type="math/tex; mode=display">
-(x,y,z) \rightarrow (f'\frac{x}{z},f'\frac{y}{z})</script><p>用齐次坐标表示的话为：<img src="/images/274.png" alt=""><br>在很多地方左边的那个等式会写成这样子：</p>
-<script type="math/tex; mode=display">
+    <content><![CDATA[<h1 id="引入">引入</h1>
+<p>相机模型化的话，说白了就是一个函数，把一个三维场景转化为二维图像。这里主要是介绍基本相机模型，世界、相机、图像坐标系之间的转换以及相机的标定。 <span id="more"></span></p>
+<h1 id="相机模型">相机模型</h1>
+<p>这里用最简单也是最广泛的针孔相机模型，单目的，也就是下面这个：<img src="/images/272.png" /> 从3D到2D的转换中我们遗失了<strong>角度</strong>以及<strong>距离</strong>信息。<br />
+假设点<span class="math inline">\(P\)</span>的三维坐标是<span class="math inline">\([x,y,z]\)</span>，其对应图像坐标为<span class="math inline">\([x^,,y^,]\)</span>，有如下关系：<img src="/images/273.png" /> （就是简单的相似三角形）<br />
+也就是说: <span class="math display">\[
+(x,y,z) \rightarrow (f&#39;\frac{x}{z},f&#39;\frac{y}{z})
+\]</span> 用齐次坐标表示的话为：<img src="/images/274.png" /> 在很多地方左边的那个等式会写成这样子： <span class="math display">\[
 \begin{pmatrix}
-    f'&0&0&0\\
-    0&f'&0&0\\
-    0&0&1&0
+    f&#39;&amp;0&amp;0&amp;0\\
+    0&amp;f&#39;&amp;0&amp;0\\
+    0&amp;0&amp;1&amp;0
 \end{pmatrix}
 \begin{pmatrix}
     x\\
@@ -21,39 +24,50 @@
 \end{pmatrix}
 =z
 \begin{pmatrix}
-    f'\frac{x}{z}\\
-    f'\frac{y}{z}\\
+    f&#39;\frac{x}{z}\\
+    f&#39;\frac{y}{z}\\
     1
-\end{pmatrix}</script><p>虽然看上去只是把系数提出来而已，但表达的意思却多了一个：对于同一个图像坐标，其三维坐标有无数种可能，只要在投影线上就行。这是引进齐次坐标的一个很大的特点。</p>
-<h1 id="坐标系转变"><a href="#坐标系转变" class="headerlink" title="坐标系转变"></a>坐标系转变</h1><p>上面那种情况是最简单的，但一般来说，相机在世界坐标系中的位置是不定的，所以要在中间引入一个新的坐标系————相机坐标系，又叫归一化坐标系。\<br>所以这里要用到三个坐标系，分别为：世界坐标系，相机坐标系和图像坐标系，它们的转变过程如下：<img src="/images/275.png" alt=""><br>也就是：</p>
+\end{pmatrix}
+\]</span> 虽然看上去只是把系数提出来而已，但表达的意思却多了一个：对于同一个图像坐标，其三维坐标有无数种可能，只要在投影线上就行。这是引进齐次坐标的一个很大的特点。</p>
+<h1 id="坐标系转变">坐标系转变</h1>
+<p>上面那种情况是最简单的，但一般来说，相机在世界坐标系中的位置是不定的，所以要在中间引入一个新的坐标系————相机坐标系，又叫归一化坐标系。<br />
+所以这里要用到三个坐标系，分别为：世界坐标系，相机坐标系和图像坐标系，它们的转变过程如下：<img src="/images/275.png" /> 也就是：</p>
 <blockquote>
-<p>首先将世界坐标转为相机坐标\<br>然后将相机坐标转为图像坐标</p>
+<p>首先将世界坐标转为相机坐标<br />
+然后将相机坐标转为图像坐标</p>
 </blockquote>
-<h2 id="世界坐标到相机坐标"><a href="#世界坐标到相机坐标" class="headerlink" title="世界坐标到相机坐标"></a>世界坐标到相机坐标</h2><p>(这个过程也就是归一化的过程)\<br>相机坐标与世界坐标是旋转加平移的关系，即是如下：</p>
-<script type="math/tex; mode=display">
-\widetilde{x}^C=R(\widetilde{x}^W-\widetilde{c})</script><p>其中：$\widetilde{c}$是相机中心在世界坐标系中的位置。\<br>写成齐次形式的话就是：<img src="/images/276.png" alt=""><br>这是一种线性变换的形式，这时候维度还没有遗失\<br>这个转换矩阵写简洁一点即是：</p>
-<script type="math/tex; mode=display">
+<h2 id="世界坐标到相机坐标">世界坐标到相机坐标</h2>
+<p>(这个过程也就是归一化的过程)<br />
+相机坐标与世界坐标是旋转加平移的关系，即是如下： <span class="math display">\[
+\widetilde{x}^C=R(\widetilde{x}^W-\widetilde{c})
+\]</span> 其中：<span class="math inline">\(\widetilde{c}\)</span>是相机中心在世界坐标系中的位置。<br />
+写成齐次形式的话就是：<img src="/images/276.png" /> 这是一种线性变换的形式，这时候维度还没有遗失<br />
+这个转换矩阵写简洁一点即是： <span class="math display">\[
 x^C=
 \begin{bmatrix}
-    R&t\\
-    0&1
+    R&amp;t\\
+    0&amp;1
 \end{bmatrix}
-x^W</script><p>其中$t=-R\widetilde{c}$</p>
-<h2 id="相机坐标到图像坐标"><a href="#相机坐标到图像坐标" class="headerlink" title="相机坐标到图像坐标"></a>相机坐标到图像坐标</h2><p>这里先给三个定义：</p>
+x^W
+\]</span> 其中<span class="math inline">\(t=-R\widetilde{c}\)</span></p>
+<h2 id="相机坐标到图像坐标">相机坐标到图像坐标</h2>
+<p>这里先给三个定义：</p>
 <blockquote>
-<ol>
-<li>主轴(Principal axis)：从相机中心垂直于图像平面的线；\</li>
-<li>归一化(相机)坐标系(Normalized (camera) coordinate system)：以相机中心为原点，z轴为主轴的坐标系\</li>
+<ol type="1">
+<li>主轴(Principal axis)：从相机中心垂直于图像平面的线；<br />
+</li>
+<li>归一化(相机)坐标系(Normalized (camera) coordinate system)：以相机中心为原点，z轴为主轴的坐标系<br />
+</li>
 <li>主点(Principal point)：主轴与图像平面相交的点(归一化坐标系的原点）</li>
 </ol>
 </blockquote>
-<p>即是下图这样：<img src="/images/277.png" alt=""></p>
-<p>相机坐标系的原点在主点上，而图像坐标系的原点在角落(一般是左上角)，也就是说，两个坐标系存在着偏移量，以图像坐标系为参考的话，该偏移量为$(p_x,p_y)$。\<br>将最上面那个投影转换写下来，对于三维坐标点$(X,Y,Z)$，其图像坐标为$(f\frac{X}{Z},f\frac{Y}{Z})$，即：</p>
-<script type="math/tex; mode=display">
+<p>即是下图这样：<img src="/images/277.png" /></p>
+<p>相机坐标系的原点在主点上，而图像坐标系的原点在角落(一般是左上角)，也就是说，两个坐标系存在着偏移量，以图像坐标系为参考的话，该偏移量为<span class="math inline">\((p_x,p_y)\)</span>。<br />
+将最上面那个投影转换写下来，对于三维坐标点<span class="math inline">\((X,Y,Z)\)</span>，其图像坐标为<span class="math inline">\((f\frac{X}{Z},f\frac{Y}{Z})\)</span>，即： <span class="math display">\[
 \begin{pmatrix}
-    f&0&0&0\\
-    0&f&0&0\\
-    0&0&1&0
+    f&amp;0&amp;0&amp;0\\
+    0&amp;f&amp;0&amp;0\\
+    0&amp;0&amp;1&amp;0
 \end{pmatrix}
 \begin{pmatrix}
     X\\
@@ -66,16 +80,17 @@ x^W</script><p>其中$t=-R\widetilde{c}$</p>
     fX\\
     fY\\
     Z
-\end{pmatrix}</script><p>写成紧凑一些的形式为：</p>
-<script type="math/tex; mode=display">
-x^I=K\cdot [I|0]\cdot x^C=K\cdot \widetilde{x}^C</script><p>其中：</p>
-<script type="math/tex; mode=display">
-K=diag\left\{f,f,1\right\}</script><p>(注意，这里有个非齐次向齐次转换的计算)\<br>然后考虑这个中心偏移量，即对于三维坐标$(X,Y,Z)$，其图像坐标应为$f\frac{X}{Z}+p_x,f\frac{Y}{Z}+p_y$，写成矩阵计算形式如下：</p>
-<script type="math/tex; mode=display">
+\end{pmatrix}
+\]</span> 写成紧凑一些的形式为： <span class="math display">\[
+x^I=K\cdot [I|0]\cdot x^C=K\cdot \widetilde{x}^C
+\]</span> 其中： <span class="math display">\[
+K=diag\left\{f,f,1\right\}
+\]</span> (注意，这里有个非齐次向齐次转换的计算)<br />
+然后考虑这个中心偏移量，即对于三维坐标<span class="math inline">\((X,Y,Z)\)</span>，其图像坐标应为<span class="math inline">\(f\frac{X}{Z}+p_x,f\frac{Y}{Z}+p_y\)</span>，写成矩阵计算形式如下： <span class="math display">\[
 \begin{pmatrix}
-    f&0&p_x&0\\
-    0&f&p_y&0\\
-    0&0&1&0
+    f&amp;0&amp;p_x&amp;0\\
+    0&amp;f&amp;p_y&amp;0\\
+    0&amp;0&amp;1&amp;0
 \end{pmatrix}
 \begin{pmatrix}
     X\\
@@ -88,52 +103,63 @@ K=diag\left\{f,f,1\right\}</script><p>(注意，这里有个非齐次向齐次�
     fX+Zp_x\\
     fY+Zp_y\\
     Z
-\end{pmatrix}</script><p>这里对应的的$K$为标定矩阵(calibration matrix)，即：</p>
-<script type="math/tex; mode=display">
+\end{pmatrix}
+\]</span> 这里对应的的<span class="math inline">\(K\)</span>为标定矩阵(calibration matrix)，即： <span class="math display">\[
 K=
 \begin{pmatrix}
-    f&0&p_x\\
-    0&f&p_y\\
-    0&0&1
-\end{pmatrix}</script><p>也就是输入一个归一化的世界坐标，通过矩阵$K$可以得到其对应的图像坐标。\<br>但是这里还有一个问题，就是说对于世界坐标系，我们用的单位一般会是“米”，“厘米”，“英寸”之类的，但在图像坐标系中我们统一使用“像素”为单位，所以这还需要一个转换过程：</p>
+    f&amp;0&amp;p_x\\
+    0&amp;f&amp;p_y\\
+    0&amp;0&amp;1
+\end{pmatrix}
+\]</span> 也就是输入一个归一化的世界坐标，通过矩阵<span class="math inline">\(K\)</span>可以得到其对应的图像坐标。<br />
+但是这里还有一个问题，就是说对于世界坐标系，我们用的单位一般会是“米”，“厘米”，“英寸”之类的，但在图像坐标系中我们统一使用“像素”为单位，所以这还需要一个转换过程：</p>
 <blockquote>
-<p>假设在水平方向上以某一单位(m,mm,inch,…)为基准共有$m_x$个像素，在垂直方向上有$m_y$个像素。</p>
+<p>假设在水平方向上以某一单位(m,mm,inch,...)为基准共有<span class="math inline">\(m_x\)</span>个像素，在垂直方向上有<span class="math inline">\(m_y\)</span>个像素。</p>
 </blockquote>
-<p>就有如下关系：</p>
-<script type="math/tex; mode=display">
+<p>就有如下关系： <span class="math display">\[
 K=
 \begin{pmatrix}
-    m_x&0&0\\
-    0&m_y&0\\
-    0&0&1
+    m_x&amp;0&amp;0\\
+    0&amp;m_y&amp;0\\
+    0&amp;0&amp;1
 \end{pmatrix}
 \begin{pmatrix}
-    f&0&p_x\\
-    0&f&p_y\\
-    0&0&1
+    f&amp;0&amp;p_x\\
+    0&amp;f&amp;p_y\\
+    0&amp;0&amp;1
 \end{pmatrix}
 =
 \begin{pmatrix}
-    \alpha_x&0&\beta_x\\
-    0&\alpha_y&\beta_y\\
-    0&0&1
-\end{pmatrix}</script><p>以上这些就是相机的主要内参数，包括有：</p>
+    \alpha_x&amp;0&amp;\beta_x\\
+    0&amp;\alpha_y&amp;\beta_y\\
+    0&amp;0&amp;1
+\end{pmatrix}
+\]</span> 以上这些就是相机的主要内参数，包括有：</p>
 <blockquote>
-<ol>
-<li>主点坐标;\</li>
-<li>焦距;\</li>
-<li>像素放大系数;\</li>
-<li>对于非矩形像素，还有偏斜系数(Skew)，这里不讨论。\</li>
+<ol type="1">
+<li>主点坐标;<br />
+</li>
+<li>焦距;<br />
+</li>
+<li>像素放大系数;<br />
+</li>
+<li>对于非矩形像素，还有偏斜系数(Skew)，这里不讨论。<br />
+</li>
 </ol>
 </blockquote>
-<p>常见的还有畸变参数，这个是为了补充内参数的，下面会讨论。\<br>这些参数是相机在出厂时就设定好的，一般不会轻易改变。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>用一张图简单总结下：<img src="/images/278.png" alt=""><br>这里的矩阵$P$是投影矩阵，即是给一个齐次世界坐标，通过矩阵$P$，可以得到对应的齐次图像坐标，其中$K\in R^{3\times 3}$，$P\in R^{3\times 4}$。</p>
-<h1 id="正投影模型"><a href="#正投影模型" class="headerlink" title="正投影模型"></a>正投影模型</h1><p>关于这个简单说一下就好，正投影，也就是平行投影，形式如下：<img src="/images/279.png" alt=""><br>其投影矩阵为：<img src="/images/280.png" alt=""></p>
-<h1 id="相机标定"><a href="#相机标定" class="headerlink" title="相机标定"></a>相机标定</h1><p>相机标定就是根据某些方法确定出相机的内参数和畸变参数。</p>
-<h2 id="不考虑畸变"><a href="#不考虑畸变" class="headerlink" title="不考虑畸变"></a>不考虑畸变</h2><p>先假设我们有三维坐标点$X_i$，以及对应的图像坐标点$x_i$，都是齐次的，现在想要估计投影矩阵$P$。\<br>由于共线性，有如下关系：</p>
-<script type="math/tex; mode=display">
-\lambda x_i=PX_i</script><p>即：</p>
-<script type="math/tex; mode=display">
+<p>常见的还有畸变参数，这个是为了补充内参数的，下面会讨论。<br />
+这些参数是相机在出厂时就设定好的，一般不会轻易改变。</p>
+<h2 id="总结">总结</h2>
+<p>用一张图简单总结下：<img src="/images/278.png" /> 这里的矩阵<span class="math inline">\(P\)</span>是投影矩阵，即是给一个齐次世界坐标，通过矩阵<span class="math inline">\(P\)</span>，可以得到对应的齐次图像坐标，其中<span class="math inline">\(K\in R^{3\times 3}\)</span>，<span class="math inline">\(P\in R^{3\times 4}\)</span>。</p>
+<h1 id="正投影模型">正投影模型</h1>
+<p>关于这个简单说一下就好，正投影，也就是平行投影，形式如下：<img src="/images/279.png" /> 其投影矩阵为：<img src="/images/280.png" /></p>
+<h1 id="相机标定">相机标定</h1>
+<p>相机标定就是根据某些方法确定出相机的内参数和畸变参数。</p>
+<h2 id="不考虑畸变">不考虑畸变</h2>
+<p>先假设我们有三维坐标点<span class="math inline">\(X_i\)</span>，以及对应的图像坐标点<span class="math inline">\(x_i\)</span>，都是齐次的，现在想要估计投影矩阵<span class="math inline">\(P\)</span>。<br />
+由于共线性，有如下关系： <span class="math display">\[
+\lambda x_i=PX_i
+\]</span> 即： <span class="math display">\[
 \lambda
 \begin{pmatrix}
     x_i\\
@@ -144,93 +170,127 @@ K=
     p_1^T\\
     p_2^T\\
     p_3^T
-\end{bmatrix}X_i</script><p>这里$p_j^T$表示矩阵$P$的第$j$行。\<br>用叉积：</p>
-<script type="math/tex; mode=display">
-x_i \times PX_i=0</script><p>即：</p>
-<script type="math/tex; mode=display">
+\end{bmatrix}X_i
+\]</span> 这里<span class="math inline">\(p_j^T\)</span>表示矩阵<span class="math inline">\(P\)</span>的第<span class="math inline">\(j\)</span>行。<br />
+用叉积： <span class="math display">\[
+x_i \times PX_i=0
+\]</span> 即： <span class="math display">\[
 \begin{bmatrix}
     y_ip_3^TX_i-p_2^TX_i\\
     p_1^TX_i-x_ip_3^TX_i\\
     x_ip_2^TX_i-y_ip_1^TX_i
-\end{bmatrix}=0</script><p>写成矩阵乘积形式为：</p>
-<script type="math/tex; mode=display">
+\end{bmatrix}=0
+\]</span> 写成矩阵乘积形式为： <span class="math display">\[
 \begin{bmatrix}
-    0&-X_i^T&y_iX_i^T\\
-    X_i^T&0&-x_iX_i^T\\
-    -y_iX_i^T&x_iX_i^T&0
+    0&amp;-X_i^T&amp;y_iX_i^T\\
+    X_i^T&amp;0&amp;-x_iX_i^T\\
+    -y_iX_i^T&amp;x_iX_i^T&amp;0
 \end{bmatrix}
 \begin{pmatrix}
     p_1\\
     p_2\\
     p_3
-\end{pmatrix}=0</script><p>这个矩阵$P$虽然有12个参数，但由于尺度是随意的，所以实际只要考虑11个自由度就行，然后由于上面那个矩阵等式只提供了两个线性独立等式(因为秩为2)，所以为了求解矩阵$P$，我们最少需要6个 3D/2D 对应点。如果我们有多于6个数据对的话，那就更好了，可以用最小二乘法估计。\<br>假设我们现在有很多个数据对，根据上面的方法写成如下形式：<img src="/images/281.png" alt=""><br>简单记为：</p>
-<script type="math/tex; mode=display">
-Ap=0</script><p>由于当$p=0$时虽然符合方程，但明显不是我们想要的，要排除，所以加个约束：$||p||=1$，也就是如下齐次最小二乘形式：</p>
-<script type="math/tex; mode=display">
-Ap=0\quad s.t. \quad ||p||=1</script><p>先说解法步骤：</p>
+\end{pmatrix}=0
+\]</span> 这个矩阵<span class="math inline">\(P\)</span>虽然有12个参数，但由于尺度是随意的，所以实际只要考虑11个自由度就行，然后由于上面那个矩阵等式只提供了两个线性独立等式(因为秩为2)，所以为了求解矩阵<span class="math inline">\(P\)</span>，我们最少需要6个 3D/2D 对应点。如果我们有多于6个数据对的话，那就更好了，可以用最小二乘法估计。<br />
+假设我们现在有很多个数据对，根据上面的方法写成如下形式：<img src="/images/281.png" /> 简单记为： <span class="math display">\[
+Ap=0
+\]</span> 由于当<span class="math inline">\(p=0\)</span>时虽然符合方程，但明显不是我们想要的，要排除，所以加个约束：<span class="math inline">\(||p||=1\)</span>，也就是如下齐次最小二乘形式： <span class="math display">\[
+Ap=0\quad s.t. \quad ||p||=1
+\]</span> 先说解法步骤：</p>
 <blockquote>
-<ol>
-<li>进行SVD分解：$A=USV^T$</li>
-<li>假设奇异值是排好序了的，即$S=diag(s_1,…,s_{12}),s_{i+1}\leq s_i$</li>
-<li>取最后一个右奇异值向量，此时$p=v_{12}$</li>
+<ol type="1">
+<li>进行SVD分解：<span class="math inline">\(A=USV^T\)</span></li>
+<li>假设奇异值是排好序了的，即<span class="math inline">\(S=diag(s_1,...,s_{12}),s_{i+1}\leq s_i\)</span></li>
+<li>取最后一个右奇异值向量，此时<span class="math inline">\(p=v_{12}\)</span></li>
 </ol>
 </blockquote>
 <p>为什么是这样？下面简单说明。</p>
-<h3 id="齐次最小二乘：简介"><a href="#齐次最小二乘：简介" class="headerlink" title="齐次最小二乘：简介"></a>齐次最小二乘：简介</h3><p>现假设向量$p\in R^n$满足：</p>
-<script type="math/tex; mode=display">
-Ap=0</script><p>其中$A\in R^{m\times n}$且$0\in R^m$，进一步假设$m\geq n$且$rank(A)=n$。\<br>由于$A$是测量矩阵，就难免有噪音，所以我们会最小化下面这个：</p>
-<script type="math/tex; mode=display">
-||Ap||^2</script><p>为了避免$p=0$这个解，我们在这里加个约束$||p||=1$，也就是说现在我们的问题变为：\</p>
+<h3 id="齐次最小二乘简介">齐次最小二乘：简介</h3>
+<p>现假设向量<span class="math inline">\(p\in R^n\)</span>满足： <span class="math display">\[
+Ap=0
+\]</span> 其中<span class="math inline">\(A\in R^{m\times n}\)</span>且<span class="math inline">\(0\in R^m\)</span>，进一步假设<span class="math inline">\(m\geq n\)</span>且<span class="math inline">\(rank(A)=n\)</span>。<br />
+由于<span class="math inline">\(A\)</span>是测量矩阵，就难免有噪音，所以我们会最小化下面这个： <span class="math display">\[
+||Ap||^2
+\]</span> 为了避免<span class="math inline">\(p=0\)</span>这个解，我们在这里加个约束<span class="math inline">\(||p||=1\)</span>，也就是说现在我们的问题变为：<br />
+</p>
 <blockquote>
-<p>在约束$||p||=1$的条件下，寻找$p$，使得$||Ap||^2$最小。</p>
+<p>在约束<span class="math inline">\(||p||=1\)</span>的条件下，寻找<span class="math inline">\(p\)</span>，使得<span class="math inline">\(||Ap||^2\)</span>最小。</p>
 </blockquote>
-<p>现在开始解这个问题。\<br>首先我们改写这个约束条件为：$1-p^Tp=0$，然后用拉格朗日乘子：</p>
-<script type="math/tex; mode=display">
-\frac{\partial}{\partial p}(p^TA^TA^Tp+\lambda (1-p^Tp))=0</script><p>即：</p>
-<script type="math/tex; mode=display">
-2A^TAp-2\lambda p=0 \quad \rightarrow \quad (A^TA)p=\lambda p</script><p>这里$p$是$(A^TA)$的特征向量，$\lambda$是特征值。\<br>这就引出了特征值和特征向量了，但现在还有个问题，我们要选哪个特征值/向量？\<br>回到我们原来的问题，我们要最小化如下的量：</p>
-<script type="math/tex; mode=display">
-||Ap||^2=p^TA^TAp</script><p>用约束$||p||=1$改写一下如下：</p>
-<script type="math/tex; mode=display">
-||Ap||^2=p^T\lambda p=\lambda</script><p>这就出来了，我们要选的$p$就是$A^TA$最小特征值对应的特征向量。</p>
-<p>然后继续，毕竟上面我们的对象是$A^TA$，不是$A$，现在要引进SVD分解。</p>
-<h3 id="齐次最小二乘：SVD"><a href="#齐次最小二乘：SVD" class="headerlink" title="齐次最小二乘：SVD"></a>齐次最小二乘：SVD</h3><p>SVD，即是奇异值分解，全称为singular value decomposition，表示成如下形式：</p>
-<script type="math/tex; mode=display">
-A=USV^T</script><p>其中$U\in R^{m\times n}$，$V\in R^{n\times n}$是正交的(即是逆等于转置，行列式绝对值为1的矩阵)，$S\in R^{n\times n}$是对角矩阵，且值沿对角线递减。\<br>现在我们有：</p>
-<script type="math/tex; mode=display">
-A^TA=(USV^T)^TUSV^T=VS^TU^TUSV^T=VS^2V^T</script><p>上面这个式子就是一个特征值分解(正交性)，所以我们可以看到：</p>
+<p>现在开始解这个问题。<br />
+首先我们改写这个约束条件为：<span class="math inline">\(1-p^Tp=0\)</span>，然后用拉格朗日乘子： <span class="math display">\[
+\frac{\partial}{\partial p}(p^TA^TA^Tp+\lambda (1-p^Tp))=0
+\]</span> 即： <span class="math display">\[
+2A^TAp-2\lambda p=0 \quad \rightarrow \quad (A^TA)p=\lambda p
+\]</span> 这里<span class="math inline">\(p\)</span>是<span class="math inline">\((A^TA)\)</span>的特征向量，<span class="math inline">\(\lambda\)</span>是特征值。<br />
+这就引出了特征值和特征向量了，但现在还有个问题，我们要选哪个特征值/向量？<br />
+回到我们原来的问题，我们要最小化如下的量： <span class="math display">\[
+||Ap||^2=p^TA^TAp
+\]</span> 用约束<span class="math inline">\(||p||=1\)</span>改写一下如下： <span class="math display">\[
+||Ap||^2=p^T\lambda p=\lambda
+\]</span> 这就出来了，我们要选的<span class="math inline">\(p\)</span>就是<span class="math inline">\(A^TA\)</span>最小特征值对应的特征向量。</p>
+<p>然后继续，毕竟上面我们的对象是<span class="math inline">\(A^TA\)</span>，不是<span class="math inline">\(A\)</span>，现在要引进SVD分解。</p>
+<h3 id="齐次最小二乘svd">齐次最小二乘：SVD</h3>
+<p>SVD，即是奇异值分解，全称为singular value decomposition，表示成如下形式： <span class="math display">\[
+A=USV^T
+\]</span> 其中<span class="math inline">\(U\in R^{m\times n}\)</span>，<span class="math inline">\(V\in R^{n\times n}\)</span>是正交的(即是逆等于转置，行列式绝对值为1的矩阵)，<span class="math inline">\(S\in R^{n\times n}\)</span>是对角矩阵，且值沿对角线递减。<br />
+现在我们有： <span class="math display">\[
+A^TA=(USV^T)^TUSV^T=VS^TU^TUSV^T=VS^2V^T
+\]</span> 上面这个式子就是一个特征值分解(正交性)，所以我们可以看到：</p>
 <blockquote>
-<ol>
-<li>$A^TA$的特征向量就是$A$的右奇异向量；</li>
-<li>$A^TA$的特征值是$A$奇异值的平方。</li>
+<ol type="1">
+<li><span class="math inline">\(A^TA\)</span>的特征向量就是<span class="math inline">\(A\)</span>的右奇异向量；</li>
+<li><span class="math inline">\(A^TA\)</span>的特征值是<span class="math inline">\(A\)</span>奇异值的平方。</li>
 </ol>
 </blockquote>
-<p>所以，要找$A^TA$的最小特征值，就是要计算$A$的最右边的奇异向量。\<br>至此就回答完上面的问题了。\<br>关于SVD分解，详细的可以参看<a href="https://shartoo.github.io/2016/10/25/SVD-decomponent/">这篇</a>。</p>
-<h3 id="通过-P-求-K"><a href="#通过-P-求-K" class="headerlink" title="通过$P$求$K$"></a>通过$P$求$K$</h3><p>至此我们就求出了投影矩阵$P$，它包含了相机的外参和内参，但相机的标定只要求内参，所以我们要继续往下做。\<br>这里矩阵$P$是一个$3\times 4$的矩阵，我们把它按如下方式分解：</p>
-<script type="math/tex; mode=display">
-P=[M|m]=[KR|-KR\widetilde{c}]</script><p>这里矩阵$M\in R^{3\times 3},m\in R^{3\times 1}$，然后将矩阵$M$进行QR分解成一个上三角矩阵$K$和一个正交的矩阵$R$，这里的$K$就是我们要的标定矩阵，$R$是旋转矩阵。最后，通过SVD找到c作为P的零空间。\<br>至此，这种不考虑畸变的标定就结束了。</p>
-<h2 id="考虑畸变参数"><a href="#考虑畸变参数" class="headerlink" title="考虑畸变参数"></a>考虑畸变参数</h2><p>上面是特殊情况，一般在现实中我们是不能忽略畸变参数的，在进行标定前，先对畸变参数作简要说明。\</p>
-<h3 id="畸变参数"><a href="#畸变参数" class="headerlink" title="畸变参数"></a>畸变参数</h3><p>根据畸变的方式不同畸变参数可分为两部分，径向畸变和切向畸变(还有其他的比如薄透镜畸变，这里不考虑)。</p>
-<h4 id="径向畸变"><a href="#径向畸变" class="headerlink" title="径向畸变"></a>径向畸变</h4><p>径向畸变是由于透镜形状的制造工艺导致。且越向透镜边缘移动径向畸变越严重。\<br>比如说这是我们正常的图像：<img src="/images/282.png" alt=""><br>其中的像素点坐标我们用极坐标来表示，为$(r,\theta)$，径向畸变的话，就是$r$的缩放，其又分为两种，分别为桶形畸变和枕形畸变，如下：<img src="/images/283.png" alt=""><br>其中桶形畸变大都发生在使用广角镜头或使用变焦镜头的广角端时，枕形畸变则是使用长焦镜头或使用变焦镜头的长焦端时发生。\<br>用数学形式表示的话，我们先假定归一化平面上有一点$p$，坐标为$[x,y]^T$，对应的极坐标形式为$[r,\theta]^T$，其中$r$表示与坐标系原点的距离，$\theta$表示与水平轴的夹角。径向畸变的话就是$r$发生了变化，畸变后的坐标可表示为：</p>
-<script type="math/tex; mode=display">
+<p>所以，要找<span class="math inline">\(A^TA\)</span>的最小特征值，就是要计算<span class="math inline">\(A\)</span>的最右边的奇异向量。<br />
+至此就回答完上面的问题了。<br />
+关于SVD分解，详细的可以参看<a href="https://shartoo.github.io/2016/10/25/SVD-decomponent/">这篇</a>。</p>
+<h3 id="通过p求k">通过<span class="math inline">\(P\)</span>求<span class="math inline">\(K\)</span></h3>
+<p>至此我们就求出了投影矩阵<span class="math inline">\(P\)</span>，它包含了相机的外参和内参，但相机的标定只要求内参，所以我们要继续往下做。<br />
+这里矩阵<span class="math inline">\(P\)</span>是一个<span class="math inline">\(3\times 4\)</span>的矩阵，我们把它按如下方式分解： <span class="math display">\[
+P=[M|m]=[KR|-KR\widetilde{c}]
+\]</span> 这里矩阵<span class="math inline">\(M\in R^{3\times 3},m\in R^{3\times 1}\)</span>，然后将矩阵<span class="math inline">\(M\)</span>进行QR分解成一个上三角矩阵<span class="math inline">\(K\)</span>和一个正交的矩阵<span class="math inline">\(R\)</span>，这里的<span class="math inline">\(K\)</span>就是我们要的标定矩阵，<span class="math inline">\(R\)</span>是旋转矩阵。最后，通过SVD找到c作为P的零空间。<br />
+至此，这种不考虑畸变的标定就结束了。</p>
+<h2 id="考虑畸变参数">考虑畸变参数</h2>
+<p>上面是特殊情况，一般在现实中我们是不能忽略畸变参数的，在进行标定前，先对畸变参数作简要说明。<br />
+</p>
+<h3 id="畸变参数">畸变参数</h3>
+<p>根据畸变的方式不同畸变参数可分为两部分，径向畸变和切向畸变(还有其他的比如薄透镜畸变，这里不考虑)。</p>
+<h4 id="径向畸变">径向畸变</h4>
+<p>径向畸变是由于透镜形状的制造工艺导致。且越向透镜边缘移动径向畸变越严重。<br />
+比如说这是我们正常的图像：<img src="/images/282.png" /> 其中的像素点坐标我们用极坐标来表示，为<span class="math inline">\((r,\theta)\)</span>，径向畸变的话，就是<span class="math inline">\(r\)</span>的缩放，其又分为两种，分别为桶形畸变和枕形畸变，如下：<img src="/images/283.png" /> 其中桶形畸变大都发生在使用广角镜头或使用变焦镜头的广角端时，枕形畸变则是使用长焦镜头或使用变焦镜头的长焦端时发生。<br />
+用数学形式表示的话，我们先假定归一化平面上有一点<span class="math inline">\(p\)</span>，坐标为<span class="math inline">\([x,y]^T\)</span>，对应的极坐标形式为<span class="math inline">\([r,\theta]^T\)</span>，其中<span class="math inline">\(r\)</span>表示与坐标系原点的距离，<span class="math inline">\(\theta\)</span>表示与水平轴的夹角。径向畸变的话就是<span class="math inline">\(r\)</span>发生了变化，畸变后的坐标可表示为： <span class="math display">\[
 x_{distorted}=x(1+k_1r^2+k_2r^4+k_3r^6)
-$$</script><p>y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)</p>
-<script type="math/tex; mode=display">
-这里的$k_1,k_2,k_3$即是径向畸变参数。\
-这里的多项式不一定非得是这几个，可以多写几项或少些几项，看自己需求吧，不过大都用这几个表示。\
-
-#### 切向畸变
-切向畸变是由于透镜本身与相机传感器平面（成像平面）或图像平面不平行而产生的，其畸变来源示意图如下：![](/images/284.png)
-同样可用数学表示如下：</script><p>x_{distorted}=x+2p_1xy+p_2(r^2+2x^2)<br>y_{distorted}=y+p_1(r^2+2y^2)+2P_2xy</p>
-<script type="math/tex; mode=display">
-这里的$p_1,p_2$就是切向畸变参数。
-
-#### 求解畸变参数
-首先，根据上面两类畸变可知，一个畸变后的坐标应该是这样的：</script><p>x_{distorted}=x(1+k_1r^2+k_2r^4+k_3r^6)+2p_1xy+p_2(r^2+2x^2)</p>
-<script type="math/tex; mode=display">$$
-y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)+p_1(r^2+2y^2)+2P_2xy</script><p>这里涉及到5个畸变参数，分别为：$k_1,k_2,k_3,p_1,p_2$。\<br>畸变的话不能直接求解，但可以用优化的思想，目标函数选用最小化重投影误差，也就是将空间坐标点按照估计的投影方程投影到图像上，得到像素估计值，使该值与实际观测值之间的误差最小。\<br>其中变量初始值设为：畸变参数为0，其余参数用上面无畸变标定的方法的结果。\<br>注意，这里的优化变量不只是畸变参数，还有其余内参。\<br>至于其中的优化细节，一大堆公式还没看，留着以后吧。\<br>其实直接用OpenCV或者Matlab就可以弄出来了，尤其是Matlab，真-傻瓜式操作，不过还是得知道这些内部算法的。这个优化细节，以后有心情的话看完再补充了。</p>
-<h1 id="附"><a href="#附" class="headerlink" title="附"></a>附</h1><p>关于坐标系的投影变换，可以看<a href="https://superzlw.github.io/posts/1.html">这个</a>，有直接的例子。</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>【1】 视觉SLAM 14讲\<br>【2】 <a href="https://shartoo.github.io/2016/10/25/SVD-decomponent/">https://shartoo.github.io/2016/10/25/SVD-decomponent/</a> \<br>【3】 <a href="https://www.qinxing.xyz/posts/b7ea425d/">https://www.qinxing.xyz/posts/b7ea425d/</a> \<br>【4】 <a href="https://zhuanlan.zhihu.com/p/24651968">https://zhuanlan.zhihu.com/p/24651968</a> \<br>【5】 <a href="https://zhuanlan.zhihu.com/p/87334006">https://zhuanlan.zhihu.com/p/87334006</a></p>
+\]</span> <span class="math display">\[
+y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)
+\]</span> 这里的<span class="math inline">\(k_1,k_2,k_3\)</span>即是径向畸变参数。<br />
+这里的多项式不一定非得是这几个，可以多写几项或少些几项，看自己需求吧，不过大都用这几个表示。<br />
+</p>
+<h4 id="切向畸变">切向畸变</h4>
+<p>切向畸变是由于透镜本身与相机传感器平面（成像平面）或图像平面不平行而产生的，其畸变来源示意图如下：<img src="/images/284.png" /> 同样可用数学表示如下： <span class="math display">\[
+x_{distorted}=x+2p_1xy+p_2(r^2+2x^2)
+\]</span> <span class="math display">\[
+y_{distorted}=y+p_1(r^2+2y^2)+2P_2xy
+\]</span> 这里的<span class="math inline">\(p_1,p_2\)</span>就是切向畸变参数。</p>
+<h4 id="求解畸变参数">求解畸变参数</h4>
+<p>首先，根据上面两类畸变可知，一个畸变后的坐标应该是这样的： <span class="math display">\[
+x_{distorted}=x(1+k_1r^2+k_2r^4+k_3r^6)+2p_1xy+p_2(r^2+2x^2)
+\]</span><span class="math display">\[
+y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)+p_1(r^2+2y^2)+2P_2xy
+\]</span> 这里涉及到5个畸变参数，分别为：<span class="math inline">\(k_1,k_2,k_3,p_1,p_2\)</span>。<br />
+畸变的话不能直接求解，但可以用优化的思想，目标函数选用最小化重投影误差，也就是将空间坐标点按照估计的投影方程投影到图像上，得到像素估计值，使该值与实际观测值之间的误差最小。<br />
+其中变量初始值设为：畸变参数为0，其余参数用上面无畸变标定的方法的结果。<br />
+注意，这里的优化变量不只是畸变参数，还有其余内参。<br />
+至于其中的优化细节，一大堆公式还没看，留着以后吧。<br />
+其实直接用OpenCV或者Matlab就可以弄出来了，尤其是Matlab，真-傻瓜式操作，不过还是得知道这些内部算法的。这个优化细节，以后有心情的话看完再补充了。</p>
+<h1 id="附">附</h1>
+<p>关于坐标系的投影变换，可以看<a href="https://superzlw.github.io/posts/1.html">这个</a>，有直接的例子。</p>
+<h1 id="参考">参考</h1>
+<p>【1】 视觉SLAM 14讲<br />
+【2】 https://shartoo.github.io/2016/10/25/SVD-decomponent/<br />
+【3】 https://www.qinxing.xyz/posts/b7ea425d/<br />
+【4】 https://zhuanlan.zhihu.com/p/24651968<br />
+【5】 https://zhuanlan.zhihu.com/p/87334006</p>
 ]]></content>
       <categories>
         <category>图像处理</category>
