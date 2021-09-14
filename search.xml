@@ -590,9 +590,10 @@ y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)+p_1(r^2+2y^2)+2P_2xy
 <ol type="1">
 <li>数据是否符合我们提出的假设（比如高斯性）;<br />
 </li>
-<li>两个数据集的分布是否可以假定为相同。 <span id="more"></span></li>
+<li>两个数据集的分布是否可以假定为相同。</li>
 </ol>
 </blockquote>
+<span id="more"></span>
 <p>一般来说：</p>
 <blockquote>
 <ol type="1">
