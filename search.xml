@@ -669,6 +669,7 @@ E_{SSD}(u,v) \approx \sum_{(x,y)\in R}(u\cdot I_x(x,y,t)+v\cdot I_y(x,y,t)+I_t(x
 <li>只计算运动增量</li>
 </ol>
 </blockquote>
+<p>具体过程见<a href="https://blog.csdn.net/sgfmby1994/article/details/68489944">这里</a></p>
 <h2 id="密集lk光流dense-lk-flow">密集LK光流(Dense LK Flow)</h2>
 <p>要计算密集LK光流的话，我们可以只把区域R看作是每个像素周围的一个小区域，并为每个像素计算一个流动矢量。<br />
 对于老问题：small motions，可以用以下两种方法解决：</p>
