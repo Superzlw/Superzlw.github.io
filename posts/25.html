@@ -22,17 +22,35 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="三部分：LK光流，HS光流，概率法。（占个位，考完试再写）">
+  <meta name="description" content="引入 目前关于光流一共学过三种方法，分别为LK光流，HS光流以及概率法，一步一步来吧，这里先讲LK光流，之后如果学了其它方法再来更新。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="光流三部曲---1. LK光流">
 <meta property="og:url" content="https://superzlw.github.io/posts/25.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="三部分：LK光流，HS光流，概率法。（占个位，考完试再写）">
+<meta property="og:description" content="引入 目前关于光流一共学过三种方法，分别为LK光流，HS光流以及概率法，一步一步来吧，这里先讲LK光流，之后如果学了其它方法再来更新。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://superzlw.github.io/images/298.png">
+<meta property="og:image" content="https://superzlw.github.io/images/299.png">
+<meta property="og:image" content="https://superzlw.github.io/images/300.png">
+<meta property="og:image" content="https://superzlw.github.io/images/301.png">
+<meta property="og:image" content="https://superzlw.github.io/images/302.png">
+<meta property="og:image" content="https://superzlw.github.io/images/303.png">
+<meta property="og:image" content="https://superzlw.github.io/images/304.png">
+<meta property="og:image" content="https://superzlw.github.io/images/305.png">
+<meta property="og:image" content="https://superzlw.github.io/images/306.png">
+<meta property="og:image" content="https://superzlw.github.io/images/307.png">
+<meta property="og:image" content="https://superzlw.github.io/images/308.png">
+<meta property="og:image" content="https://superzlw.github.io/images/309.png">
+<meta property="og:image" content="https://superzlw.github.io/images/310.png">
+<meta property="og:image" content="https://superzlw.github.io/images/311.png">
+<meta property="og:image" content="https://superzlw.github.io/images/312.png">
+<meta property="og:image" content="https://superzlw.github.io/images/313.png">
+<meta property="og:image" content="https://superzlw.github.io/images/314.png">
 <meta property="article:published_time" content="2021-08-30T08:38:47.040Z">
-<meta property="article:modified_time" content="2021-08-30T08:43:30.315Z">
+<meta property="article:modified_time" content="2021-09-15T19:42:51.168Z">
 <meta property="article:author" content="super_wzl">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://superzlw.github.io/images/298.png">
 
 <link rel="canonical" href="https://superzlw.github.io/posts/25.html">
 
@@ -215,10 +233,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-08-30 10:38:47 / 修改时间：10:43:30" itemprop="dateCreated datePublished" datetime="2021-08-30T10:38:47+02:00">2021-08-30</time>
+              <time title="创建时间：2021-08-30 10:38:47" itemprop="dateCreated datePublished" datetime="2021-08-30T10:38:47+02:00">2021-08-30</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-09-15 21:42:51" itemprop="dateModified" datetime="2021-09-15T21:42:51+02:00">2021-09-15</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -261,7 +285,131 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>三部分：LK光流，HS光流，概率法。（占个位，考完试再写）</p>
+        <h1 id="引入">引入</h1>
+<p>目前关于光流一共学过三种方法，分别为LK光流，HS光流以及概率法，一步一步来吧，这里先讲LK光流，之后如果学了其它方法再来更新。 <span id="more"></span></p>
+<h1 id="光流">光流</h1>
+<p>光流（optical flow）是指空间运动物体在观测平面上的像素运动的瞬时速度。一般用图像序列中像素在不同时间上的变化来确定相邻帧之间的相关关系，从而计算出相邻帧图像的运动。当相邻帧时间间隔足够短时，我们可以用目标点的位移来代指这个速度。<br />
+简言之：</p>
+<blockquote>
+<p><strong>Optical flow = 2D velocity field describing the apparent motion in the images.</strong></p>
+</blockquote>
+<p>光流场的话，是指图像中所有像素点构成的一种二维瞬时速度场，如下图的例子所示：<img src="/images/298.png" /></p>
+<h1 id="光流估计">光流估计</h1>
+<p>光流估计即是通过给定的两帧图片，估计它们之间的<span class="math inline">\(u(x,y)\)</span>和<span class="math inline">\(v(x,y)\)</span>。<br />
+为了计算光流，我们会首先做以下两个假设：</p>
+<blockquote>
+<p><strong>假设1</strong>：对于图像中的小区域，尽管它们的位置可能发生变化，但小区域中的图像测量值(例如亮度)保持不变，称为亮度恒定假设。<br />
+<strong>假设2</strong>：场景中的相邻点通常属于同一表面，因此通常具有相似的3D运动。称为空间连续性假设。</p>
+</blockquote>
+<p>对于假设1，用数学表示的话可以写成如下形式： <span class="math display">\[
+I(x+u(x,y),y+v(x,y),t+1)=I(x,y,t)
+\]</span> 其中<span class="math inline">\(u(x,y)\)</span>和<span class="math inline">\(v(x,y)\)</span>分别称为水平流位移和垂直流位移。<br />
+计算这个光流最直接的想法是最小化亮度差异，亮度差异可表示为： <span class="math display">\[
+E_{SSD}(u,v)=\sum_{(x,y)\in R}(I(x+u,y+v,t+1)-I(x,y,t))^2
+\]</span> 也就是计算一个区域像素在某一方向的亮度差异。<br />
+再具体一点的话，就是对每个像素，取其邻近区域并尝试所有可能的运动，取一个最小的<span class="math inline">\(SSD\)</span>，该方向即为该区域像素的光流方向。<br />
+但这么算的话效率很低，而且把运动空间分散了，这跟现实不太符。<br />
+所以我们希望找到另一个方法来近似。</p>
+<h2 id="改进">改进</h2>
+<p>对于上面那个差异公式，右边第一项可以写为： <span class="math display">\[
+I(x+u,y+v,t+1)=I(x+\Delta_x,y+\Delta_y,t+\Delta_t)
+\]</span> 继续用泰勒级数展开可表示为： <span class="math display">\[
+I(x,y,t)+\Delta_x\frac{\partial}{\partial x}I(x,y,t)+\Delta_y\frac{\partial}{\partial y}I(x,y,t)+\Delta_t\frac{\partial}{\partial t}I(x,y,t)+\epsilon(\Delta_x^2,\Delta_y^2,\Delta_t^2)
+\]</span> 最后一项<span class="math inline">\(\epsilon\)</span>是近似误差，当<span class="math inline">\(\Delta_t\)</span>足够小时，这个误差近似为0。<br />
+所以上面的SSD近似可写为： <span class="math display">\[
+\begin{split}
+E_{SSD}(u,v) &amp;\approx \sum_{(x,y)\in R}(I(x,y,t)+u\frac{\partial}{\partial x}I(x,y,t)+v\frac{\partial}{\partial y}I(x,y,t)+\frac{\partial}{\partial t}I(x,y,t)-I(x,y,t))^2\\\\
+&amp;= \sum_{(x,y)\in R}(u\frac{\partial}{\partial x}I(x,y,t)+v\frac{\partial}{\partial y}I(x,y,t)+\frac{\partial}{\partial t}I(x,y,t))^2\\\\
+&amp;= \sum_{(x,y)\in R}(u\cdot I_x(x,y,t)+v\cdot I_y(x,y,t)+I_t(x,y,t))^2
+\end{split}
+\]</span> 这个SSD近似方程相较于更上面的那个差异性方程来说，这个方程对于运动<span class="math inline">\(u,v\)</span>是凸的，所以更容易计算，但是，这只适用于<mark><strong>小运动</strong></mark>的情况。<br />
+当<span class="math inline">\(\Delta_t\)</span>足够小趋近于0的时候，我们有下面这个式子： <span class="math display">\[
+u\cdot I_x+v\cdot I_y+I_t=0
+\]</span> 这就是光流约束方程(optical flow constraint equation, OFCE)，也成为线性化亮度恒定约束。<br />
+上面这个约束方程可改写成下面形式： <span class="math display">\[
+\Delta I^Tu=-I_t
+\]</span> 其中: <span class="math display">\[
+u=
+\begin{pmatrix}
+u\\v
+\end{pmatrix}
+\quad
+\Delta I=
+\begin{pmatrix}
+I_x\\
+I_y
+\end{pmatrix}
+\]</span> *********************************************************************************<br />
+另外，对于这个公式的推导，有些地方会这么写，都一个意思： <span class="math display">\[
+\frac{dI}{dt}=\frac{\partial I}{\partial x}\frac{dx}{dt}+\frac{\partial I}{\partial y}\frac{dy}{dt}+\frac{\partial I}{\partial t}
+\]</span> 当假设每个场景点的图像强度随时间推移而不变时(例如亮度)，则有： <span class="math display">\[
+\frac{dI}{dt}=0
+\]</span> 则： <span class="math display">\[
+u\cdot I_x+v\cdot I_y+I_t=0
+\]</span> 两种推导一个意思。<br />
+*********************************************************************************<br />
+用这个约束的话有个问题，也就是下面提到的孔径问题(The Aperture Problem)。</p>
+<h3 id="the-aperture-problem">The Aperture Problem</h3>
+<p>孔径问题(The Aperture Problem)的话，表现为下图这种情况<img src="/images/299.png" /> <img src="/images/300.png" /> 也就是说对于第一幅图，虽然线是往右平移的，但我们的判断却是下面这样：<img src="/images/301.png" /> 简单解释一下，现假设我们取一个单一的像素点，并得到了下面这个约束方程： <span class="math display">\[
+u\cdot I_x+v\cdot I_y+I_t=0
+\]</span> 画出来的话如下图：<img src="/images/302.png" /> 这里有两个未知数，却只有一条线，我们没法确认具体的<span class="math inline">\(u,v\)</span>，所以我们就取图中"Normal flow"方向的值(如果还有一条线确定一个交点，那就不用纠结了)。<br />
+再举个例子，如下图：<img src="/images/303.png" /> 与上面情况类似，对于光圈中观察到的直线的移动，有无数种可能，上图只取其中三种，列出下面这个约束方程： <span class="math display">\[
+u\cdot I_x+v\cdot I_y+I_t=0
+\]</span> 由于我们这种情况下我们只研究垂直方向，也就是中间这种(这是人为定的)，因为其它可能性我们没法研究，除非有先验。也就是说<span class="math inline">\(v\)</span>方向没运动，所以我们有： <span class="math display">\[
+u\cdot I_x+0\cdot I_y+I_t=0
+\]</span> 进而： <span class="math display">\[
+u=-\frac{I_t}{I_x}
+\]</span> 现在反过来考虑，由于我们只研究<span class="math inline">\(u\)</span>方向，<span class="math inline">\(v\)</span>方向没运动的话，即是:<span class="math inline">\(I_y=0\)</span>，此时<span class="math inline">\(v\)</span>可为任意值。<br />
+这就是常见到的两个结论：</p>
+<blockquote>
+<ol type="1">
+<li>梯度方向的光流是确定的；</li>
+<li>但平行于边缘的光流是未知的。</li>
+</ol>
+</blockquote>
+<p>(这部分不太好用文字说明，很多地方直接说“由约束方程直觉上可知”上面两个结论，图也不给，神它喵的“直觉”……)<br />
+这部分知道是怎么回事就行。<br />
+也就是说运动场跟光流不一定一样，举个更简单的例子，理发店门口的颜色柱<img src="/images/304.png" /> 其运动场和光流分别是：<img src="/images/305.png" /></p>
+<h2 id="多个约束">多个约束</h2>
+<p>上面说到，因为两个未知数一条线所以我们只能估计法线方向的光流，那现在我们找多几个点，就会有下面这种情况：<img src="/images/306.png" /> 这就确定下来了。我们能这么做是因为上面有了假设2，也就是空间连续性假设，也就是说假设光流在一个区域内是恒定的。<br />
+回到上面那个式子： <span class="math display">\[
+E_{SSD}(u,v) \approx \sum_{(x,y)\in R}(u\cdot I_x(x,y,t)+v\cdot I_y(x,y,t)+I_t(x,y,t))^2
+\]</span> 要计算运动的话这里分别对<span class="math inline">\(u,v\)</span>求导并使其为0： <span class="math display">\[
+\frac{\partial}{\partial u}E_{SSD}(u,v) \approx
+2\sum_{(x,y)\in R}(u\cdot I_x(x,y,t)+v\cdot I_y(x,y,t)+I_t(x,y,t))I_x(x,y,t)=0
+\]</span> <span class="math display">\[
+\frac{\partial}{\partial v}E_{SSD}(u,v) \approx
+2\sum_{(x,y)\in R}(u\cdot I_x(x,y,t)+v\cdot I_y(x,y,t)+I_t(x,y,t))I_y(x,y,t)=0
+\]</span> 即：<img src="/images/307.png" /> 写成矩阵形式：<img src="/images/308.png" /> 左边第一个矩阵是对称正定矩阵，可逆，它的特征向量给出了局部图像变化的主要方向。特征值则表示其强度。<br />
+此时求个逆光流<span class="math inline">\(u,v\)</span>就算出来了。 这种方法就是LK光流法。</p>
+<h2 id="coarse-to-fine-estimation">Coarse-to-fine estimation</h2>
+<p>这里还有个问题，LK-model要求是小运动。为解决这个问题，可以用Coarse-to-fine estimation，基本操作是：</p>
+<blockquote>
+<ol type="1">
+<li>建立一个高斯金字塔;</li>
+<li>从最低分辨率开始，此时运动很小;</li>
+<li>使用这个运动来 pre-warp 下一个更精细的尺度;</li>
+<li>只计算运动增量</li>
+</ol>
+</blockquote>
+<h2 id="密集lk光流dense-lk-flow">密集LK光流(Dense LK Flow)</h2>
+<p>要计算密集LK光流的话，我们可以只把区域R看作是每个像素周围的一个小区域，并为每个像素计算一个流动矢量。<br />
+对于老问题：small motions，可以用以下两种方法解决：</p>
+<blockquote>
+<ol type="1">
+<li>迭代估计</li>
+<li>Coarse-to-fine estimation</li>
+</ol>
+</blockquote>
+<h3 id="迭代估计">迭代估计</h3>
+<p>首先通过两张图计算其LK光流，如下：<img src="/images/309.png" /> 然后将第二副图根据上面计算出来的光流，向第一幅图靠拢，如下：<img src="/images/310.png" /> 再计算第一副图与warp后的第二幅图的光流，如下：<img src="/images/311.png" /> 将上面计算出来的光流跟之前的光流叠加，再将第二副图按照这个新的光流向第一幅图靠拢，如下：<img src="/images/312.png" /> 如此往复一直下去直到收敛。</p>
+<h3 id="coarse-to-fine-estimation-1">Coarse-to-fine estimation</h3>
+<p>如果用高斯金字塔的话，结果会是这样子：<img src="/images/313.png" /> 跟Ground Truth做对比的话，如下：<img src="/images/314.png" /> 效果明显不太好，有些地方窗口太大了，以至于一些不连续的地方都被磨平了，有些地方窗口则太小，估计结果很差，因为窗口中没有足够的图像信息。<br />
+终究，LK光流法只是一种局部光流法，至于全局光流法，见另外两篇。</p>
+<h1 id="说明">说明</h1>
+<p>这个相关代码都会上传到我的Github上，但由于攒了十几个代码都要修改上传，最近又很多事，所以如果Github上没有，那就是还没上传。</p>
+<h1 id="参考">参考</h1>
+<p>【1】 https://blog.csdn.net/sgfmby1994/article/details/68489944</p>
 
     </div>
 
@@ -354,6 +502,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%89%E6%B5%81"><span class="nav-number">2.</span> <span class="nav-text">光流</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%89%E6%B5%81%E4%BC%B0%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">光流估计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E8%BF%9B"><span class="nav-number">3.1.</span> <span class="nav-text">改进</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-aperture-problem"><span class="nav-number">3.1.1.</span> <span class="nav-text">The Aperture Problem</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA%E7%BA%A6%E6%9D%9F"><span class="nav-number">3.2.</span> <span class="nav-text">多个约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#coarse-to-fine-estimation"><span class="nav-number">3.3.</span> <span class="nav-text">Coarse-to-fine estimation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%86%E9%9B%86lk%E5%85%89%E6%B5%81dense-lk-flow"><span class="nav-number">3.4.</span> <span class="nav-text">密集LK光流(Dense LK Flow)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3%E4%BC%B0%E8%AE%A1"><span class="nav-number">3.4.1.</span> <span class="nav-text">迭代估计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#coarse-to-fine-estimation-1"><span class="nav-number">3.4.2.</span> <span class="nav-text">Coarse-to-fine estimation</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E"><span class="nav-number">4.</span> <span class="nav-text">说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
