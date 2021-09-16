@@ -116,7 +116,7 @@ p_1^T[t\times (Rp_2)]=p_1^TEp_2=0
 <blockquote>
 <ol type="1">
 <li>极线用本质矩阵可表示为：<span class="math inline">\(l_1=Ep_2\)</span>, <span class="math inline">\(l_2=E^Tp_1\)</span>;</li>
-<li><span class="math inline">\(e_1E=E^Te_1=0\)</span>与<span class="math inline">\(Ee_2=0\)</span>;</li>
+<li><span class="math inline">\(e_1^TE=E^Te_1=0\)</span>与<span class="math inline">\(Ee_2=0\)</span>;</li>
 <li>本质矩阵是奇异的，秩为2; 剩下的两个特征值相等;</li>
 <li>本质矩阵有5个自由度(三个旋转+三个平移，但<span class="math inline">\(det(E)=0\)</span>去掉了一个，或者说由于比例是任意的，所以去掉了一个)。</li>
 </ol>
