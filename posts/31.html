@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引入 记录一种基于α拓展和图像切割技术的图像去噪的方法，作业的其中一题，貌似也没在网上看到相关的东西，觉得挺有意思就记一下。顺便也总结一下其中用到的方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图像去噪 (Graphcuts + α-expansion)">
+<meta property="og:url" content="https://superzlw.github.io/posts/31.html">
+<meta property="og:site_name" content="SuperZLW&#39;s Blog">
+<meta property="og:description" content="引入 记录一种基于α拓展和图像切割技术的图像去噪的方法，作业的其中一题，貌似也没在网上看到相关的东西，觉得挺有意思就记一下。顺便也总结一下其中用到的方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://superzlw.github.io/images/316.png">
+<meta property="og:image" content="https://superzlw.github.io/images/317.png">
+<meta property="og:image" content="https://superzlw.github.io/images/318.png">
+<meta property="og:image" content="https://superzlw.github.io/images/319.png">
+<meta property="og:image" content="https://superzlw.github.io/images/320.png">
+<meta property="og:image" content="https://superzlw.github.io/images/321.png">
+<meta property="og:image" content="https://superzlw.github.io/images/322.png">
+<meta property="og:image" content="https://superzlw.github.io/images/323.png">
+<meta property="og:image" content="https://superzlw.github.io/images/324.png">
+<meta property="og:image" content="https://superzlw.github.io/images/325.png">
+<meta property="og:image" content="https://superzlw.github.io/images/326.png">
+<meta property="article:published_time" content="2021-10-10T11:45:26.471Z">
+<meta property="article:modified_time" content="2021-10-11T17:23:09.154Z">
+<meta property="article:author" content="super_wzl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://superzlw.github.io/images/316.png">
+
+<link rel="canonical" href="https://superzlw.github.io/posts/31.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>图像去噪 (Graphcuts + α-expansion) | SuperZLW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SuperZLW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">贩卖咸鱼の海边小店</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/posts/31.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="super_wzl">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuperZLW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          图像去噪 (Graphcuts + α-expansion)
+        </h1>
+
+        <div class="post-meta">
+          <span class="post-time">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-10 13:45:26" itemprop="dateCreated datePublished" datetime="2021-10-10T13:45:26+02:00">2021-10-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-11 19:23:09" itemprop="dateModified" datetime="2021-10-11T19:23:09+02:00">2021-10-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">图像处理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/posts/31.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/posts/31.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引入">引入</h1>
+<p>记录一种基于α拓展和图像切割技术的图像去噪的方法，作业的其中一题，貌似也没在网上看到相关的东西，觉得挺有意思就记一下。顺便也总结一下其中用到的方法。 <span id="more"></span></p>
+<h1 id="graph-cuts">Graph Cuts</h1>
+<p>这里以二元分割为例，即是说 disparity 只取[0, 1]，如下图所示：<img src="/images/316.png" /> 然后现在就要对每个像素进行分类，或者说切割，但我们要怎么判断一个像素属于哪个 disparity 呢，这里就要引入Cost，有两种，第一种如下图：<img src="/images/317.png" /> 也就是说这里的 5 表示该像素<strong>不</strong>分配到 <span class="math inline">\(d=1\)</span>的Cost，同理，对于下面<span class="math inline">\(d=0\)</span>也会有对应的Cost；<br />
+第二种是：<img src="/images/318.png" /> 也即是说这里的2表示把相邻像素分配给不同disparity的Cost。<br />
+现在我们要考虑的就是如何把不同的像素归到不同的disparity，这里介绍一种最常用的方法：最大流/最小割法 (max-flow/min-cut)。</p>
+<h2 id="最大流最小割法-max-flowmin-cut">最大流/最小割法 (max-flow/min-cut)</h2>
+<h3 id="最大流">最大流</h3>
+<p><strong>这部分直接去看【参考1】比较好</strong></p>
+<p>乍看之下这好像是两种方法，但在这里这两个东西其实本质上是一样的。<br />
+【参考1】其实已经讲得很好了，我这里结合【参考2】再理一遍，至少让我印象深刻一点。<br />
+以水管输送水为例，要从起始点送水到目标点，某一路径最大允许流量应取决于该路径最脆弱那段水管所能承受的最大流量，不然会爆，以下图为例: <img src="/images/319.png" title="图源于参考1" /> 这里只有一条路径，且最小值为2，即是说该路径的最大流为2。<br />
+如果路径多一点的话那就不太好算了，以下图为例：<img src="/images/320.png" title="图源于参考1" /> 对于路径“s-&gt;u-&gt;v-&gt;t”，最小值为2，即该路径允许的最大流为2，用了流量2后当前状态就变成下图的状态了：<img src="/images/321.png" title="图源于参考1" /> (这里的x/y 表示容量最大为y，现已经用了x。)<br />
+这时候就会发现没路径可走了，并作出判断：该图最大流为2。但显然这种判断是错的，下面这种情况才是对的：<img src="/images/322.png" title="图源于参考1" /> 为了得到正确的流量，上面那种简单路径叠加的方法明显是行不通的，这时候就要用residual graph了。</p>
+<h4 id="residual-graph">residual graph</h4>
+<p>这个方法的核心思想就是可以撤销之前的操作，这样就可以考虑得更全面(学过“图”算法的应该很容易理解，但我没学过，只在leetcode上做过广度/深度优先搜索算法题，意思差不多，所以对这部分我只是基本理解，并不全面)。<br />
+当我们选择了路径“s-&gt;u-&gt;v-&gt;t”时，其允许的最大流为<strong>2</strong>，此时按照这个流量从终点往起点回溯，图如下：<img src="/images/323.png" title="图源于参考1" />抵消部分如果是0就省略了。<br />
+然后现在在根据这个新图找一条新的路径，比如说“s-&gt;v-&gt;u-&gt;t”，其允许的最大流为<strong>1</strong>，回溯后又得到一个新图如下：<img src="/images/324.png" title="图源于参考1" /> 根据这个图我们没办法找到新路径了，所以最大流为2+1=3，这就是最终的结果了。<br />
+</p>
+<h3 id="最小割">最小割</h3>
+<p>最小割的话就简单说了，即是把不同像素归到不同的disparity，使这种归类所需的能量最小，比如说下面这幅图：<img src="/images/325.png" /></p>
+<h1 id="𝝰-expansion">𝝰-expansion</h1>
+<p>上面的图割法显然只对二分类有用，经常用于分离背景和目标物，但如果要处理多个标签，就要用到𝝰-expansion了。<br />
+这种方法简单说就是迭代地使用图割找到能量(或者对数后验)地局部最优解。<br />
+基本思想是：</p>
+<blockquote>
+<ol type="1">
+<li>初始化disparity map，比如全部设0；<br />
+</li>
+<li>以随机顺序反复扫过所有的disparity；<br />
+</li>
+<li>将中间解决方案视为一个disparity level，当前提出的disparity level视为另一个；<br />
+</li>
+<li>解决二进制的图割问题；<br />
+</li>
+<li>重复进行，直到在一次扫描中没有像素被更新为止。　</li>
+</ol>
+</blockquote>
+<p>用图表示的话就是：<img src="/images/326.png" /> 简单解释一下：𝝰-expansion将多标签问题表示成一系列的二元子问题，在每一步里，我们选择一个标签 α 并拓展：对于每个像素，要么保持标签原样，要么用 α 替换。每个子问题都能以全局最优的方式得到解决。 a) 初始标签。 b) 橙色标签扩大：每个标签保持不变或变成橙色。 c) 黄色标签扩大。 d) 红色标签扩大。</p>
+<h1 id="作业解释">作业解释</h1>
+<p>(作业代码依旧在GitHub里，如果没有，那就是还没整理好)<br />
+</p>
+<p>𝝰-expansion 提供了一种对具有多个标签的马尔科夫随机网格（MRF）进行推理的方法，将解决方案分解为一系列二进制问题，其中每个问题都可以被精确解决。其主要思想是对每个标签进行迭代，在每次迭代中，所有节点都可以选择保留其当前标签或切换到新标签，如上图所示。<br />
+这里实现一种近似版本的𝝰-expansion，现假设图像被标准差为<span class="math inline">\(\sigma_N\)</span>的高斯噪音破坏，并且这个高斯噪音是像素独立的(pixelwise independent)。<br />
+对于尺寸为<span class="math inline">\(H\times W\)</span>的图像，放弃一些常数项，我们可以写出一个适当的似然模型： <span class="math display">\[
+p(y|x) \propto \prod_{i,j}exp\left\{-\frac{1}{2\sigma^2_N}(x_{i,j}-y_{i,j})^2\right\}
+\]</span> 这里<span class="math inline">\(x,y\in R^{H\times W}\)</span>分别是原始图像和被破坏的图像。<br />
+</p>
+<p>不写下去了，到时候直接在代码里加注释吧。。。</p>
+<h1 id="参考">参考</h1>
+<p><a target="_blank" rel="noopener" href="https://seineo.github.io/%E5%9B%BE%E8%AE%BA%EF%BC%9A%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2%E8%AF%A6%E8%A7%A3.html">参考1</a><br />
+<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/58185005">参考2</a><br />
+</p>
+
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+      
+    </div>
+
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/30.html" rel="prev" title="高斯过程">
+      <i class="fa fa-chevron-left"></i> 高斯过程
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#graph-cuts"><span class="nav-number">2.</span> <span class="nav-text">Graph Cuts</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2%E6%B3%95-max-flowmin-cut"><span class="nav-number">2.1.</span> <span class="nav-text">最大流&#x2F;最小割法 (max-flow&#x2F;min-cut)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E6%B5%81"><span class="nav-number">2.1.1.</span> <span class="nav-text">最大流</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#residual-graph"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">residual graph</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E5%89%B2"><span class="nav-number">2.1.2.</span> <span class="nav-text">最小割</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%F0%9D%9D%B0-expansion"><span class="nav-number">3.</span> <span class="nav-text">𝝰-expansion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%9C%E4%B8%9A%E8%A7%A3%E9%87%8A"><span class="nav-number">4.</span> <span class="nav-text">作业解释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="super_wzl"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">super_wzl</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">super_wzl</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-611ffbcfffca5ad1" async="async"></script>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'JbTCzSGo7EeV9tTlVHeWHuWx-MdYXbMMI',
+      appKey     : '3yO7D6U6pVQy4RVNcsKIxy4m',
+      placeholder: "来唠两句吗？",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
