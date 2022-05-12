@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Introduction This blog is a summary of the papers I have read recently, and it is also convenient for viewing at any time during the current project.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Summary of some papers —— “Attention is all you need”">
+<meta property="og:url" content="https://superzlw.github.io/posts/34.html">
+<meta property="og:site_name" content="SuperZLW&#39;s Blog">
+<meta property="og:description" content="Introduction This blog is a summary of the papers I have read recently, and it is also convenient for viewing at any time during the current project.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://superzlw.github.io/images/327.png">
+<meta property="og:image" content="https://superzlw.github.io/images/328.png">
+<meta property="og:image" content="https://superzlw.github.io/images/329.png">
+<meta property="og:image" content="https://superzlw.github.io/images/330.png">
+<meta property="og:image" content="https://superzlw.github.io/images/331.png">
+<meta property="og:image" content="https://superzlw.github.io/images/332.png">
+<meta property="og:image" content="https://superzlw.github.io/images/333.png">
+<meta property="og:image" content="https://superzlw.github.io/images/334.png">
+<meta property="og:image" content="https://superzlw.github.io/images/335.png">
+<meta property="og:image" content="https://superzlw.github.io/images/336.png">
+<meta property="og:image" content="https://superzlw.github.io/images/337.png">
+<meta property="og:image" content="https://superzlw.github.io/images/338.png">
+<meta property="og:image" content="https://superzlw.github.io/images/339.png">
+<meta property="og:image" content="https://superzlw.github.io/images/340.png">
+<meta property="og:image" content="https://superzlw.github.io/images/341.png">
+<meta property="og:image" content="https://superzlw.github.io/images/342.png">
+<meta property="og:image" content="https://superzlw.github.io/images/343.png">
+<meta property="og:image" content="https://superzlw.github.io/images/344.png">
+<meta property="og:image" content="https://superzlw.github.io/images/345.png">
+<meta property="og:image" content="https://superzlw.github.io/images/346.png">
+<meta property="og:image" content="https://superzlw.github.io/images/347.png">
+<meta property="og:image" content="https://superzlw.github.io/images/348.png">
+<meta property="article:published_time" content="2022-05-11T22:31:54.081Z">
+<meta property="article:modified_time" content="2022-05-12T23:22:48.382Z">
+<meta property="article:author" content="super_wzl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://superzlw.github.io/images/327.png">
+
+<link rel="canonical" href="https://superzlw.github.io/posts/34.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Summary of some papers —— “Attention is all you need” | SuperZLW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SuperZLW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">贩卖咸鱼の海边小店</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/posts/34.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="super_wzl">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuperZLW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Summary of some papers —— “Attention is all you need”
+        </h1>
+
+        <div class="post-meta">
+          <span class="post-time">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-12 00:31:54" itemprop="dateCreated datePublished" datetime="2022-05-12T00:31:54+02:00">2022-05-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-13 01:22:48" itemprop="dateModified" datetime="2022-05-13T01:22:48+02:00">2022-05-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">学习总结</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/posts/34.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/posts/34.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="introduction">Introduction</h1>
+<p>This blog is a summary of the papers I have read recently, and it is also convenient for viewing at any time during the current project. <span id="more"></span></p>
+<p>The project is based on viT semantic segmentation, so the papers here are related to it, including the following:</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a></p></li>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2011.14503">End-to-End Video Instance Segmentation with Transformers</a></p></li>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2105.05633">Segmenter: Transformer for Semantic Segmentation</a></p></li>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2010.11929">An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale</a></p></li>
+</ul>
+<p>(<em>Due to the limitations of English, the expression may be a bit strange, but as long as the meaning is correct, who cares?</em>)</p>
+<h1 id="attention-is-all-you-need">Attention is all you need</h1>
+<p>(The Chinese version can refer to my previous blog: <a href="https://superzlw.github.io/posts/16.html">here</a>, the content is different from this one, and relatively brief, but also could be very helpful to understand it.)</p>
+<p>(Here I recommend a awesome <a target="_blank" rel="noopener" href="http://jalammar.github.io/illustrated-transformer/">blog</a>. Most of the pictures here are from this blog as well as my previous blog.)</p>
+<h2 id="what-and-why">WHAT? and WHY?</h2>
+<p>First, I will give a brief introduction to this paper from these two parts, and then elaborate on its principles later.</p>
+<h3 id="what-is-it">What is it?</h3>
+<p>"Attention" is a method proposed by Bengio's team in 2014 and widely used in various deep learning fields.</p>
+<p>On this basis, this paper further proposes a new concept: Transformer. As the title of the paper says, the traditional CNN and RNN are abandoned in the Transformer, and the entire network structure is completely composed of the Attention mechanism. More precisely, the Transformer consists of and only consists of self-Attenion and Feed Forward Neural Network.</p>
+<p>A trainable neural network based on Transformer can be built by stacking Transformers. The author's experiment is to build an encoder-decoder with 6 layers of encoder and decoder, and a total of 12 layers of Encoder-Decoder, which performed best in machine translate.</p>
+<h3 id="why-use-it">Why use it?</h3>
+<p>The reason why the author uses "Attention" is to consider that the calculation of RNN (or LSTM, GRU, etc.) is limited to sequential, that is to say, RNN-related algorithms can only be calculated from left to right or from right to left. The mechanism brings up two problems:</p>
+<ul>
+<li><p>The calculation at time t depends on the calculation result at time t-1, which limits the parallelism of the model;</p></li>
+<li><p>Information will be lost in the process of sequential calculation. Although LSTM and other structures alleviate the problem of long-term dependence to a certain extent, it is still powerless for particularly long-term dependence.</p></li>
+</ul>
+<p>The proposal of Transformer solves the above two problems. First, it uses "Attention" to reduce the distance between any two positions in the sequence to a constant; second, it is not a sequential structure similar to RNN, so it has better Parallelism, in line with existing GPU frameworks.</p>
+<p>Said in the paper:</p>
+<blockquote>
+<p>Transformer is the first transduction model relying entirely on self-attention to compute representations of its input and output without using sequence aligned RNNs or convolution。</p>
+</blockquote>
+<h2 id="principle">Principle</h2>
+<h3 id="structure-of-the-transformer">Structure of the Transformer</h3>
+<p>Here take the machine translation as example, if we want to translate a sentence as below: <img src="/images/327.png" /></p>
+<p>Expand the transformer module, we can see: <img src="/images/328.png" /></p>
+<p>The Encoder-Decoder are what we mention above. Further expand the module, we can get that: <img src="/images/329.png" /></p>
+<p>And the Encoder-Decoder looks like: <img src="/images/330.png" /></p>
+<h3 id="how-it-works">How it works</h3>
+<p>First of all, we need to do word-embedding as the input of the first Encoder, all the encoder receive a list of vectors each of the size 512, it means that, both word-embedding and the output of a Encoder should be in the same size, that is, list of vectors each of the size 512. This size(512) is depended on the longest word of our training data, it should be a hyperparameter.</p>
+<p>We could see this figure, the FC layer is also named feed forward layer. <img src="/images/331.png" /></p>
+<p>It shows that, after self-attention, there are dependencies between these paths, but no dependencies in feed forward layer, thus the various paths can be executed in parallel while flowing through the feed-forward layer.</p>
+<h3 id="detail-of-the-self-attention">Detail of the "Self-Attention"</h3>
+<p><strong>Step 1: create 3 vectors</strong></p>
+<p>After Embedding of one word, we get an embedding vector, with 512 size. Next, we need to create 3 new vector, named: Queries Vector, Keys Vector and Values Vector. The size of these 3 vectors should be smaller than Embedding Vector, usually, they could be 64.</p>
+<p>But how can we obtain these 3 vectors?</p>
+<p>Here we need 3 matrix, that is <span class="math inline">\(W^q\)</span>, <span class="math inline">\(W^k\)</span> and <span class="math inline">\(W^v\)</span>. We multiply embedding vector by the <span class="math inline">\(W^q\)</span> to obtain vector q, that is, Queries Vector, and the same to get other two vectors.</p>
+<p><strong>Step 2: compute scores</strong> These scores are used to measure how much focus to place on other parts of the input sentence as we encode a word at a certain position. For example, we have the following sentence:</p>
+<blockquote>
+<p>The animal didn't cross the street because it was too tired</p>
+</blockquote>
+<p>What does <code>it</code> mean here? Fur us, it is a quite easy question, but computer does not think so. So it is necessary to compute this score. Just like the figure below: <img src="/images/332.png" /></p>
+<p>To calculate these scores, there are 2 common methods: <img src="/images/333.png" /></p>
+<p>Here we only consider the left one. It means that, we use dot product of the query vector with the key vector of the respective word we’re scoring.</p>
+<p><strong>Step 3, 4</strong> Divide the score by 8 (the square root of the dimension of the key vectors used in the paper), and then use SOftmax to normalizes the score. Such as the figure below: <img src="/images/334.png" /></p>
+<blockquote>
+<p><strong>Note</strong>: the score of itself is also required and the score above should first divide by 8, and then softmax. The activate function could also be replaced by other function likes ReLU.</p>
+</blockquote>
+<p><strong>Step 5, 6</strong> Multiply each value vector by the softmax score, this step can be used to ignore the unrelated word.</p>
+<p>And then sum up the weighted value vectors, to produces the output of the self-attention layer at this position.</p>
+<p>Such as the figure below: <img src="/images/335.png" /></p>
+<h4 id="in-matrix-form">In Matrix Form</h4>
+<p>This part shows how to compute with matrix, several picture are enough: <img src="/images/336.png" /> <img src="/images/337.png" /> <img src="/images/338.png" /></p>
+<blockquote>
+<p><strong>Note</strong>: Only <span class="math inline">\(W^q\)</span>, <span class="math inline">\(W^k\)</span> and <span class="math inline">\(W^v\)</span> should be learned.</p>
+</blockquote>
+<h3 id="multi-head-self-attention">Multi-head-Self-attention</h3>
+<p>Use multi-head can improve the ability of the model to focus on different positions. Take 2 heads as example: <img src="/images/339.png" /> There are 2 sets of Query/Key/Value weight matrices, that means that, we will get 2 <span class="math inline">\(b\)</span> by using one embedding vector, but we only need one vector as input for next layer.</p>
+<p>So here we introduce a new weight matrix <span class="math inline">\(W^0\)</span>: <img src="/images/340.png" /> It means that, We concat the matrices then multiply them by an additional weights matrix <span class="math inline">\(W^0\)</span> <img src="/images/341.png" /> (<strong>this image takes 8 heads as example</strong>)</p>
+<h3 id="position-encoding">Position Encoding</h3>
+<p>The last problem is, although we consider the whole sentence, we do not consider the relative position of the individual words.</p>
+<p>To solve this problem, we need to use an additional vector, which can tell the model the exactly position of each word, or the distance between different word. And this vector could be considered in embedding vector.</p>
+<p>For example, if the dimension of the embedding vector is 4, it could be: <img src="/images/342.png" /></p>
+<p>This position vector in paper looks like this: <img src="/images/343.png" /> Each column represents a position vector. The first column will be the vector we want to add to the first word embedding in the input sequence. Each column contains 512 values, each with a value between 1 and -1</p>
+<h3 id="a-small-detail">A small detail</h3>
+<p>One detail in the encoder architecture is that each sub-layer (self-attention, ffnn) in each encoder has a residual connection around it, followed by a layer normalization step. Such like this: <img src="/images/344.png" /> More specifically: <img src="/images/345.png" /></p>
+<h2 id="decoder">Decoder</h2>
+<p>After learning the principle of the Transformer as well as the Encoder, now we could start our Decoder.</p>
+<p>After processing the input sequence by encoder, the output of the top encoder is then transformed into a set of attention vectors K and V. These are to be used by each decoder in its “encoder-decoder attention” layer which helps the decoder focus on appropriate places in the input sequence: <img src="/images/346.png" /></p>
+<p>Repeat this process, until a special signal is outputted, to tell the decoder that the process should be finished.</p>
+<p>What's more, the self-attention in decoder is a bit different from the self-attention in encoder. In the decoder, the self-attention layer is only allowed to attend to earlier positions in the output sequence.</p>
+<p>This process can be showed as below: <img src="/images/347.png" /> <img src="/images/348.png" /> we could see that, the self-attention of decoder only care about the earlier positions in the output sequence, for example, we use "I", "am", "a" that we obtained before to get the new word "student".</p>
+<p>It should be noted that, the K and V vectors from encoder should be used in every decoder part.</p>
+<p>Finally, we get a float vector, we should turn it into a word, this is what the last layer, softmax layer, do. It is a simple full connected layer, that projects the vector produced by the stack of decoders, into a much, much larger vector called a logits vector.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] Paper: Attention is all you need</p>
+<p>[2] http://jalammar.github.io/illustrated-transformer/</p>
+<p>[3] https://zhuanlan.zhihu.com/p/48508221</p>
+
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+      
+    </div>
+
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/33.html" rel="prev" title="一次项目的反思和总结">
+      <i class="fa fa-chevron-left"></i> 一次项目的反思和总结
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#attention-is-all-you-need"><span class="nav-number">2.</span> <span class="nav-text">Attention is all you need</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#what-and-why"><span class="nav-number">2.1.</span> <span class="nav-text">WHAT? and WHY?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#what-is-it"><span class="nav-number">2.1.1.</span> <span class="nav-text">What is it?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#why-use-it"><span class="nav-number">2.1.2.</span> <span class="nav-text">Why use it?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#principle"><span class="nav-number">2.2.</span> <span class="nav-text">Principle</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#structure-of-the-transformer"><span class="nav-number">2.2.1.</span> <span class="nav-text">Structure of the Transformer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#how-it-works"><span class="nav-number">2.2.2.</span> <span class="nav-text">How it works</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#detail-of-the-self-attention"><span class="nav-number">2.2.3.</span> <span class="nav-text">Detail of the &quot;Self-Attention&quot;</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#in-matrix-form"><span class="nav-number">2.2.3.1.</span> <span class="nav-text">In Matrix Form</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#multi-head-self-attention"><span class="nav-number">2.2.4.</span> <span class="nav-text">Multi-head-Self-attention</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#position-encoding"><span class="nav-number">2.2.5.</span> <span class="nav-text">Position Encoding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#a-small-detail"><span class="nav-number">2.2.6.</span> <span class="nav-text">A small detail</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#decoder"><span class="nav-number">2.3.</span> <span class="nav-text">Decoder</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">3.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="super_wzl"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">super_wzl</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">super_wzl</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-611ffbcfffca5ad1" async="async"></script>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'JbTCzSGo7EeV9tTlVHeWHuWx-MdYXbMMI',
+      appKey     : '3yO7D6U6pVQy4RVNcsKIxy4m',
+      placeholder: "来唠两句吗？",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
