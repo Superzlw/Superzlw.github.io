@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Introduction The swin transformer is proposed because the previous transformer has the following two shortcomings in the field of visual processing:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Summary of some papers 3 —— “Swin Transformer”">
+<meta property="og:url" content="https://superzlw.github.io/posts/36.html">
+<meta property="og:site_name" content="SuperZLW&#39;s Blog">
+<meta property="og:description" content="Introduction The swin transformer is proposed because the previous transformer has the following two shortcomings in the field of visual processing:">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://superzlw.github.io/images/349.png">
+<meta property="og:image" content="https://superzlw.github.io/images/351.png">
+<meta property="og:image" content="https://superzlw.github.io/images/352.png">
+<meta property="og:image" content="https://superzlw.github.io/images/353.png">
+<meta property="og:image" content="https://superzlw.github.io/images/350.png">
+<meta property="og:image" content="https://superzlw.github.io/images/354.png">
+<meta property="og:image" content="https://superzlw.github.io/images/355.png">
+<meta property="og:image" content="https://superzlw.github.io/images/350.png">
+<meta property="og:image" content="https://superzlw.github.io/images/356.png">
+<meta property="og:image" content="https://superzlw.github.io/images/357.png">
+<meta property="og:image" content="https://superzlw.github.io/images/358.png">
+<meta property="og:image" content="https://superzlw.github.io/images/359.png">
+<meta property="og:image" content="https://superzlw.github.io/images/360.png">
+<meta property="og:image" content="https://superzlw.github.io/images/361.png">
+<meta property="og:image" content="https://superzlw.github.io/images/362.png">
+<meta property="og:image" content="https://superzlw.github.io/images/363.png">
+<meta property="article:published_time" content="2022-06-19T12:20:40.108Z">
+<meta property="article:modified_time" content="2022-06-20T13:05:55.780Z">
+<meta property="article:author" content="super_wzl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://superzlw.github.io/images/349.png">
+
+<link rel="canonical" href="https://superzlw.github.io/posts/36.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Summary of some papers 3 —— “Swin Transformer” | SuperZLW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SuperZLW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">贩卖咸鱼の海边小店</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/posts/36.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="super_wzl">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuperZLW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Summary of some papers 3 —— “Swin Transformer”
+        </h1>
+
+        <div class="post-meta">
+          <span class="post-time">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-19 14:20:40" itemprop="dateCreated datePublished" datetime="2022-06-19T14:20:40+02:00">2022-06-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-20 15:05:55" itemprop="dateModified" datetime="2022-06-20T15:05:55+02:00">2022-06-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">学习总结</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/posts/36.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/posts/36.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="introduction">Introduction</h1>
+<p>The swin transformer is proposed because the previous transformer has the following two shortcomings in the field of visual processing: <span id="more"></span> * Unlike NLP, the pixel resolution of an image is much larger than that of text information. If pixels are used as tokens, the computational complexity is unacceptable. * The objects in the image often have different scales, which is also not effectively handled by the previous viT, such as: instance segmentation in densely predicted scenes.</p>
+<p>In order to solve these problems, swin transformer has proposed some new solutions. This blog mainly focuses on the following aspects:</p>
+<ul>
+<li>Patch Merging</li>
+<li>Window Self-Attention</li>
+<li>Shift Window Self-Attention</li>
+<li>Relative Position Index</li>
+</ul>
+<p>And as repeatedly emphasized in the paper, the swin transformer not only solves the above two problems, but more importantly, the author proposes a general-purpose backbone network, although the performance of the unified model in the NLP and CV fields is not as good as viT, but Its future development is worth looking forward to.</p>
+<p><strong>NOTICE: Reading this blog requires a basic understanding of viT.</strong></p>
+<h1 id="patch-merging">Patch Merging</h1>
+<p>As mentioned above, viT does not handle the problem of image multi-scale very well. Looking back at CNN, when dealing with multi-scale problems, we have a good method: FPN. So how do we apply this idea to transformers? The author proposes Patch Merging. Simply explained, this is to achieve the CNN effect with a non-CNN method.Continuing to read the paper, we will find that the author built the network with the effect achieved by CNN as a template.</p>
+<p>First, in terms of scale, the comparison between swin transformer and viT can be seen in the following figure: <img src="/images/349.png" /></p>
+<p>From the above figure we can see that the scale of the swin transformer increases step by step compared to the single scale of viT ($ 16  $). With each increment, the feature map size is halved and the number of channels is doubled, which is very similar to CNN.</p>
+<p>That is to say, the patch size at the beginning is <span class="math inline">\(4\times 4\)</span>, followed by <span class="math inline">\(8 \times 8\)</span>, <span class="math inline">\(16 \times 16\)</span>, and the receptive field is getting bigger and bigger, forming multiple scale.</p>
+<p>Then we look at the structure of the entire network: <img src="/images/351.png" /></p>
+<p>If the input image is a 3-channel image, the size is <span class="math inline">\(H \times W\)</span>, after the first layer, the scale is reduced to 1/4, and the number of channels becomes <span class="math inline">\(4\times 4 \times 3 = 96\)</span>, after the first layer stage, the scale remains unchanged, and the number of channels becomes C, where C depends on the size of the model, as shown in the following figure. After each stage, the scale is reduced by half and the number of channels is doubled. <img src="/images/352.png" /></p>
+<blockquote>
+<p>Notice: Patch Partition + Linear Embedding in the figure has a similar effect as Patch Merging.</p>
+</blockquote>
+<h2 id="detail-of-patch-merging">Detail of Patch Merging</h2>
+<p>Now we know what Patch Merging does, but how does it work? Next I will use a simple example to illustrate. <img src="/images/353.png" /> Here we have a feature map of <span class="math inline">\(4 \times 4\)</span>, take a single channel as an example, divide it into 4 windows, take the patches at the same position in each window (marked with the same color here), and merge them to increase the number of channels, Then LayerNorm is performed, and finally a linear operation is performed to halve the number of channels. This is the whole process of patch-merging, which realizes the operation of halving the scale and doubling the number of channels.</p>
+<h1 id="window-self-attention-and-shift-window-self-attention">Window Self-Attention and Shift Window Self-Attention</h1>
+<p>For the computational complexity mentioned above, the paper uses a window self-attention model. In order to connect different windows and achieve a global approach, a shift window self-attention model is proposed.</p>
+<p>Take this picture in the paper as an example: <img src="/images/350.png" /></p>
+<h2 id="window-self-attentionw-msa">Window Self-Attention(W-MSA)</h2>
+<p>First look at the following figures. The entire image has <span class="math inline">\(8\times 8\)</span> patches, divided into 4 windows, each window has <span class="math inline">\(4\times 4\)</span> patches. <img src="/images/354.png" /> If we use MSA, such as the left picture, we have to calculate the self-attention of one patch with all other patch, and if we use W-MSA, we only need to calculate the self-attention of each window. As the scale of the feature map increases, MSA is a squared increase, while W-MSA increases linearly.</p>
+<p>The paper gave the calculation-functions for these two methods: <img src="/images/355.png" /> Parameter Description:</p>
+<ul>
+<li>h: height of feature map</li>
+<li>w: the width of the feature map</li>
+<li>C: the number of channels of the feature map</li>
+<li>M: size of a single window</li>
+</ul>
+<h3 id="additional-partcomputational-complexity">Additional Part(Computational complexity)</h3>
+<p>This part is an additional part to explain how the above complexity calculation formula comes from.</p>
+<p>Here we use <code>FOLPs</code> as the metric, and first we need to know the FOLPs of the matrix calculation. Such as <span class="math inline">\(A^{m \times n}\times B^{n \times v}\)</span>, the FOLPs is: <span class="math inline">\(m \times n \times v\)</span>.</p>
+<p>Review the calculation of <code>Attention</code>: <span class="math display">\[
+Attention(Q,K,V) = SoftMax(\frac{QK^T}{\sqrt{d}})V
+\]</span> For each patch in the feature map, the corresponding q, k, v are generated through <span class="math inline">\(W_q, W_k, W_v\)</span>, It is assumed here that the vector lengths of q, k, v are consistent with the depth C of the feature map. Then the process of generating Q for all patches is as follows: <span class="math display">\[
+A^{hw\times C}\cdot W_q^{C\times C} = Q^{hw\times C}
+\]</span> The FOLPs is: <span class="math inline">\(hw \times C \times C\)</span>, the same as K and V, with total of <span class="math inline">\(3hwC^2\)</span>.</p>
+<p>And the is <span class="math inline">\(Q K^T\)</span>, the FOLPs is <span class="math inline">\((hw)^2C\)</span>, then ignore division by <span class="math inline">\(sqrt{d}\)</span> and <span class="math inline">\(softmax\)</span>, and finally, multiply by V, so we can obtain the following FOLPs: <span class="math display">\[
+3hwC^2+(hw)^2C+(hw)^2C = 3hwC^2+2(hw)^2C
+\]</span> Finally is the matrix about mutil-head <span class="math inline">\(W_o\)</span>, the FOLPs is <span class="math inline">\(hwC^2\)</span>.</p>
+<p>So we get: <span class="math inline">\(4hwC^2+2(hw)^2C\)</span></p>
+<p>For W-MSA, we can also get the function with a similar calculation process.</p>
+<h2 id="shift-window-self-attention">Shift Window Self-Attention</h2>
+<p>Now comes the part that I think is the most interesting.</p>
+<p>Although we significantly reduce the computational complexity through windowed self-attention, it also creates a problem: global information is lost. We only focus on attention within a window, and there is no connection between windows.</p>
+<p>To solve this problem, the author proposes a new method: <strong>Shift Window Self-Attention</strong>. As shown below: <img src="/images/350.png" /></p>
+<p>After finishing the W-MSA on the left, we shift the image a few patches to the right and down, this amount of "Shift" depends on <span class="math inline">\(\frac{|M|}{2}\)</span>, and then divide the image again.</p>
+<p>In this way we can connect patches that were not in the same window before. But this creates a new problem: as shown on the right, the new feature map has 9 windows. If they are calculated separately, their sizes are different and cannot be calculated uniformly. If padding is used here to expand it to the same size, the self-attention of 9 windows needs to be calculated, which increases the computational complexity.</p>
+<p>In order to unify the self-attention of the calculation window without increasing the computational complexity, the author proposes an interesting method: cyclically shift the window to achieve unified calculation and reduce the computational complexity.</p>
+<p>As shown below: <img src="/images/356.png" /> We spliced parts A, B, and C separately, taking the middle window as an example, after shifting, it can contact the original 4 windows.</p>
+<p>But now a new problem has arisen. Although this method can keep the computational complexity from increasing, the window formed by shifting and splicing will cause errors if we directly calculate self-attention. Since they have moved from far away, the connection between the two should be minimal.</p>
+<p>For example, if "C" stands for "sky", we concatenate it with "ground" below, and the calculated self-attention is obviously inappropriate.</p>
+<p>To avoid this error, the authors propose a new masking method.</p>
+<p>Regarding this method, the author gave a detailed explanation in <code>issues #38</code> in his GitHub, as shown below: <img src="/images/357.png" /> That is to say, in the required position, the mask value is 0, and in the unwanted position, the value is -100. Since the value after self-attention calculation is very small, after subtracting 100, through softmax, in the unwanted position, the value will approach 0 indefinitely.</p>
+<p>Finally, after the calculation, it is necessary to restore the shifted part back to its original position.</p>
+<h1 id="relative-position-index">Relative Position Index</h1>
+<p>This part belongs to the optimization part of the project and is not required, but it can improve the performance of the model(as shown below). <img src="/images/358.png" /></p>
+<p>The process of building a relative position index is as follows:</p>
+<p><strong>Step 1:</strong> Build a relative position matrix based on each patch, flatten, merge. <img src="/images/359.png" /></p>
+<p><strong>Step 2:</strong> The simple relative position index has actually been completed, but in the source code, in order to express more concisely, each index is represented by one-dimensional rather than two-dimensional coordinates. But how? If we directly add the two-dimension coordination together, then (0, -1) and (-1, 0) will have the same value. In order to avoid this problem, author use the following method:</p>
+<p>Add M-1 to the original relative position index (M is the size of the window, in this example M=2), after adding, there will be no negative numbers in the index. <img src="/images/360.png" /></p>
+<p><strong>Step 3:</strong> Then multiply all row values by 2M-1: <img src="/images/361.png" /></p>
+<p><strong>Step 4:</strong> Add row and column values: <img src="/images/362.png" /></p>
+<p><strong>Step 5:</strong> Finally get the value according to the index: <img src="/images/363.png" /></p>
+<p>Now the process of relative position index and value is completed.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2103.14030">Paper: Swin Transformer</a></p>
+<p>[2] <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV13L4y1475U?spm_id_from=333.999.header_right.history_list.click&amp;vd_source=60a30fcab490c05a3a49048140bf284a">Video-1: From Bilibili</a></p>
+<p>[3] <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1pL4y1v7jC?spm_id_from=333.999.0.0&amp;vd_source=60a30fcab490c05a3a49048140bf284a">Video-2: From Bilibili</a></p>
+<p>[4] <a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37541097/article/details/121119988?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165568155116782395358199%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&amp;request_id=165568155116782395358199&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-121119988-null-null.nonecase&amp;utm_term=swin&amp;spm=1018.2226.3001.4450">Blog-1: From CSDN</a></p>
+
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+      
+    </div>
+
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/34.html" rel="prev" title="Summary of some papers —— “Attention is all you need”">
+      <i class="fa fa-chevron-left"></i> Summary of some papers —— “Attention is all you need”
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#patch-merging"><span class="nav-number">2.</span> <span class="nav-text">Patch Merging</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#detail-of-patch-merging"><span class="nav-number">2.1.</span> <span class="nav-text">Detail of Patch Merging</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#window-self-attention-and-shift-window-self-attention"><span class="nav-number">3.</span> <span class="nav-text">Window Self-Attention and Shift Window Self-Attention</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#window-self-attentionw-msa"><span class="nav-number">3.1.</span> <span class="nav-text">Window Self-Attention(W-MSA)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#additional-partcomputational-complexity"><span class="nav-number">3.1.1.</span> <span class="nav-text">Additional Part(Computational complexity)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shift-window-self-attention"><span class="nav-number">3.2.</span> <span class="nav-text">Shift Window Self-Attention</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#relative-position-index"><span class="nav-number">4.</span> <span class="nav-text">Relative Position Index</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="super_wzl"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">super_wzl</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">super_wzl</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-611ffbcfffca5ad1" async="async"></script>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'JbTCzSGo7EeV9tTlVHeWHuWx-MdYXbMMI',
+      appKey     : '3yO7D6U6pVQy4RVNcsKIxy4m',
+      placeholder: "来唠两句吗？",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
