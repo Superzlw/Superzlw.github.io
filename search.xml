@@ -4,7 +4,11 @@
     <title>Summary of some papers 3 —— “Swin Transformer”</title>
     <url>/posts/36.html</url>
     <content><![CDATA[<h1 id="introduction">Introduction</h1>
-<p>The swin transformer is proposed because the previous transformer has the following two shortcomings in the field of visual processing: <span id="more"></span> * Unlike NLP, the pixel resolution of an image is much larger than that of text information. If pixels are used as tokens, the computational complexity is unacceptable. * The objects in the image often have different scales, which is also not effectively handled by the previous viT, such as: instance segmentation in densely predicted scenes.</p>
+<p>The swin transformer is proposed because the previous transformer has the following two shortcomings in the field of visual processing: <span id="more"></span></p>
+<ul>
+<li>Unlike NLP, the pixel resolution of an image is much larger than that of text information. If pixels are used as tokens, the computational complexity is unacceptable.</li>
+<li>The objects in the image often have different scales, which is also not effectively handled by the previous viT, such as: instance segmentation in densely predicted scenes.</li>
+</ul>
 <p>In order to solve these problems, swin transformer has proposed some new solutions. This blog mainly focuses on the following aspects:</p>
 <ul>
 <li>Patch Merging</li>
