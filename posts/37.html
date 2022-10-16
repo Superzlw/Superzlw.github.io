@@ -22,24 +22,30 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="写在前面的说明 这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接\(\rightarrow\)这里。">
+  <meta name="description" content="Introduction This blog post is a summary of a dataset with information that may be useful in current projects. And the paper is: CaDIS: Cataract Dataset for Image Segmentation">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【ML-2020&#x2F;21】Generative Adversarial Network (GAN) --- Part-1 基本介绍">
-<meta property="og:url" content="https://superzlw.github.io/posts/18.html">
+<meta property="og:title" content="Summary — “CaDIS - Cataract Dataset for Image Segmentation”">
+<meta property="og:url" content="https://superzlw.github.io/posts/37.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="写在前面的说明 这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接\(\rightarrow\)这里。">
+<meta property="og:description" content="Introduction This blog post is a summary of a dataset with information that may be useful in current projects. And the paper is: CaDIS: Cataract Dataset for Image Segmentation">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/d57961ffdf8e42ea8734ca364681a041.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/1680feeda4444fc1b29eb7b98e4c9e1f.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/238b184dc150483fbd987a3a3d4dad15.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/0ac5f9c70c8142c092fa644d0526eb5b.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="article:published_time" content="2021-08-03T21:59:32.055Z">
-<meta property="article:modified_time" content="2021-08-18T11:36:07.896Z">
+<meta property="og:image" content="https://superzlw.github.io/images/365.png">
+<meta property="og:image" content="https://superzlw.github.io/images/366.png">
+<meta property="og:image" content="https://superzlw.github.io/images/367.png">
+<meta property="og:image" content="https://superzlw.github.io/images/368.png">
+<meta property="og:image" content="https://superzlw.github.io/images/369.png">
+<meta property="og:image" content="https://superzlw.github.io/images/372.png">
+<meta property="og:image" content="https://superzlw.github.io/images/370.png">
+<meta property="og:image" content="https://superzlw.github.io/images/371.png">
+<meta property="og:image" content="https://superzlw.github.io/images/373.png">
+<meta property="og:image" content="https://superzlw.github.io/images/374.png">
+<meta property="article:published_time" content="2022-10-15T19:21:24.172Z">
+<meta property="article:modified_time" content="2022-10-16T19:59:35.322Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/d57961ffdf8e42ea8734ca364681a041.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
+<meta name="twitter:image" content="https://superzlw.github.io/images/365.png">
 
-<link rel="canonical" href="https://superzlw.github.io/posts/18.html">
+<link rel="canonical" href="https://superzlw.github.io/posts/37.html">
 
 
 <script id="page-configurations">
@@ -52,7 +58,7 @@
   };
 </script>
 
-  <title>【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍 | SuperZLW's Blog</title>
+  <title>Summary — “CaDIS - Cataract Dataset for Image Segmentation” | SuperZLW's Blog</title>
   
 
 
@@ -195,7 +201,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/posts/18.html">
+    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/posts/37.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -208,7 +214,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍
+          Summary — “CaDIS - Cataract Dataset for Image Segmentation”
         </h1>
 
         <div class="post-meta">
@@ -221,14 +227,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-08-03 23:59:32" itemprop="dateCreated datePublished" datetime="2021-08-03T23:59:32+02:00">2021-08-03</time>
+              <time title="创建时间：2022-10-15 21:21:24" itemprop="dateCreated datePublished" datetime="2022-10-15T21:21:24+02:00">2022-10-15</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-18 13:36:07" itemprop="dateModified" datetime="2021-08-18T13:36:07+02:00">2021-08-18</time>
+                <time title="修改时间：2022-10-16 21:59:35" itemprop="dateModified" datetime="2022-10-16T21:59:35+02:00">2022-10-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -236,7 +242,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ML-2020-21/" itemprop="url" rel="index"><span itemprop="name">ML-2020/21</span></a>
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">学习总结</span></a>
                 </span>
             </span>
 
@@ -256,8 +262,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/posts/18.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/posts/18.html" itemprop="commentCount"></span>
+    <a title="valine" href="/posts/37.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/posts/37.html" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -272,86 +278,162 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="写在前面的说明">写在前面的说明</h1>
-<p>这个系列【ML-2020/21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接<span class="math inline">\(\rightarrow\)</span><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OP5HcXJg2Aw">这里</a>。 <span id="more"></span> # 基本概念 Generative Adversarial Network (GAN) 中文名是【生成式对抗网络】，用这个网络的目的是为了让机器生成东西（比如图片，文章等），其基本网络结构包括两大部分：</p>
+        <h1 id="introduction">Introduction</h1>
+<p>This blog post is a summary of a dataset with information that may be useful in current projects. And the paper is:</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1906.11586.pdf">CaDIS: Cataract Dataset for Image Segmentation</a></p>
+<span id="more"></span>
+<p>This blog contains the following contents:</p>
+<ul>
+<li><p>Dataset</p></li>
+<li><p>Experiments</p></li>
+</ul>
+<p><strong>Note: This blog represents only the <code>Information extraction</code>.</strong></p>
+<h1 id="dataset">Dataset</h1>
+<h2 id="annotation-process">Annotation process</h2>
+<p>Some points to note in the annotation:</p>
+<ul>
+<li><p>The number of pixels for each class is greater than 50;</p></li>
+<li><p>Annotation errors may originate from: blurred boundaries caused by motion. In addition, specular reflections may also lead to inaccurate boundary delineation, especially for the instrument tips when they are inside the anatomy.</p></li>
+</ul>
+<h2 id="dataset-statistics">Dataset statistics</h2>
+<p>The dataset includes 36 classes: 29 surgical instrument classes, 4 anatomy classes and 3 miscellaneous classes, namely: <img src="/images/365.png" /></p>
+<p>Classes are imbalanced:</p>
 <blockquote>
-<ol type="1">
-<li>Generation：生成器<br />
-</li>
-<li>Discriminator：鉴别器</li>
-</ol>
-</blockquote>
-<h2 id="generation">Generation</h2>
-<p>在generation过程中我们需要做的就是训练一个生成器，比如在影像生成中，我们希望得到一个生成器，随便输入一个向量，通过这个生成器能得到一张对应图片，不同的向量对应不同的图片；在文字生成中也是一样，输入一个向量能得到对应的语句。 基本形式就像下图一样： <img src="https://img-blog.csdnimg.cn/d57961ffdf8e42ea8734ca364681a041.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 一个Generation就是一个神经网络，更简单来说，就是一个方程，输入一个向量，就能得到一个更高维度的向量，将其进行通道，图片尺寸进行重组后就是一张新的图片。 以图像生成为例，通常输入向量的每一个dimension会对应到图像的某一个特征，比如头发长度，眼镜大小，颜色等。</p>
-<h2 id="discriminator">Discriminator</h2>
-<p>Discriminator也是一个神经网络，或者说方程，输入一张图片（或者一个句子），输出一个数值，这个数值越大，则说明这个输入的真实性越高。比如说下面这张图片所示： <img src="https://img-blog.csdnimg.cn/1680feeda4444fc1b29eb7b98e4c9e1f.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
-<h2 id="generation-vs.-discriminator">Generation vs. Discriminator</h2>
-<p>在GAN中这两个神经网络可以看作是一种对抗的关系，比如说在第一个Generation中生成了一组图像，然后Discriminator根据某一个判断标准比如说图像是不是彩色的来判断这组图像是否足够真实；然后第二个Generation根据第一个Discriminator的结果产生了一组新的彩色图片，然而第二个Discriminator又根据另一个判断标准比如是否有眼睛来判断这组图片是否足够真实；再接着第三个Generation又根据第二个Discriminator的结果……这样一直“对抗”下去，直到生成的图片可以骗过Discriminator的时候，就完成了。</p>
-<h2 id="algorithm">Algorithm</h2>
-<p>根据上面它们两者的关系就可以大致写出这个算法的流程了：</p>
-<blockquote>
-<ol type="1">
-<li>初始化generator和discriminator</li>
-<li>进入循环，每个循环进行如下步骤：   <strong>step-1</strong>：固定住generator G，更新discriminator D（再说具体一点的话就是，用当前的G产生一组图片，在D中与真实的图片（已有的database）作对比，训练D，使真实图片高分，生成图低分。）   <strong>step-2</strong>：固定住D，更新G（具体就是，把一个向量输入进G，产生一张图片，根据当前的D进行评分，训练G，使得到比较高评分） （一般来说是把G和D一起当作是一个巨大的神经网络，即输入向量得到一个数值）</li>
-</ol>
-</blockquote>
-<p>说得再具体一点就是：</p>
-<blockquote>
-<ol type="1">
-<li><p>初始化<span class="math inline">\(D\)</span>和<span class="math inline">\(G\)</span>的参数分别为<span class="math inline">\(\theta_d\)</span>和<span class="math inline">\(\theta_g\)</span>；<br />
-</p></li>
-<li><p><span class="math inline">\(D\)</span>的学习过程：<br />
- ( a ). 从数据集database中选取<span class="math inline">\(m\)</span>个样本 {<span class="math inline">\(x^1,x^2,...,x^m\)</span>}；<br />
- ( b ). 从一个分布（高斯或均匀或其它）中采取<span class="math inline">\(m\)</span>个噪音样本 {<span class="math inline">\(z^1,z^2,...,z^m\)</span>}，其中噪音样本维度自己定，属于超参数；<br />
- ( c ). 利用<span class="math inline">\(G\)</span>获取生成数据 {<span class="math inline">\(\widetilde{x}^1,\widetilde{x}^2,...,\widetilde{x}^m\)</span>}，<span class="math inline">\(\widetilde{x}^i = G(z^i)\)</span>；<br />
- ( d ). 更新<span class="math inline">\(D\)</span>的参数<span class="math inline">\(\theta_d\)</span>，以便最大化<span class="math inline">\(\widetilde{V}\)</span>，其中：<span class="math display">\[\widetilde{V}=\frac{1}{m}\sum_{i=1}^m\log D(x^i)+\frac{1}{m}\sum_{i=1}^m\log(1-D(\widetilde{x}^i))\]</span> (简单说一下这个<span class="math inline">\(\widetilde{V}\)</span>，第一项就是让真实图片的得分越大越好，第二项就是让生成的图片得分越小越好，其中<span class="math inline">\(D(.)\)</span>一般是经过sigmoid的介于0~1的数)<span class="math display">\[\theta_d \leftarrow \theta_d + \eta \nabla \widetilde{V}(\theta_d)\]</span>(这里在说一句，一般这里更新不会是只update一次的，至于更新几次也属于超参数，要自己调的)<br />
-</p></li>
-<li><p><span class="math inline">\(G\)</span>的学习过程：<br />
- ( a ). 另外从一个分布（高斯或均匀或其它）中采取<span class="math inline">\(m\)</span>个噪音样本 {<span class="math inline">\(z^1,z^2,...,z^m\)</span>}；<br />
- ( b ). 更新参数<span class="math inline">\(\theta_g\)</span>以最大化<span class="math inline">\(\widetilde{V}\)</span>，其中<span class="math display">\[\widetilde{V}=\frac{1}{m}\sum_{i=1}^m\log(D(G(z^i)))\]</span><span class="math display">\[\theta_g\leftarrow\theta_g+\eta\nabla\widetilde{V}(\theta_g)\]</span></p></li>
-<li><p>上面2，3步骤反复执行。</p></li>
-</ol>
-</blockquote>
-<h2 id="补充">补充</h2>
-<p>GAN可以看作是一个Structured Learning的方法，基本可以看作下面两个部分组成： <img src="https://img-blog.csdnimg.cn/238b184dc150483fbd987a3a3d4dad15.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> Bottom Up 是指一个一个部件生成的办法，这种方法会失去全局观，也就是说不知道各个部件之间的联系；下面的Top Down 是直接观察整体，然后进行判断，generator没法用这种方法。</p>
-<blockquote>
-<p>问题1：能不能不用Discriminator？</p>
-</blockquote>
-<p>严格说来是可以的，用Auto-encoder的技术，但由于同个layer神经元之间没有联系，为了让它们产生联系，就必须多加layer，这样会把神经网络弄得很复杂，所以在同种效果下，GAN的技术会更实用。</p>
-<blockquote>
-<p>问题2：能不能不用Generation, 就只用Discriminator来做生成？</p>
-</blockquote>
-<p>也是可以的。但也很麻烦，要穷举所有可能的<span class="math inline">\(x\)</span>，使<span class="math display">\[\widetilde{x}=arg\max D(x)\]</span>然后还要让Discriminator学会如何分别好的和坏的图片，但实际上我们的database里只有好的，不过这个问题有办法解决，如下：</p>
-<blockquote>
-<ol type="1">
-<li>随机产生一些坏的图片，比如随机噪音；<br />
-</li>
-<li>用好的图片和坏的图片去训练<span class="math inline">\(D\)</span>；<br />
-</li>
-<li>用当前<span class="math inline">\(D\)</span>产生一组新的图片，充当坏的图片继续与好的图片去训练<span class="math inline">\(D\)</span></li>
-</ol>
-</blockquote>
-<p>步骤2-3循环。 效果如下： <img src="https://img-blog.csdnimg.cn/0ac5f9c70c8142c092fa644d0526eb5b.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
-<p>所以实际可以这么理解，generator就是用来解<span class="math inline">\(arg\max\)</span>问题的，也就是用generator产生坏的图片。 <strong>两者比较</strong> Generator：</p>
-<blockquote>
-<p>优点：<br />
-  1. 容易生成东西。</p>
+<p>The anatomy classes appear more frequently than the surgical instruments. The anatomy also covers the largest part of the scene.</p>
 </blockquote>
 <blockquote>
-<p>缺点：<br />
-  1. 不容易考虑部件（component）之间的关系；<br />
-  2. 只是模仿表象。</p>
-</blockquote>
-<p>Discriminator</p>
-<blockquote>
-<p>优点：<br />
-  1. 考虑整张图片。</p>
+<p>The classes about "Instrument" in dataset is highly imbalanced, for example, there are 17 instrument classes appear in less than half of the videos. So, accurate instrument classification is more challenging.</p>
 </blockquote>
 <blockquote>
-<p>缺点：<br />
-  1. 不容易生成东西；<br />
-  2. 解那个<span class="math inline">\(arg\max\)</span>问题不容易。</p>
+<p>Some Instruments have high similarity but completely different functions, such as "cannulas", which is also a difficulty of this dataset.</p>
 </blockquote>
+<h1 id="experiments">Experiments</h1>
+<h2 id="three-different-tasks">Three different tasks</h2>
+<p>Three different tasks are proposed in this dataset, that is, classes are merged in three different ways.</p>
+<h3 id="task-1-8-classes">Task 1 (8 classes):</h3>
+<p>The first task is focused on differentiating between anatomy and instruments within every frame. That is, here we only have 8 classes: 4 anatomy classes, 3 miscellaneous classes and 1 classes with all Instruments: <img src="/images/366.png" /></p>
+<h3 id="task-2-17-classes">Task 2 (17 classes):</h3>
+<p>The second task is not only focuses on anatomy, but also classifies Instruments based on appearance similarity and instrument type. That is, this task is to identify anatomical structures and also the main types of instruments that appear in the scene.</p>
+<p>The classes are as follow: <img src="/images/367.png" /></p>
+<p>The specific merged classes are as follows:</p>
+<ul>
+<li>Cannula
+<ul>
+<li>Hydrosdissection Cannula; Viscoelastic Cannula; Rycroft Cannula; Rycroft Cannula Handle; Charleux Cannula; Hydrosdissection Cannula Handle</li>
+</ul></li>
+<li>Cap. Cystotome
+<ul>
+<li>Capsulorhexis Cystotome; Capsulorhexis Cystotome Handle</li>
+</ul></li>
+<li>Tissue Forceps
+<ul>
+<li>Bonn Forceps; Troutman Forceps</li>
+</ul></li>
+<li>Primary Knife
+<ul>
+<li>Primary Knife; Primary Knife Handle</li>
+</ul></li>
+<li>Ph. Handpiece
+<ul>
+<li>Phacoemulsifier Handpiece; Phacoemulsifier Handpiece Handle</li>
+</ul></li>
+<li>Lens Injector
+<ul>
+<li>Lens Injector; Lens Injector Handle</li>
+</ul></li>
+<li>I/A Handpiece
+<ul>
+<li>Irrigation/Aspiration (I/A) Handpiece; Irrigation/Aspiration Handpiece Handle</li>
+</ul></li>
+<li>Secondary Knife
+<ul>
+<li>Secondary Knife; Secondary Knife Handle</li>
+</ul></li>
+<li>Micromanipulator
+<ul>
+<li>Micromanipulator</li>
+</ul></li>
+<li>Cap. Forceps
+<ul>
+<li>Capsulorhexis Forceps</li>
+</ul></li>
+<li>Ignore
+<ul>
+<li>Suture Needle; Needle Holder; Vitrectomy Handpiece; Mendez Ring; Marker; Cotton; Iris Hooks</li>
+</ul></li>
+</ul>
+<p><strong>Note</strong>: the instruments that only appear in the training set, cover relatively few pixels in the frame and cannot be merged with another instrument class were ignored during training.</p>
+<h3 id="task-3-25-classes">Task 3 (25 classes)</h3>
+<p>This task builds on Task 2 for a finer classification. In task 2, we can find that each Instrument and its corresponding Handle are merged together, and this task is to separate them.</p>
+<p>The classes are as follow: <img src="/images/368.png" /></p>
+<ul>
+<li>Ignore
+<ul>
+<li>Suture Needle; Needle Holder; Charleux Cannula; Primary Knife Handle; Vitrectomy Handpiece; Mendez Ring; Marker; Hydrosdissection Cannula Handle; Troutman Forceps; Cotton; Iris Hooks</li>
+</ul></li>
+</ul>
+<p><strong>Note</strong>: The classes that do not appear in all splits and are present in less than 5 videos were ignored during training.</p>
+<h2 id="models">Models</h2>
+<p>Three models are used in the paper, namely, <code>UNet</code>, <code>DeepLabV3+</code>, <code>UPerNet</code> and <code>HRNetV2</code>. (all the models are open-source)</p>
+<h3 id="for-training">For training</h3>
+<h4 id="training-dataset">Training dataset</h4>
+<p>The same data augmentation was applied for all model before training, they used: Each training image was <code>normalized</code>, <code>flipped</code>, <code>randomly rotated</code> and <code>hue</code> and <code>saturation</code> was also adjusted. The input images were <code>downsized</code> to 270 x 480.</p>
+<p>No post-processing was performed.</p>
+<h4 id="training-configuration">Training configuration</h4>
+<ul>
+<li>pre-trainged weight
+<ul>
+<li>the weights for <code>UPerNet</code> and <code>HRNetV2</code> were initialized using pre-trained weights on ImageNet;</li>
+<li>the weights for <code>DeepLabV3+</code> was based on Pascal VOC;</li>
+</ul></li>
+<li>epochs, GPU
+<ul>
+<li>100 epochs</li>
+<li>two NVIDIA GTX 1080 Ti GPUs</li>
+</ul></li>
+<li>learning rate, optimizer
+<ul>
+<li>the Cross Entropy loss function was used with learning rate equal to <span class="math inline">\(10^{-4}\)</span> using the Adam Optimizer.</li>
+<li>The <span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span> and <span class="math inline">\(\epsilon\)</span> values for the Adam Optimizer were set to 0.9, 0.999 and <span class="math inline">\(10^{-8}\)</span>, which are proposed as good</li>
+</ul></li>
+</ul>
+<h4 id="metrics">Metrics</h4>
+<p>The paper used 3 metrics to evaluate the models, namely, <code>PA</code>, <code>PAC</code>, <code>mIOU</code>, but because of the imbalanced of the dataset and classes (that is, some classes only appear in some videos' frame, and the number of pixel of some classes are larger than others). So, we mainly focus on <code>mIOU</code>.</p>
+<h3 id="results">Results</h3>
+<h4 id="for-task-1">For task 1</h4>
+<p>By using different models, the results based on task 1 are as follow: <img src="/images/369.png" /></p>
+<p>and <code>mIOU</code> per class is: <img src="/images/372.png" /></p>
+<p>From this chart we could find that:</p>
+<ul>
+<li><code>HRNetV2</code> presenting the highest <code>mIOU</code>;</li>
+<li><code>DeepLabV3+</code> presenting the lowest for both validation and test sets;</li>
+<li>There is small differences in the mIOU between the models because the imbalance among the classes is reduced by representing all instruments with one class.</li>
+</ul>
+<h4 id="for-task-2">For task 2</h4>
+<p>By using different models, the results based on task 2 are as follow: <img src="/images/370.png" /></p>
+<p>and <code>mIOU</code> per class is: <img src="/images/371.png" /></p>
+<p>From this chart we could find that:</p>
+<ul>
+<li>The mIOU between the different models starts to differ significantly as the class Instruments starts to get imbalanced;</li>
+<li>For large classes, such as the anatomical classes and instrument classes that are represented by large number of pixels, have high mIOU;</li>
+<li>Cannula group of classes and the capsulorhexis cystotome have a relatively low mIoU, beccause these classes are represented by a small number of pixels and a large percentage of them is classified as anatomy around the boundary.</li>
+<li>The capsulorhexis forceps present a low mIoU for all models and this is because they are frequently misclassified as tissue forceps, These two classes could have been merged into one group, however as the capsulorhexis forceps appear in all splits with sufficient number of training images, they are represented by a separate class.</li>
+</ul>
+<h4 id="for-task-3">For task 3</h4>
+<p>By using different models, the results based on task 3 are as follow: <img src="/images/373.png" /></p>
+<p>and <code>mIOU</code> per class is: <img src="/images/374.png" /></p>
+<p>From this chart we could find that:</p>
+<ul>
+<li>As the number of classes increases, class imbalance is more evident;</li>
+</ul>
+<h3 id="conclusion">Conclusion</h3>
+<ul>
+<li><code>DeepLabV3+</code>, <code>UPerNet</code> and <code>HRNet</code> achieve higher mIOU for instrument segmentation and classification than <code>UNet</code>;</li>
+<li><code>UNet</code> gives a lower mIoU at instrument segmentation and classification;</li>
+<li><code>UPerNet</code> and <code>HRNet</code> have the higher mIoU at simultaneous anatomy segmentation and instrument classification.</li>
+</ul>
+<h1 id="reference">Reference:</h1>
+<p>[1] Paper: CaDIS: Cataract Dataset for Image Segmentation</p>
 
     </div>
 
@@ -378,13 +460,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/posts/17.html" rel="prev" title="深度学习中的正则化">
-      <i class="fa fa-chevron-left"></i> 深度学习中的正则化
+    <a href="/posts/36.html" rel="prev" title="Summary — “Swin Transformer”">
+      <i class="fa fa-chevron-left"></i> Summary — “Swin Transformer”
     </a></div>
-      <div class="post-nav-item">
-    <a href="/posts/19.html" rel="next" title="【ML-2020/21】Generative Adversarial Network (GAN) --- Part-2 Conditional GAN">
-      【ML-2020/21】Generative Adversarial Network (GAN) --- Part-2 Conditional GAN <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -444,7 +523,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">写在前面的说明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#generation"><span class="nav-number">1.1.</span> <span class="nav-text">Generation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#discriminator"><span class="nav-number">1.2.</span> <span class="nav-text">Discriminator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#generation-vs.-discriminator"><span class="nav-number">1.3.</span> <span class="nav-text">Generation vs. Discriminator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#algorithm"><span class="nav-number">1.4.</span> <span class="nav-text">Algorithm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A5%E5%85%85"><span class="nav-number">1.5.</span> <span class="nav-text">补充</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#dataset"><span class="nav-number">2.</span> <span class="nav-text">Dataset</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#annotation-process"><span class="nav-number">2.1.</span> <span class="nav-text">Annotation process</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dataset-statistics"><span class="nav-number">2.2.</span> <span class="nav-text">Dataset statistics</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#experiments"><span class="nav-number">3.</span> <span class="nav-text">Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#three-different-tasks"><span class="nav-number">3.1.</span> <span class="nav-text">Three different tasks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#task-1-8-classes"><span class="nav-number">3.1.1.</span> <span class="nav-text">Task 1 (8 classes):</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#task-2-17-classes"><span class="nav-number">3.1.2.</span> <span class="nav-text">Task 2 (17 classes):</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#task-3-25-classes"><span class="nav-number">3.1.3.</span> <span class="nav-text">Task 3 (25 classes)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#models"><span class="nav-number">3.2.</span> <span class="nav-text">Models</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#for-training"><span class="nav-number">3.2.1.</span> <span class="nav-text">For training</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#training-dataset"><span class="nav-number">3.2.1.1.</span> <span class="nav-text">Training dataset</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#training-configuration"><span class="nav-number">3.2.1.2.</span> <span class="nav-text">Training configuration</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#metrics"><span class="nav-number">3.2.1.3.</span> <span class="nav-text">Metrics</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#results"><span class="nav-number">3.2.2.</span> <span class="nav-text">Results</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#for-task-1"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">For task 1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#for-task-2"><span class="nav-number">3.2.2.2.</span> <span class="nav-text">For task 2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#for-task-3"><span class="nav-number">3.2.2.3.</span> <span class="nav-text">For task 3</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#conclusion"><span class="nav-number">3.2.3.</span> <span class="nav-text">Conclusion</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">4.</span> <span class="nav-text">Reference:</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
