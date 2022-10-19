@@ -39,8 +39,12 @@
 <meta property="og:image" content="https://superzlw.github.io/images/371.png">
 <meta property="og:image" content="https://superzlw.github.io/images/373.png">
 <meta property="og:image" content="https://superzlw.github.io/images/374.png">
+<meta property="og:image" content="https://superzlw.github.io/images/375.jpg">
+<meta property="og:image" content="https://superzlw.github.io/images/376.jpg">
+<meta property="og:image" content="https://superzlw.github.io/images/377.jpg">
+<meta property="og:image" content="https://superzlw.github.io/images/378.jpg">
 <meta property="article:published_time" content="2022-10-15T19:21:24.172Z">
-<meta property="article:modified_time" content="2022-10-16T19:59:35.322Z">
+<meta property="article:modified_time" content="2022-10-19T13:28:39.762Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://superzlw.github.io/images/365.png">
@@ -234,7 +238,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-16 21:59:35" itemprop="dateModified" datetime="2022-10-16T21:59:35+02:00">2022-10-16</time>
+                <time title="修改时间：2022-10-19 15:28:39" itemprop="dateModified" datetime="2022-10-19T15:28:39+02:00">2022-10-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -432,6 +436,11 @@
 <li><code>UNet</code> gives a lower mIoU at instrument segmentation and classification;</li>
 <li><code>UPerNet</code> and <code>HRNet</code> have the higher mIoU at simultaneous anatomy segmentation and instrument classification.</li>
 </ul>
+<h1 id="additional">Additional</h1>
+<p>According to the finding of "RVIM Lab", some annotations in the dataset are wrong, and at least 179 images were labeled wrong, and they("RVIM Lab") relabeled some of them. Such as the following examples: <img src="/images/375.jpg" /></p>
+<p>we could find that, the annotations of <code>Hand</code> and <code>Micromanipulator</code> are wrong, the correct mask should be: <img src="/images/376.jpg" /></p>
+<p>Another example: <img src="/images/377.jpg" /></p>
+<p>the correct one should be: <img src="/images/378.jpg" /></p>
 <h1 id="reference">Reference:</h1>
 <p>[1] Paper: CaDIS: Cataract Dataset for Image Segmentation</p>
 
@@ -523,7 +532,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#dataset"><span class="nav-number">2.</span> <span class="nav-text">Dataset</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#annotation-process"><span class="nav-number">2.1.</span> <span class="nav-text">Annotation process</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dataset-statistics"><span class="nav-number">2.2.</span> <span class="nav-text">Dataset statistics</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#experiments"><span class="nav-number">3.</span> <span class="nav-text">Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#three-different-tasks"><span class="nav-number">3.1.</span> <span class="nav-text">Three different tasks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#task-1-8-classes"><span class="nav-number">3.1.1.</span> <span class="nav-text">Task 1 (8 classes):</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#task-2-17-classes"><span class="nav-number">3.1.2.</span> <span class="nav-text">Task 2 (17 classes):</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#task-3-25-classes"><span class="nav-number">3.1.3.</span> <span class="nav-text">Task 3 (25 classes)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#models"><span class="nav-number">3.2.</span> <span class="nav-text">Models</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#for-training"><span class="nav-number">3.2.1.</span> <span class="nav-text">For training</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#training-dataset"><span class="nav-number">3.2.1.1.</span> <span class="nav-text">Training dataset</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#training-configuration"><span class="nav-number">3.2.1.2.</span> <span class="nav-text">Training configuration</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#metrics"><span class="nav-number">3.2.1.3.</span> <span class="nav-text">Metrics</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#results"><span class="nav-number">3.2.2.</span> <span class="nav-text">Results</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#for-task-1"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">For task 1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#for-task-2"><span class="nav-number">3.2.2.2.</span> <span class="nav-text">For task 2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#for-task-3"><span class="nav-number">3.2.2.3.</span> <span class="nav-text">For task 3</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#conclusion"><span class="nav-number">3.2.3.</span> <span class="nav-text">Conclusion</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">4.</span> <span class="nav-text">Reference:</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#dataset"><span class="nav-number">2.</span> <span class="nav-text">Dataset</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#annotation-process"><span class="nav-number">2.1.</span> <span class="nav-text">Annotation process</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dataset-statistics"><span class="nav-number">2.2.</span> <span class="nav-text">Dataset statistics</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#experiments"><span class="nav-number">3.</span> <span class="nav-text">Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#three-different-tasks"><span class="nav-number">3.1.</span> <span class="nav-text">Three different tasks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#task-1-8-classes"><span class="nav-number">3.1.1.</span> <span class="nav-text">Task 1 (8 classes):</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#task-2-17-classes"><span class="nav-number">3.1.2.</span> <span class="nav-text">Task 2 (17 classes):</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#task-3-25-classes"><span class="nav-number">3.1.3.</span> <span class="nav-text">Task 3 (25 classes)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#models"><span class="nav-number">3.2.</span> <span class="nav-text">Models</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#for-training"><span class="nav-number">3.2.1.</span> <span class="nav-text">For training</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#training-dataset"><span class="nav-number">3.2.1.1.</span> <span class="nav-text">Training dataset</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#training-configuration"><span class="nav-number">3.2.1.2.</span> <span class="nav-text">Training configuration</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#metrics"><span class="nav-number">3.2.1.3.</span> <span class="nav-text">Metrics</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#results"><span class="nav-number">3.2.2.</span> <span class="nav-text">Results</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#for-task-1"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">For task 1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#for-task-2"><span class="nav-number">3.2.2.2.</span> <span class="nav-text">For task 2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#for-task-3"><span class="nav-number">3.2.2.3.</span> <span class="nav-text">For task 3</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#conclusion"><span class="nav-number">3.2.3.</span> <span class="nav-text">Conclusion</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#additional"><span class="nav-number">4.</span> <span class="nav-text">Additional</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">5.</span> <span class="nav-text">Reference:</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -539,14 +548,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
