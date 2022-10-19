@@ -11,6 +11,7 @@
 <ul>
 <li><p>Dataset</p></li>
 <li><p>Experiments</p></li>
+<li><p>Problems of this dataset</p></li>
 </ul>
 <p><strong>Note: This blog represents only the <code>Information extraction</code>.</strong></p>
 <h1 id="dataset">Dataset</h1>
@@ -163,7 +164,7 @@
 <p>Another example: <img src="/images/377.jpg" /></p>
 <p>the correct one should be: <img src="/images/378.jpg" /></p>
 <h1 id="reference">Reference:</h1>
-<p>[1] Paper: CaDIS: Cataract Dataset for Image Segmentation</p>
+<p>[1] <a href="https://arxiv.org/pdf/1906.11586.pdf">Paper: CaDIS: Cataract Dataset for Image Segmentation</a> [2] <a href="https://link.springer.com/chapter/10.1007/978-3-030-87202-1_49">Paper: Effective semantic segmentation in Cataract Surgery: What matters most?</a></p>
 ]]></content>
       <categories>
         <category>学习总结</category>
