@@ -22,12 +22,12 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="引入 一般做三维重建我们是采用多视图的，单视图虽然也能做，但需要有场景的先验信息，比如点的对应关系，线、面几何等，所以在条件允许的情况下，基于多视图的三维重建适用范围是要优于单视图的，这里介绍两视图的情况，包括它们包含的几何关系。">
+  <meta name="description" content="引入一般做三维重建我们是采用多视图的，单视图虽然也能做，但需要有场景的先验信息，比如点的对应关系，线、面几何等，所以在条件允许的情况下，基于多视图的三维重建适用范围是要优于单视图的，这里介绍两视图的情况，包括它们包含的几何关系。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="三维重建基础与极几何">
 <meta property="og:url" content="https://superzlw.github.io/posts/28.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="引入 一般做三维重建我们是采用多视图的，单视图虽然也能做，但需要有场景的先验信息，比如点的对应关系，线、面几何等，所以在条件允许的情况下，基于多视图的三维重建适用范围是要优于单视图的，这里介绍两视图的情况，包括它们包含的几何关系。">
+<meta property="og:description" content="引入一般做三维重建我们是采用多视图的，单视图虽然也能做，但需要有场景的先验信息，比如点的对应关系，线、面几何等，所以在条件允许的情况下，基于多视图的三维重建适用范围是要优于单视图的，这里介绍两视图的情况，包括它们包含的几何关系。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://superzlw.github.io/images/286.png">
 <meta property="og:image" content="https://superzlw.github.io/images/287.png">
@@ -41,8 +41,8 @@
 <meta property="og:image" content="https://superzlw.github.io/images/295.png">
 <meta property="og:image" content="https://superzlw.github.io/images/296.png">
 <meta property="og:image" content="https://superzlw.github.io/images/297.png">
-<meta property="article:published_time" content="2021-09-13T08:43:10.725Z">
-<meta property="article:modified_time" content="2021-09-16T20:01:46.233Z">
+<meta property="article:published_time" content="2021-09-17T02:01:48.000Z">
+<meta property="article:modified_time" content="2021-09-17T02:01:48.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://superzlw.github.io/images/286.png">
@@ -229,15 +229,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-09-13 10:43:10" itemprop="dateCreated datePublished" datetime="2021-09-13T10:43:10+02:00">2021-09-13</time>
+              <time title="创建时间：2021-09-17 04:01:48" itemprop="dateCreated datePublished" datetime="2021-09-17T04:01:48+02:00">2021-09-17</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-16 22:01:46" itemprop="dateModified" datetime="2021-09-16T22:01:46+02:00">2021-09-16</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -280,226 +273,186 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="引入">引入</h1>
-<p>一般做三维重建我们是采用多视图的，单视图虽然也能做，但需要有场景的先验信息，比如点的对应关系，线、面几何等，所以在条件允许的情况下，基于多视图的三维重建适用范围是要优于单视图的，这里介绍两视图的情况，包括它们包含的几何关系。 <span id="more"></span></p>
-<h1 id="三角测量triangulation">三角测量(Triangulation)</h1>
-<p>我们想要解决的问题是：</p>
+        <h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>一般做三维重建我们是采用多视图的，单视图虽然也能做，但需要有场景的先验信息，比如点的对应关系，线、面几何等，所以在条件允许的情况下，基于多视图的三维重建适用范围是要优于单视图的，这里介绍两视图的情况，包括它们包含的几何关系。<br><span id="more"></span></p>
+<h1 id="三角测量-Triangulation"><a href="#三角测量-Triangulation" class="headerlink" title="三角测量(Triangulation)"></a>三角测量(Triangulation)</h1><p>我们想要解决的问题是：</p>
 <blockquote>
 <p>现给定一个三维点在两个或多个图像(相机矩阵已知)中的投影，希望找到该点的坐标。</p>
 </blockquote>
-<p>以两图像投影为例，如下图：<img src="/images/286.png" /> 正常来说，由于相机矩阵是已知的，<span class="math inline">\(O_1x_1\)</span>和<span class="math inline">\(O_2x_2\)</span>我们都能表示出来，也就很容易求出这个空间三维点<span class="math inline">\(X\)</span>了，然而这有个前提，就是那两条视线应该相交，但由于噪音和数值误差，这个条件一般都不能满足。<br />
-也就是说一般情况下是这样子的：<img src="/images/287.png" /> 我们的想法是：找到连接两条视线的最短线段，并让 X 为该线段的中点。具体操作为：</p>
+<p>以两图像投影为例，如下图：<img src="/images/286.png" alt=""><br>正常来说，由于相机矩阵是已知的，$O_1x_1$和$O_2x_2$我们都能表示出来，也就很容易求出这个空间三维点$X$了，然而这有个前提，就是那两条视线应该相交，但由于噪音和数值误差，这个条件一般都不能满足。\<br>也就是说一般情况下是这样子的：<img src="/images/287.png" alt=""><br>我们的想法是：找到连接两条视线的最短线段，并让 X 为该线段的中点。具体操作为：</p>
 <blockquote>
-<ol type="1">
+<ol>
 <li>寻找线段的方向(即垂直于两条射线);</li>
 <li>构造两个平面，每个平面都包含该线段以及一条射线;</li>
 <li>将该平面与其它射线相交以产生线段的端点;</li>
 <li>找到中点。</li>
 </ol>
 </blockquote>
-<p>找是找到了这个点，怎么求呢，我们现在已知的条件有：<span class="math inline">\(x_1,x_2\)</span>，内参矩阵<span class="math inline">\(K_1,K_2\)</span>，旋转平移<span class="math inline">\(R,T\)</span>(也就是知道投影矩阵)，这里主要有两种方法，线性法和非线性法。</p>
-<h2 id="线性法">线性法</h2>
-<p>线性法的话，精度不高但比较容易。<br />
-由共线可知： <span class="math display">\[
-x_1\times P_1X=0
-\]</span> <span class="math display">\[
-x_2\times P_2X=0
-\]</span> 这明显就是个齐次线性方程组，用SVD分解很快就做出来了，这在之前相机那篇已经介绍过，这里就不赘述了，<a href="https://superzlw.github.io/posts/26.html">链接在这</a>。<br />
-对于多于两个视图的情况，无非就是多列几个方程。</p>
-<h2 id="非线性法">非线性法</h2>
-<p>这种方法简单说就是希望找到个<span class="math inline">\(X\)</span>，使其最小化下面这个式子： <span class="math display">\[
-d^2(x_1,P_1,X)+d^2(x_2,P_2,X)
-\]</span> 如图：<img src="/images/288.png" /> 也即是说，我们要找的那个三维点，它投影到图像上的点，要跟我们观测点距离最小。也就是图中的<span class="math display">\[x_1&#39;x_1+x_2&#39;x_2\]</span>最小。<br />
-假设我们把世界坐标系设在<span class="math inline">\(O_1\)</span>的位置，那么两个投影矩阵分别为： <span class="math display">\[
-P_1=K_1[I|0]
-\]</span> <span class="math display">\[
-P_2=K_2[R|T]
-\]</span> 至此条件都足够了，然后通过迭代求解就行，一般是用高斯牛顿法或者L-M法求解，这个在另一篇非线性优化里也已经介绍过了，<a href="https://superzlw.github.io/posts/15.html">链接在这</a>。<br />
-</p>
-<h1 id="极几何">极几何</h1>
-<p>接下来我们想知道的就是同一场景的两个不同视图之间的关系。<br />
-这里先给几个后面需要用到的概念：<img src="/images/289.png" /></p>
+<p>找是找到了这个点，怎么求呢，我们现在已知的条件有：$x_1,x_2$，内参矩阵$K_1,K_2$，旋转平移$R,T$(也就是知道投影矩阵)，这里主要有两种方法，线性法和非线性法。</p>
+<h2 id="线性法"><a href="#线性法" class="headerlink" title="线性法"></a>线性法</h2><p>线性法的话，精度不高但比较容易。\<br>由共线可知：</p>
+<script type="math/tex; mode=display">
+x_1\times P_1X=0</script><script type="math/tex; mode=display">
+x_2\times P_2X=0</script><p>这明显就是个齐次线性方程组，用SVD分解很快就做出来了，这在之前相机那篇已经介绍过，这里就不赘述了，<a href="https://superzlw.github.io/posts/26.html">链接在这</a>。 \<br>对于多于两个视图的情况，无非就是多列几个方程。</p>
+<h2 id="非线性法"><a href="#非线性法" class="headerlink" title="非线性法"></a>非线性法</h2><p>这种方法简单说就是希望找到个$X$，使其最小化下面这个式子：</p>
+<script type="math/tex; mode=display">
+d^2(x_1,P_1,X)+d^2(x_2,P_2,X)</script><p>如图：<img src="/images/288.png" alt=""><br>也即是说，我们要找的那个三维点，它投影到图像上的点，要跟我们观测点距离最小。也就是图中的<script type="math/tex">x_1'x_1+x_2'x_2</script>最小。\<br>假设我们把世界坐标系设在$O_1$的位置，那么两个投影矩阵分别为：</p>
+<script type="math/tex; mode=display">
+P_1=K_1[I|0]</script><script type="math/tex; mode=display">
+P_2=K_2[R|T]</script><p>至此条件都足够了，然后通过迭代求解就行，一般是用高斯牛顿法或者L-M法求解，这个在另一篇非线性优化里也已经介绍过了，<a href="https://superzlw.github.io/posts/15.html">链接在这</a>。 \</p>
+<h1 id="极几何"><a href="#极几何" class="headerlink" title="极几何"></a>极几何</h1><p>接下来我们想知道的就是同一场景的两个不同视图之间的关系。\<br>这里先给几个后面需要用到的概念：<img src="/images/289.png" alt=""></p>
 <blockquote>
-<ol type="1">
-<li>极平面(Epipolar plane): 过点<span class="math inline">\(P\)</span>与两相机中心的平面;</li>
-<li>基线(baseline): <span class="math inline">\(O_1\)</span>与<span class="math inline">\(O_2\)</span>的连线;</li>
-<li>极线(epipolar lines): 极平面与成像平面的交线，也就是<span class="math inline">\(p_1e_1\)</span>和<span class="math inline">\(p_2e_2\)</span>;</li>
-<li>极点(Epipole): 基线与成像平面的交点，也就是<span class="math inline">\(e_1\)</span>和<span class="math inline">\(e_2\)</span>。(可以在可见区域之外)</li>
+<ol>
+<li>极平面(Epipolar plane): 过点$P$与两相机中心的平面;</li>
+<li>基线(baseline): $O_1$与$O_2$的连线;</li>
+<li>极线(epipolar lines): 极平面与成像平面的交线，也就是$p_1e_1$和$p_2e_2$;</li>
+<li>极点(Epipole): 基线与成像平面的交点，也就是$e_1$和$e_2$。(可以在可见区域之外)</li>
 </ol>
 </blockquote>
-<p>现在来看这个图：<img src="/images/290.png" /> 关于这个极几何有几个性质需要提一下(第3,4点比较重要):</p>
+<p>现在来看这个图：<img src="/images/290.png" alt=""><br>关于这个极几何有几个性质需要提一下(第3,4点比较重要):</p>
 <blockquote>
-<ol type="1">
+<ol>
 <li>极平面相交于基线;</li>
 <li>极线相交于极点;</li>
-<li><span class="math inline">\(p_1\)</span>的对应点落在极线<span class="math inline">\(p_2e_2\)</span>上;</li>
-<li><span class="math inline">\(p_2\)</span>的对应点落在极线<span class="math inline">\(p_1e_1\)</span>上;</li>
+<li>$p_1$的对应点落在极线$p_2e_2$上;</li>
+<li>$p_2$的对应点落在极线$p_1e_1$上;</li>
 </ol>
 </blockquote>
-<p>最后两个性质表明，我们要找一个像点在另一个平面的对应点时，不用整张图去找，只要找极线就行了。<br />
-来看几个特例：<br />
-<strong>(1). 平行视图：</strong><img src="/images/291.png" /></p>
+<p>最后两个性质表明，我们要找一个像点在另一个平面的对应点时，不用整张图去找，只要找极线就行了。\<br>来看几个特例：\<br><strong>(1). 平行视图：</strong><img src="/images/291.png" alt=""></p>
 <blockquote>
-<p>两个图像平行；<br />
-基线平行于图像平面，两极点位于无穷远处；<br />
-极线平行于图像坐标轴的其中一条轴。<br />
-</p>
+<p>两个图像平行；\<br>基线平行于图像平面，两极点位于无穷远处；\<br>极线平行于图像坐标轴的其中一条轴。\</p>
 </blockquote>
-<p><strong>(2). 前后平移：</strong><img src="/images/292.png" /></p>
+<p><strong>(2). 前后平移：</strong><img src="/images/292.png" alt=""></p>
 <blockquote>
 <p>两幅图极点位置相同，极点称为展开焦点。</p>
 </blockquote>
-<h2 id="极几何约束">极几何约束</h2>
-<p>现在我们想要知道的是，一个图中的点和另一幅图中点的对应关系。<br />
-如下图：<img src="/images/293.png" /> 明显，我们有如下关系(这些关系都是等价的，一个意思)：</p>
+<h2 id="极几何约束"><a href="#极几何约束" class="headerlink" title="极几何约束"></a>极几何约束</h2><p>现在我们想要知道的是，一个图中的点和另一幅图中点的对应关系。\<br>如下图：<img src="/images/293.png" alt=""><br>明显，我们有如下关系(这些关系都是等价的，一个意思)：</p>
 <blockquote>
-<ol type="1">
-<li><span class="math inline">\(\overrightarrow{O_1P},\overrightarrow{O_2P},\overrightarrow{O_1O_2}\)</span> 共面;<br />
-</li>
-<li><span class="math inline">\(\overrightarrow{O_1p_1},\overrightarrow{O_2p_2},\overrightarrow{O_1O_2}\)</span> 共面;<br />
-</li>
-<li><span class="math inline">\(\overrightarrow{O_1p_1}\cdot [\overrightarrow{O_1O_2}\times \overrightarrow{O_2p_2}]=0\)</span>。</li>
+<ol>
+<li>$\overrightarrow{O_1P},\overrightarrow{O_2P},\overrightarrow{O_1O_2}$ 共面;\</li>
+<li>$\overrightarrow{O_1p_1},\overrightarrow{O_2p_2},\overrightarrow{O_1O_2}$ 共面;\</li>
+<li>$\overrightarrow{O_1p_1}\cdot [\overrightarrow{O_1O_2}\times \overrightarrow{O_2p_2}]=0$。</li>
 </ol>
 </blockquote>
-<h3 id="本质矩阵情况下">本质矩阵情况下</h3>
-<p>这种情况我们考虑的是规范化相机，规范化相机是指相机内参数矩阵为单位矩阵的相机，即是： <span class="math display">\[
+<h3 id="本质矩阵情况下"><a href="#本质矩阵情况下" class="headerlink" title="本质矩阵情况下"></a>本质矩阵情况下</h3><p>这种情况我们考虑的是规范化相机，规范化相机是指相机内参数矩阵为单位矩阵的相机，即是：</p>
+<script type="math/tex; mode=display">
 K=
 \begin{bmatrix}
-1&amp;0&amp;0\\
-0&amp;1&amp;0\\
-0&amp;0&amp;1
-\end{bmatrix}
-\]</span> 假设<span class="math inline">\(p_1=(u_1,v_1,1)^T\)</span>，<span class="math inline">\(p_2=(u_2,v_2,1)^T\)</span>，上面最后一个关系(3)就等价于： <span class="math display">\[
-p_1^T[t\times (Rp_2)]=0
-\]</span> 上面这个呢就是外极性约束了。<br />
-叉乘的话可以表示成矩阵形式，比如说 <span class="math display">\[
+1&0&0\\
+0&1&0\\
+0&0&1
+\end{bmatrix}</script><p>假设$p_1=(u_1,v_1,1)^T$，$p_2=(u_2,v_2,1)^T$，上面最后一个关系(3)就等价于：</p>
+<script type="math/tex; mode=display">
+p_1^T[t\times (Rp_2)]=0</script><p>上面这个呢就是外极性约束了。\<br>叉乘的话可以表示成矩阵形式，比如说</p>
+<script type="math/tex; mode=display">
 a\times b = 
 \begin{bmatrix}
-0&amp;-a_z&amp;a_y\\
-a_z&amp;0&amp;-a_x\\
--a_y&amp;a_x&amp;0
+0&-a_z&a_y\\
+a_z&0&-a_x\\
+-a_y&a_x&0
 \end{bmatrix}
 \begin{bmatrix}
 b_x\\
 b_y\\
 b_z
 \end{bmatrix}=
-[a]_{\times}b
-\]</span> 所以本质矩阵：<span class="math inline">\(E=[t]_{\times}R\)</span><br />
-将上面那个外极性约束用本质矩阵描述的话是: <span class="math display">\[
-p_1^T[t\times (Rp_2)]=p_1^TEp_2=0
-\]</span> 也就是说空间一个三维点在双视图中必须满足 <span class="math inline">\(p_1^TEp_2=0\)</span>。<br />
-随着这个本质矩阵带来的，还有下面一系列的重要性质：</p>
+[a]_{\times}b</script><p>所以本质矩阵：$E=[t]_{\times}R$\<br>将上面那个外极性约束用本质矩阵描述的话是:</p>
+<script type="math/tex; mode=display">
+p_1^T[t\times (Rp_2)]=p_1^TEp_2=0</script><p>也就是说空间一个三维点在双视图中必须满足 $p_1^TEp_2=0$。\<br>随着这个本质矩阵带来的，还有下面一系列的重要性质：</p>
 <blockquote>
-<ol type="1">
-<li>极线用本质矩阵可表示为：<span class="math inline">\(l_1=Ep_2\)</span>, <span class="math inline">\(l_2=E^Tp_1\)</span>;</li>
-<li><span class="math inline">\(e_1^TE=E^Te_1=0\)</span>与<span class="math inline">\(Ee_2=0\)</span>;</li>
+<ol>
+<li>极线用本质矩阵可表示为：$l_1=Ep_2$, $l_2=E^Tp_1$;</li>
+<li>$e_1^TE=E^Te_1=0$与$Ee_2=0$;</li>
 <li>本质矩阵是奇异的，秩为2; 剩下的两个特征值相等;</li>
-<li>本质矩阵有5个自由度(三个旋转+三个平移，但<span class="math inline">\(det(E)=0\)</span>去掉了一个，或者说由于比例是任意的，所以去掉了一个)。</li>
+<li>本质矩阵有5个自由度(三个旋转+三个平移，但$det(E)=0$去掉了一个，或者说由于比例是任意的，所以去掉了一个)。</li>
 </ol>
 </blockquote>
-<p>(上面4个性质都容易证明，就不写了，但有一个性质需要记住：<strong>反对称矩阵的秩是偶数的</strong>)<br />
-</p>
-<p>举个平行相机的例子，如图：<img src="/images/294.png" /> 由于是平行的，<span class="math inline">\(R=I\)</span>，平移量为<span class="math inline">\(b\)</span>，则<span class="math inline">\(t=[-b,0,0]\)</span>，所以本质矩阵为： <span class="math display">\[
+<p>(上面4个性质都容易证明，就不写了，但有一个性质需要记住：<strong>反对称矩阵的秩是偶数的</strong>)\</p>
+<p>举个平行相机的例子，如图：<img src="/images/294.png" alt=""><br>由于是平行的，$R=I$，平移量为$b$，则$t=[-b,0,0]$，所以本质矩阵为：</p>
+<script type="math/tex; mode=display">
 E=[t]_{\times}R=
 \begin{bmatrix}
-0&amp;0&amp;0\\
-0&amp;0&amp;b\\
-0&amp;-b&amp;0
-\end{bmatrix}
-\]</span> 由约束条件 <span class="math inline">\(p_{1}^TEp_2=0\)</span> 得： <span class="math display">\[
+0&0&0\\
+0&0&b\\
+0&-b&0
+\end{bmatrix}</script><p>由约束条件 $p_{1}^TEp_2=0$ 得：</p>
+<script type="math/tex; mode=display">
 \begin{split}
-0 &amp;=p_{1}^TEp_2 \\\\
-&amp;= [x_1,y_1,1]\begin{bmatrix}
-0&amp;0&amp;0\\
-0&amp;0&amp;b\\
-0&amp;-b&amp;0
+0 &=p_{1}^TEp_2 \\\\
+&= [x_1,y_1,1]\begin{bmatrix}
+0&0&0\\
+0&0&b\\
+0&-b&0
 \end{bmatrix}\begin{bmatrix}
 x_2\\
 y_2\\
 1
 \end{bmatrix}\\\\
-&amp;= [x_1,y_1,1]\begin{bmatrix}
+&= [x_1,y_1,1]\begin{bmatrix}
 0\\
 b\\
 -by_2
 \end{bmatrix}\\\\
-&amp;= by_1-by_2
-\end{split}
-\]</span> 解得：<span class="math inline">\(y_1=y_2\)</span>, <span class="math inline">\(x_2\)</span> 任意。</p>
-<h3 id="基础矩阵情况下">基础矩阵情况下</h3>
-<p>一般情况下我们的相机都不是规范化的相机，而是普通的一般化相机，不适用于上面的情况，这时候就引出了与本质矩阵相对的“基础矩阵”。<br />
-依旧是这个图：<img src="/images/295.png" /> 但这时候的<span class="math inline">\(K\)</span>不再是单位矩阵了，怎么做？<br />
-最直接的想法就是把它转化为规范化相机。<br />
-我们假设两个内参矩阵分别是:<span class="math inline">\(K_1,K_2\)</span>，这两个是已知的。然后有如下关系： <span class="math display">\[
-x_1=K[I\;0]P
-\]</span> 即是: <span class="math display">\[
+&= by_1-by_2
+\end{split}</script><p>解得：$y_1=y_2$, $x_2$ 任意。</p>
+<h3 id="基础矩阵情况下"><a href="#基础矩阵情况下" class="headerlink" title="基础矩阵情况下"></a>基础矩阵情况下</h3><p>一般情况下我们的相机都不是规范化的相机，而是普通的一般化相机，不适用于上面的情况，这时候就引出了与本质矩阵相对的“基础矩阵”。\<br>依旧是这个图：<img src="/images/295.png" alt=""><br>但这时候的$K$不再是单位矩阵了，怎么做？\<br>最直接的想法就是把它转化为规范化相机。\<br>我们假设两个内参矩阵分别是:$K_1,K_2$，这两个是已知的。然后有如下关系：</p>
+<script type="math/tex; mode=display">
+x_1=K[I\;0]P</script><p>即是:</p>
+<script type="math/tex; mode=display">
 K^{-1}x_1=K^{-1}K[I\;0]P=
 \begin{bmatrix}
-1&amp;0&amp;0&amp;0\\
-0&amp;1&amp;0&amp;0\\
-0&amp;0&amp;1&amp;0
-\end{bmatrix}P
-\]</span> 设：<span class="math inline">\(K^{-1}x_1=x_{1c}\)</span>, 所以有： <span class="math display">\[
+1&0&0&0\\
+0&1&0&0\\
+0&0&1&0
+\end{bmatrix}P</script><p>设：$K^{-1}x_1=x_{1c}$, 所以有：</p>
+<script type="math/tex; mode=display">
 x_{1c}=\begin{bmatrix}
-1&amp;0&amp;0&amp;0\\
-0&amp;1&amp;0&amp;0\\
-0&amp;0&amp;1&amp;0
-\end{bmatrix}P
-\]</span> 同理，<span class="math inline">\(K_2^{-1}x_2=x_{2c}\)</span> 如此得出来的<span class="math inline">\(x_{1c},x_{2c}\)</span>就是规范化相机下<span class="math inline">\(P\)</span>的对应点。<br />
-文字描述的话就是：把成像平面上实际观测点乘以该相机内参数矩阵的逆矩阵，就可以得到对应的规范化相机下的点。<br />
-由本质矩阵的性质有: <span class="math display">\[
-x_{2c}^TEx_{1c}=x_{2c}^T[t]_{\times}Rx_{1c}=(K_2^{-1}x_2)^T\cdot [t]_{\times}RK_{1}^{-1}x_1=x_2^TK_2^{-T}[t]_{\times}RK_{1}^{-1}x_1=0
-\]</span> 中间这串就是我们要引出的基础矩阵<span class="math inline">\(F\)</span>：<span class="math inline">\(F=K_2^{-T}[t]_{\times}RK_{1}^{-1}\)</span>，然后我们就可以有如下结论： <span class="math display">\[
-x_2^TFx_1=0
-\]</span> 基础矩阵有与本质矩阵类似的性质，如下：</p>
+1&0&0&0\\
+0&1&0&0\\
+0&0&1&0
+\end{bmatrix}P</script><p>同理，$K_2^{-1}x_2=x_{2c}$<br>如此得出来的$x_{1c},x_{2c}$就是规范化相机下$P$的对应点。\<br>文字描述的话就是：把成像平面上实际观测点乘以该相机内参数矩阵的逆矩阵，就可以得到对应的规范化相机下的点。\<br>由本质矩阵的性质有:</p>
+<script type="math/tex; mode=display">
+x_{2c}^TEx_{1c}=x_{2c}^T[t]_{\times}Rx_{1c}=(K_2^{-1}x_2)^T\cdot [t]_{\times}RK_{1}^{-1}x_1=x_2^TK_2^{-T}[t]_{\times}RK_{1}^{-1}x_1=0</script><p>中间这串就是我们要引出的基础矩阵$F$：$F=K_2^{-T}[t]_{\times}RK_{1}^{-1}$，然后我们就可以有如下结论：</p>
+<script type="math/tex; mode=display">
+x_2^TFx_1=0</script><p>基础矩阵有与本质矩阵类似的性质，如下：</p>
 <blockquote>
-<ol type="1">
-<li>极线分别是：<span class="math inline">\(l_1=Fx_1\)</span>和<span class="math inline">\(l_2=F^Tx_2\)</span>;</li>
-<li><span class="math inline">\(Fe_1=0\)</span>与<span class="math inline">\(F^Te_2=e_2^TF=0\)</span>;</li>
-<li><span class="math inline">\(F\)</span>是奇异的，秩为2;</li>
-<li><span class="math inline">\(F\)</span>有7个自由度(尺度任意，<span class="math inline">\(det(F)=0\)</span>)。</li>
+<ol>
+<li>极线分别是：$l_1=Fx_1$和$l_2=F^Tx_2$;</li>
+<li>$Fe_1=0$与$F^Te_2=e_2^TF=0$;</li>
+<li>$F$是奇异的，秩为2;</li>
+<li>$F$有7个自由度(尺度任意，$det(F)=0$)。</li>
 </ol>
 </blockquote>
-<h2 id="估计基础矩阵归一化八点算法">估计基础矩阵：归一化八点算法</h2>
-<p><span class="math inline">\(F\)</span>有7个自由度，理论上7个点就可以求解了，但这样做的话解是非线性的，很麻烦，所以这里用8个点，俗称“八点算法”。<br />
-现假设一个三维点在两成像平面上的观测点分别为：<span class="math inline">\([x&#39;,y&#39;,1]\)</span>和<span class="math inline">\([x,y,1]\)</span>，按照上面的结论我们有： <span class="math display">\[
+<h2 id="估计基础矩阵：归一化八点算法"><a href="#估计基础矩阵：归一化八点算法" class="headerlink" title="估计基础矩阵：归一化八点算法"></a>估计基础矩阵：归一化八点算法</h2><p>$F$有7个自由度，理论上7个点就可以求解了，但这样做的话解是非线性的，很麻烦，所以这里用8个点，俗称“八点算法”。\<br>现假设一个三维点在两成像平面上的观测点分别为：$[x’,y’,1]$和$[x,y,1]$，按照上面的结论我们有：</p>
+<script type="math/tex; mode=display">
 \begin{bmatrix}
-x&#39;&amp;y&#39;&amp;1
+x'&y'&1
 \end{bmatrix}
 \begin{bmatrix}
-F_{11}&amp;F_{12}&amp;F_{13}\\
-F_{21}&amp;F_{22}&amp;F_{23}\\
-F_{31}&amp;F_{32}&amp;F_{33}
+F_{11}&F_{12}&F_{13}\\
+F_{21}&F_{22}&F_{23}\\
+F_{31}&F_{32}&F_{33}
 \end{bmatrix}
 \begin{bmatrix}
 x\\y\\1
 \end{bmatrix}
-=0
-\]</span> 展开的话即是： <span class="math display">\[
+=0</script><p>展开的话即是：</p>
+<script type="math/tex; mode=display">
 \begin{bmatrix}
-xx&#39;&amp;yx&#39;&amp;x&#39;&amp;xy&#39;&amp;yy&#39;&amp;y&#39;&amp;x&amp;y&amp;1
+xx'&yx'&x'&xy'&yy'&y'&x&y&1
 \end{bmatrix}
 \begin{bmatrix}
 F_{11}\\F_{12}\\F_{13}\\F_{21}\\F_{22}\\F_{23}\\F_{31}\\F_{32}\\F_{33}\\
-\end{bmatrix}=0
-\]</span> 简写成： <span class="math display">\[
-Af=0
-\]</span> 由于<span class="math inline">\(f\)</span>不能为0，所以添加一个约束：<span class="math inline">\(||f||=1\)</span>，这，又是带约束的齐次方程，正经8个点的话直接算，但一般我们会用多于8个点去估计，以减少误差，这时候就可以用SVD分解，相关计算看相机那篇，<a href="https://superzlw.github.io/posts/26.html">在这</a>。<br />
-但是在计算之前我们不能忘了数值稳定性，也就是说方程组的系数应该在同一数量级，比如像素是<span class="math inline">\(1E6\)</span>，也就是说要预处理，不然会由于数值差异很大导致最后结果精度很低。方法过程如下：<img src="/images/296.png" /> 之后就可以求解了。 但用这种方法算出来的还不是我们要求的基础矩阵，因为基础矩阵的秩应该是2，而这种方法算出来的矩阵秩通常为3，即满秩。<br />
-要解决这个问题也简单(且粗暴)，加入在上面我们求出来的满秩“基础矩阵”为 <span class="math inline">\(\widetilde{F}\)</span>，我们对其再做一次SVD分解： <span class="math display">\[
-\widetilde{F}=U_F\widetilde{D}_FV_{F}^T
-\]</span> 令： <span class="math display">\[
-D_F=\widetilde{D}_F \quad , \quad D_{F,33}=0
-\]</span> 接着回构： <span class="math display">\[
-\overline{F}=U_FD_FV_F^T
-\]</span> 由于上面我们对坐标进行了处理，最后一步把<span class="math inline">\(\overline{F}\)</span>返回去： <span class="math display">\[
-F=T&#39;^T\overline{F}T
-\]</span> 用这种奇异值置零的方法我们可以保证求出的<span class="math inline">\(F\)</span>满足在约束 <span class="math inline">\(det(F)=0\)</span> 的情况下最小化 <span class="math inline">\(||F-\widetilde{F}||_F\)</span><br />
-至此求解就结束了。<br />
-上述过程可以用下面这张图总结：<img src="/images/297.png" /></p>
-<h1 id="参考">参考</h1>
-<p>【1】 https://www.youtube.com/watch?v=BKVEvj9F_H4&amp;list=LL&amp;index=42</p>
+\end{bmatrix}=0</script><p>简写成：</p>
+<script type="math/tex; mode=display">
+Af=0</script><p>由于$f$不能为0，所以添加一个约束：$||f||=1$，这，又是带约束的齐次方程，正经8个点的话直接算，但一般我们会用多于8个点去估计，以减少误差，这时候就可以用SVD分解，相关计算看相机那篇，<a href="https://superzlw.github.io/posts/26.html">在这</a>。\<br>但是在计算之前我们不能忘了数值稳定性，也就是说方程组的系数应该在同一数量级，比如像素是$1E6$，也就是说要预处理，不然会由于数值差异很大导致最后结果精度很低。方法过程如下：<img src="/images/296.png" alt=""><br>之后就可以求解了。<br>但用这种方法算出来的还不是我们要求的基础矩阵，因为基础矩阵的秩应该是2，而这种方法算出来的矩阵秩通常为3，即满秩。\<br>要解决这个问题也简单(且粗暴)，加入在上面我们求出来的满秩“基础矩阵”为 $\widetilde{F}$，我们对其再做一次SVD分解：</p>
+<script type="math/tex; mode=display">
+\widetilde{F}=U_F\widetilde{D}_FV_{F}^T</script><p>令：</p>
+<script type="math/tex; mode=display">
+D_F=\widetilde{D}_F \quad , \quad D_{F,33}=0</script><p>接着回构：</p>
+<script type="math/tex; mode=display">
+\overline{F}=U_FD_FV_F^T</script><p>由于上面我们对坐标进行了处理，最后一步把$\overline{F}$返回去：</p>
+<script type="math/tex; mode=display">
+F=T'^T\overline{F}T</script><p>用这种奇异值置零的方法我们可以保证求出的$F$满足在约束 $det(F)=0$ 的情况下最小化 $||F-\widetilde{F}||_F$\<br>至此求解就结束了。\<br>上述过程可以用下面这张图总结：<img src="/images/297.png" alt=""></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>【1】 <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=BKVEvj9F_H4&amp;list=LL&amp;index=42">https://www.youtube.com/watch?v=BKVEvj9F_H4&amp;list=LL&amp;index=42</a></p>
 
     </div>
 
@@ -526,8 +479,8 @@ F=T&#39;^T\overline{F}T
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/posts/27.html" rel="prev" title="RANSAC算法">
-      <i class="fa fa-chevron-left"></i> RANSAC算法
+    <a href="/posts/25.html" rel="prev" title="光流三部曲---1. LK光流">
+      <i class="fa fa-chevron-left"></i> 光流三部曲---1. LK光流
     </a></div>
       <div class="post-nav-item">
     <a href="/posts/31.html" rel="next" title="图像去噪 (Graphcuts + α-expansion)">
@@ -592,7 +545,7 @@ F=T&#39;^T\overline{F}T
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8Ftriangulation"><span class="nav-number">2.</span> <span class="nav-text">三角测量(Triangulation)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">线性法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E7%BA%BF%E6%80%A7%E6%B3%95"><span class="nav-number">2.2.</span> <span class="nav-text">非线性法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%81%E5%87%A0%E4%BD%95"><span class="nav-number">3.</span> <span class="nav-text">极几何</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%81%E5%87%A0%E4%BD%95%E7%BA%A6%E6%9D%9F"><span class="nav-number">3.1.</span> <span class="nav-text">极几何约束</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E8%B4%A8%E7%9F%A9%E9%98%B5%E6%83%85%E5%86%B5%E4%B8%8B"><span class="nav-number">3.1.1.</span> <span class="nav-text">本质矩阵情况下</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A9%E9%98%B5%E6%83%85%E5%86%B5%E4%B8%8B"><span class="nav-number">3.1.2.</span> <span class="nav-text">基础矩阵情况下</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%B0%E8%AE%A1%E5%9F%BA%E7%A1%80%E7%9F%A9%E9%98%B5%E5%BD%92%E4%B8%80%E5%8C%96%E5%85%AB%E7%82%B9%E7%AE%97%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">估计基础矩阵：归一化八点算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F-Triangulation"><span class="nav-number">2.</span> <span class="nav-text">三角测量(Triangulation)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">线性法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E7%BA%BF%E6%80%A7%E6%B3%95"><span class="nav-number">2.2.</span> <span class="nav-text">非线性法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%81%E5%87%A0%E4%BD%95"><span class="nav-number">3.</span> <span class="nav-text">极几何</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%81%E5%87%A0%E4%BD%95%E7%BA%A6%E6%9D%9F"><span class="nav-number">3.1.</span> <span class="nav-text">极几何约束</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E8%B4%A8%E7%9F%A9%E9%98%B5%E6%83%85%E5%86%B5%E4%B8%8B"><span class="nav-number">3.1.1.</span> <span class="nav-text">本质矩阵情况下</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A9%E9%98%B5%E6%83%85%E5%86%B5%E4%B8%8B"><span class="nav-number">3.1.2.</span> <span class="nav-text">基础矩阵情况下</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%B0%E8%AE%A1%E5%9F%BA%E7%A1%80%E7%9F%A9%E9%98%B5%EF%BC%9A%E5%BD%92%E4%B8%80%E5%8C%96%E5%85%AB%E7%82%B9%E7%AE%97%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">估计基础矩阵：归一化八点算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -608,14 +561,14 @@ F=T&#39;^T\overline{F}T
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -643,7 +596,7 @@ F=T&#39;^T\overline{F}T
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

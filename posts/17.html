@@ -22,15 +22,15 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="引入 与其它机器学习方法类似，DNN在训练过程中也会遇到过拟合的现象，尤其是当参数数量多于输入数据量时。为了防止过拟合现象，除了增加训练样本外，最常见的就是各种正则化方法，比如：数据增强、\(L1\) 正则化、\(L2\) 正则化、Dropout、DropConnect 和早停法（Early stopping）等。 下面对这些方法进行逐一介绍。">
+  <meta name="description" content="引入与其它机器学习方法类似，DNN在训练过程中也会遇到过拟合的现象，尤其是当参数数量多于输入数据量时。为了防止过拟合现象，除了增加训练样本外，最常见的就是各种正则化方法，比如：数据增强、$L1$ 正则化、$L2$ 正则化、Dropout、DropConnect 和早停法（Early stopping）等。下面对这些方法进行逐一介绍。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深度学习中的正则化">
 <meta property="og:url" content="https://superzlw.github.io/posts/17.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="引入 与其它机器学习方法类似，DNN在训练过程中也会遇到过拟合的现象，尤其是当参数数量多于输入数据量时。为了防止过拟合现象，除了增加训练样本外，最常见的就是各种正则化方法，比如：数据增强、\(L1\) 正则化、\(L2\) 正则化、Dropout、DropConnect 和早停法（Early stopping）等。 下面对这些方法进行逐一介绍。">
+<meta property="og:description" content="引入与其它机器学习方法类似，DNN在训练过程中也会遇到过拟合的现象，尤其是当参数数量多于输入数据量时。为了防止过拟合现象，除了增加训练样本外，最常见的就是各种正则化方法，比如：数据增强、$L1$ 正则化、$L2$ 正则化、Dropout、DropConnect 和早停法（Early stopping）等。下面对这些方法进行逐一介绍。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-08-03T21:59:24.919Z">
-<meta property="article:modified_time" content="2021-08-10T22:57:09.153Z">
+<meta property="article:published_time" content="2021-08-11T04:57:10.000Z">
+<meta property="article:modified_time" content="2021-08-11T04:57:10.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 
@@ -216,15 +216,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-08-03 23:59:24" itemprop="dateCreated datePublished" datetime="2021-08-03T23:59:24+02:00">2021-08-03</time>
+              <time title="创建时间：2021-08-11 06:57:10" itemprop="dateCreated datePublished" datetime="2021-08-11T06:57:10+02:00">2021-08-11</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-11 00:57:09" itemprop="dateModified" datetime="2021-08-11T00:57:09+02:00">2021-08-11</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -267,49 +260,35 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="引入">引入</h1>
-<p>与其它机器学习方法类似，DNN在训练过程中也会遇到过拟合的现象，尤其是当参数数量多于输入数据量时。为了防止过拟合现象，除了增加训练样本外，最常见的就是各种正则化方法，比如：数据增强、<span class="math inline">\(L1\)</span> 正则化、<span class="math inline">\(L2\)</span> 正则化、Dropout、DropConnect 和早停法（Early stopping）等。 下面对这些方法进行逐一介绍。 <span id="more"></span> # 正则化方法</p>
-<h2 id="数据增强">1. 数据增强</h2>
-<p>以图像处理为例，我们可以预先将图像做翻转拉伸，亮度调节，随机平移等操作，从而增大模型的训练数据集，增加模型的泛化能力。一般来说，现在在进行深度学习时数据增强已经成为一个必要的操作了。 但要注意的是，这种方法也不能用得太过分，一般来说用这种方法将数据集拓展到两倍已经很够了，如果再继续拓展，意义不大而且会浪费很多时间。 对于图像的数据增强方法可参见另一篇博文【图像的各种预处理方式】。</p>
-<h2 id="l1-l2正则">2. <span class="math inline">\(L1 / L2\)</span>正则</h2>
-<p>L1 / L2正则原理相似，是在损失函数后面加个正则化项，以此对损失函数进行约束，感觉就是用拉格朗日解带约束的优化问题。现假设我们的损失函数为<span class="math inline">\(L(y_i,\hat{y}_i)\)</span>。 这里先写三个概念：</p>
+        <h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>与其它机器学习方法类似，DNN在训练过程中也会遇到过拟合的现象，尤其是当参数数量多于输入数据量时。为了防止过拟合现象，除了增加训练样本外，最常见的就是各种正则化方法，比如：数据增强、$L1$ 正则化、$L2$ 正则化、Dropout、DropConnect 和早停法（Early stopping）等。<br>下面对这些方法进行逐一介绍。<br><span id="more"></span></p>
+<h1 id="正则化方法"><a href="#正则化方法" class="headerlink" title="正则化方法"></a>正则化方法</h1><h2 id="1-数据增强"><a href="#1-数据增强" class="headerlink" title="1. 数据增强"></a>1. 数据增强</h2><p>以图像处理为例，我们可以预先将图像做翻转拉伸，亮度调节，随机平移等操作，从而增大模型的训练数据集，增加模型的泛化能力。一般来说，现在在进行深度学习时数据增强已经成为一个必要的操作了。<br>但要注意的是，这种方法也不能用得太过分，一般来说用这种方法将数据集拓展到两倍已经很够了，如果再继续拓展，意义不大而且会浪费很多时间。<br>对于图像的数据增强方法可参见另一篇博文【图像的各种预处理方式】。</p>
+<h2 id="2-L1-L2-正则"><a href="#2-L1-L2-正则" class="headerlink" title="2. $L1 / L2$正则"></a>2. $L1 / L2$正则</h2><p>L1 / L2正则原理相似，是在损失函数后面加个正则化项，以此对损失函数进行约束，感觉就是用拉格朗日解带约束的优化问题。现假设我们的损失函数为$L(y_i,\hat{y}_i)$。<br>这里先写三个概念：</p>
 <blockquote>
-<ol type="1">
-<li><span class="math inline">\(L0\)</span>正则：向量中非零元素的个数，记作：<span class="math inline">\(||W||_0\)</span>；<br />
-</li>
-<li><span class="math inline">\(L1\)</span>正则：向量中元素绝对值之和，记作：<span class="math inline">\(||W||_1\)</span>；<br />
-</li>
-<li><span class="math inline">\(L2\)</span>正则：也就是模，记作：<span class="math inline">\(||W||_2\)</span></li>
+<ol>
+<li>$L0$正则：向量中非零元素的个数，记作：$||W||_0$；\</li>
+<li>$L1$正则：向量中元素绝对值之和，记作：$||W||_1$；\</li>
+<li>$L2$正则：也就是模，记作：$||W||_2$</li>
 </ol>
 </blockquote>
-<p>对于单个数据，假设其特征项<span class="math inline">\(X\)</span>为：<span class="math inline">\(x_0,x_1,...,x_N\)</span>，对应的权重项<span class="math inline">\(W\)</span>为：<span class="math inline">\(w_0,w_1,...,w_N\)</span>，为了防止过拟合，即是要减少数据的特征项数<span class="math inline">\(N\)</span>，这里选择通过控制权重项<span class="math inline">\(W\)</span>来控制特征项数<span class="math inline">\(N\)</span>，为什么不通过特征项<span class="math inline">\(X\)</span>呢？因为我们不确定下一个输入数据的特征项有多少，没法控制。也就是说，现在我们要做的就是控制权重项<span class="math inline">\(W\)</span>的项数，使其数目最少。</p>
-<h3 id="l1正则">2.1 <span class="math inline">\(L1\)</span>正则</h3>
-<p>最开始用的其实是<span class="math inline">\(L0\)</span>正则，也就是说我们要同时让损失函数<span class="math inline">\(L(y_i,\hat{y}_i)\)</span>以及<span class="math inline">\(||W||_0\)</span>正则项最小，即是求它们之和最小。</p>
+<p>对于单个数据，假设其特征项$X$为：$x_0,x_1,…,x_N$，对应的权重项$W$为：$w_0,w_1,…,w_N$，为了防止过拟合，即是要减少数据的特征项数$N$，这里选择通过控制权重项$W$来控制特征项数$N$，为什么不通过特征项$X$呢？因为我们不确定下一个输入数据的特征项有多少，没法控制。也就是说，现在我们要做的就是控制权重项$W$的项数，使其数目最少。</p>
+<h3 id="2-1-L1-正则"><a href="#2-1-L1-正则" class="headerlink" title="2.1 $L1$正则"></a>2.1 $L1$正则</h3><p>最开始用的其实是$L0$正则，也就是说我们要同时让损失函数$L(y_i,\hat{y}_i)$以及$||W||_0$正则项最小，即是求它们之和最小。</p>
 <p>补充一点点东西</p>
 <blockquote>
-<ol type="1">
-<li>这里我们也就是要实现参数矩阵<span class="math inline">\(W\)</span>稀疏，现在实现稀疏基本都是用<span class="math inline">\(L1\)</span>正则，不用<span class="math inline">\(L0\)</span>正则；<br />
-</li>
+<ol>
+<li>这里我们也就是要实现参数矩阵$W$稀疏，现在实现稀疏基本都是用$L1$正则，不用$L0$正则；\</li>
 <li>参数矩阵稀疏通常是为了特征选择和易于解释方面的考虑</li>
 </ol>
 </blockquote>
-<p>但由于<span class="math inline">\(L0\)</span>正则不好计算，所以我们转而求<span class="math inline">\(L1\)</span>正则，通过上面两概念可以知道，这两者在这里的计算意义是类似的，也就是最优凸近似（具体推导看不下去，有兴趣的参看Emmanuel Candes的paper）。 加上<span class="math inline">\(L1\)</span>正则项后新的损失函数如下：<span class="math display">\[L^{new}=L(y_i,\hat{y}_i)+\alpha ||W||_1\]</span>有些地方会写得更具体，如下：<span class="math display">\[J(w,b)=\frac{1}{m}\sum_{i=1}^mL(y_i,\hat{y}_i)+\frac{\lambda}{2m}||w||_1\]</span>反正意思都一样。这里的<span class="math inline">\(\lambda\)</span>属于超参数，也就是我们要自己调的，越大正则化越明显。 由于损失函数变化了，梯度也会跟着变化，也就是会带来梯度更新方向的不同，之后的计算跟以前一样。</p>
-<h3 id="l2正则">2.2 <span class="math inline">\(L2\)</span>正则</h3>
-<p><span class="math inline">\(L2\)</span>是求模，也就是矩阵各元素求平方和再开方，采用<span class="math inline">\(L2\)</span>正则的目的是让各参数趋近于<span class="math inline">\(0\)</span>，也就是让他们最小化。（<span class="math inline">\(L1\)</span>则是让它们等于<span class="math inline">\(0\)</span>，也就是稀疏） 那为什么让参数最小化可以有效防止过拟合呢？通过<span class="math inline">\(L2\)</span>正则可以构造出一个参数都比较小的模型，一方面，对于那些实在不重要的特征，其权重会非常接近于0，但没有等于，影响已经很小了；另一方面，当参数很小时，既使数据变化比较大，其对结果的影响也不会很大，即模型的抗干扰能力会比较强。 其形式和<span class="math inline">\(L1\)</span>基本一样，只要把后面的项改成<span class="math inline">\(L2\)</span>正则即可。</p>
-<h3 id="l1与l2的总结比较">2.3 <span class="math inline">\(L1\)</span>与<span class="math inline">\(L2\)</span>的总结比较</h3>
-<p><span class="math inline">\(L1\)</span>,<span class="math inline">\(L2\)</span>在一些地方也写作LASSO和岭回归（在之前的【线性回归】也有提到一些）。 在各种防止过拟合的正则化中，<span class="math inline">\(L2\)</span>防过拟合效果都要优于<span class="math inline">\(L1\)</span>正则，所以与<span class="math inline">\(L1\)</span>相比，正则化一般都是用<span class="math inline">\(L2\)</span>，但当<span class="math inline">\(L1\)</span>正则中的系数<span class="math inline">\(\alpha\)</span>比较大时，也会得到系数极小的最优解，这时的<span class="math inline">\(L1\)</span>也具有防止过拟合的作用。 <span class="math inline">\(L1\)</span>正则由于可以实现稀疏矩阵，所以可以用来当作特征的选择。 有一点或许是需要注意的，在进行<span class="math inline">\(L2\)</span>正则化中，我们把权重变得很小，所以在进入激活函数的时候值是在<span class="math inline">\(0\)</span>附近的，以Sigmoid函数为例，当值在<span class="math inline">\(0\)</span>附近时，其激活函数可看作线性，也就是说整个深度神经网络进行线性化近似了（不确定能不能用这种说法），这即是优点也是缺点，优点是我们把神经网络简化了，这也是实现这种正则化方法的基础；但，由于我们计算的是这种近似线性的东西，当我们要做非常复杂的决策时，这种正则化方法是不适用的。</p>
-<h2 id="dropout">3. Dropout</h2>
-<p>这个就简单写了，因为基本思路不难。Dropout的基本思路是随机去掉神经元，也就是在进行一批数据训练时，我们随机去掉一些神经元，既可以是隐藏层的，也可以是输入层的，然后进行训练，更新参数；然后在下一批数据进来的时候我们要先恢复回最原来的网络结构，再随机去掉一些神经元，更新参数，继续。。。。 需要注意的是，Dropout方法每次更新的都是同一套参数，也就是不会产生新的参数（这点跟Bagging不同，Bagging是每次训练都有自己单独的一套）。 因为Dropout将原始数据分批迭代，用这种正则化方法前提是训练样本足够大，否则会产生欠拟合现象。</p>
-<h2 id="dropconnect">4. DropConnect</h2>
-<p>DropConnect跟Dropout其实很像，Dropout是通过去掉一些神经元来防止过拟合的，而DropConnect则是通过随机选择权重的子集设为<span class="math inline">\(0\)</span>，两种方法都能增强模型的泛化能力，都在模型中引入了稀疏性，但不同的是DropConnect是在权重中引入稀疏性而不是在层的输出向量中引入。</p>
-<h2 id="早停法early-stopping">5. 早停法（Early stopping）</h2>
-<p>训练过神经网络的都知道，当训练次数过多时，模型容易发生过拟合现象，那么我们只要在过拟合之前停止训练就可以了。这就是早停法，也是深度学习中非常常用的一种方法，因为简单又有效。用这种方法我们就要时刻检测验证集的损失，当其开始<strong>持续</strong>上升时，就该停止训练了。</p>
-<p><strong><em>END</em></strong><br />
-先写到这，另外写到后面总觉得这篇有点问题，我好像把正则化和防止过拟合这两个概念混为一谈了？</p>
-<h1 id="参考网站来源">参考网站来源</h1>
-<p>网站1：https://developer.aliyun.com/article/632944</p>
-<p>网站2：https://cloud.tencent.com/developer/article/1486732</p>
-<p>网站3：http://imgtec.eetrend.com/blog/2019/100045162.html</p>
+<p>但由于$L0$正则不好计算，所以我们转而求$L1$正则，通过上面两概念可以知道，这两者在这里的计算意义是类似的，也就是最优凸近似（具体推导看不下去，有兴趣的参看Emmanuel Candes的paper）。<br>加上$L1$正则项后新的损失函数如下：<script type="math/tex">L^{new}=L(y_i,\hat{y}_i)+\alpha ||W||_1</script>有些地方会写得更具体，如下：<script type="math/tex">J(w,b)=\frac{1}{m}\sum_{i=1}^mL(y_i,\hat{y}_i)+\frac{\lambda}{2m}||w||_1</script>反正意思都一样。这里的$\lambda$属于超参数，也就是我们要自己调的，越大正则化越明显。<br>由于损失函数变化了，梯度也会跟着变化，也就是会带来梯度更新方向的不同，之后的计算跟以前一样。</p>
+<h3 id="2-2-L2-正则"><a href="#2-2-L2-正则" class="headerlink" title="2.2 $L2$正则"></a>2.2 $L2$正则</h3><p>$L2$是求模，也就是矩阵各元素求平方和再开方，采用$L2$正则的目的是让各参数趋近于$0$，也就是让他们最小化。（$L1$则是让它们等于$0$，也就是稀疏）<br>那为什么让参数最小化可以有效防止过拟合呢？通过$L2$正则可以构造出一个参数都比较小的模型，一方面，对于那些实在不重要的特征，其权重会非常接近于0，但没有等于，影响已经很小了；另一方面，当参数很小时，既使数据变化比较大，其对结果的影响也不会很大，即模型的抗干扰能力会比较强。<br>其形式和$L1$基本一样，只要把后面的项改成$L2$正则即可。</p>
+<h3 id="2-3-L1-与-L2-的总结比较"><a href="#2-3-L1-与-L2-的总结比较" class="headerlink" title="2.3 $L1$与$L2$的总结比较"></a>2.3 $L1$与$L2$的总结比较</h3><p>$L1$,$L2$在一些地方也写作LASSO和岭回归（在之前的【线性回归】也有提到一些）。<br>在各种防止过拟合的正则化中，$L2$防过拟合效果都要优于$L1$正则，所以与$L1$相比，正则化一般都是用$L2$，但当$L1$正则中的系数$\alpha$比较大时，也会得到系数极小的最优解，这时的$L1$也具有防止过拟合的作用。<br>$L1$正则由于可以实现稀疏矩阵，所以可以用来当作特征的选择。<br>有一点或许是需要注意的，在进行$L2$正则化中，我们把权重变得很小，所以在进入激活函数的时候值是在$0$附近的，以Sigmoid函数为例，当值在$0$附近时，其激活函数可看作线性，也就是说整个深度神经网络进行线性化近似了（不确定能不能用这种说法），这即是优点也是缺点，优点是我们把神经网络简化了，这也是实现这种正则化方法的基础；但，由于我们计算的是这种近似线性的东西，当我们要做非常复杂的决策时，这种正则化方法是不适用的。</p>
+<h2 id="3-Dropout"><a href="#3-Dropout" class="headerlink" title="3. Dropout"></a>3. Dropout</h2><p>这个就简单写了，因为基本思路不难。Dropout的基本思路是随机去掉神经元，也就是在进行一批数据训练时，我们随机去掉一些神经元，既可以是隐藏层的，也可以是输入层的，然后进行训练，更新参数；然后在下一批数据进来的时候我们要先恢复回最原来的网络结构，再随机去掉一些神经元，更新参数，继续。。。。<br>需要注意的是，Dropout方法每次更新的都是同一套参数，也就是不会产生新的参数（这点跟Bagging不同，Bagging是每次训练都有自己单独的一套）。<br>因为Dropout将原始数据分批迭代，用这种正则化方法前提是训练样本足够大，否则会产生欠拟合现象。</p>
+<h2 id="4-DropConnect"><a href="#4-DropConnect" class="headerlink" title="4. DropConnect"></a>4. DropConnect</h2><p>DropConnect跟Dropout其实很像，Dropout是通过去掉一些神经元来防止过拟合的，而DropConnect则是通过随机选择权重的子集设为$0$，两种方法都能增强模型的泛化能力，都在模型中引入了稀疏性，但不同的是DropConnect是在权重中引入稀疏性而不是在层的输出向量中引入。</p>
+<h2 id="5-早停法（Early-stopping）"><a href="#5-早停法（Early-stopping）" class="headerlink" title="5. 早停法（Early stopping）"></a>5. 早停法（Early stopping）</h2><p>训练过神经网络的都知道，当训练次数过多时，模型容易发生过拟合现象，那么我们只要在过拟合之前停止训练就可以了。这就是早停法，也是深度学习中非常常用的一种方法，因为简单又有效。用这种方法我们就要时刻检测验证集的损失，当其开始<strong>持续</strong>上升时，就该停止训练了。</p>
+<p><strong><em>END</em></strong>\<br>先写到这，另外写到后面总觉得这篇有点问题，我好像把正则化和防止过拟合这两个概念混为一谈了？</p>
+<h1 id="参考网站来源"><a href="#参考网站来源" class="headerlink" title="参考网站来源"></a>参考网站来源</h1><p>网站1：<a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/632944">https://developer.aliyun.com/article/632944</a></p>
+<p>网站2：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1486732">https://cloud.tencent.com/developer/article/1486732</a></p>
+<p>网站3：<a target="_blank" rel="noopener" href="http://imgtec.eetrend.com/blog/2019/100045162.html">http://imgtec.eetrend.com/blog/2019/100045162.html</a></p>
 
     </div>
 
@@ -340,8 +319,8 @@
       <i class="fa fa-chevron-left"></i> 【ML-2020/21】CNN & Self-Attention
     </a></div>
       <div class="post-nav-item">
-    <a href="/posts/18.html" rel="next" title="【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍">
-      【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍 <i class="fa fa-chevron-right"></i>
+    <a href="/posts/15.html" rel="next" title="非线性优化">
+      非线性优化 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -402,7 +381,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA"><span class="nav-number">1.1.</span> <span class="nav-text">1. 数据增强</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#l1-l2%E6%AD%A3%E5%88%99"><span class="nav-number">1.2.</span> <span class="nav-text">2. \(L1 &#x2F; L2\)正则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#l1%E6%AD%A3%E5%88%99"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 \(L1\)正则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#l2%E6%AD%A3%E5%88%99"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 \(L2\)正则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#l1%E4%B8%8El2%E7%9A%84%E6%80%BB%E7%BB%93%E6%AF%94%E8%BE%83"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 \(L1\)与\(L2\)的总结比较</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dropout"><span class="nav-number">1.3.</span> <span class="nav-text">3. Dropout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dropconnect"><span class="nav-number">1.4.</span> <span class="nav-text">4. DropConnect</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A9%E5%81%9C%E6%B3%95early-stopping"><span class="nav-number">1.5.</span> <span class="nav-text">5. 早停法（Early stopping）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E7%BD%91%E7%AB%99%E6%9D%A5%E6%BA%90"><span class="nav-number">2.</span> <span class="nav-text">参考网站来源</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">正则化方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA"><span class="nav-number">2.1.</span> <span class="nav-text">1. 数据增强</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-L1-L2-%E6%AD%A3%E5%88%99"><span class="nav-number">2.2.</span> <span class="nav-text">2. $L1 &#x2F; L2$正则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-L1-%E6%AD%A3%E5%88%99"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.1 $L1$正则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-L2-%E6%AD%A3%E5%88%99"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2 $L2$正则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-L1-%E4%B8%8E-L2-%E7%9A%84%E6%80%BB%E7%BB%93%E6%AF%94%E8%BE%83"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.3 $L1$与$L2$的总结比较</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Dropout"><span class="nav-number">2.3.</span> <span class="nav-text">3. Dropout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-DropConnect"><span class="nav-number">2.4.</span> <span class="nav-text">4. DropConnect</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%97%A9%E5%81%9C%E6%B3%95%EF%BC%88Early-stopping%EF%BC%89"><span class="nav-number">2.5.</span> <span class="nav-text">5. 早停法（Early stopping）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E7%BD%91%E7%AB%99%E6%9D%A5%E6%BA%90"><span class="nav-number">3.</span> <span class="nav-text">参考网站来源</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -418,14 +397,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -453,7 +432,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

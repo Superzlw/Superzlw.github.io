@@ -22,17 +22,17 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="写在前面的说明 本文总结自B站博主DR_CAN，他是整个B站我最喜欢的博主没有之一，推荐大家直接去看他的视频，这篇当作学后的回顾，链接在这\(\rightarrow\)【传送门】。">
+  <meta name="description" content="写在前面的说明本文总结自B站博主DR_CAN，他是整个B站我最喜欢的博主没有之一，推荐大家直接去看他的视频，这篇当作学后的回顾，链接在这$\rightarrow$【传送门】。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="卡尔曼滤波（Kalman Filter）">
 <meta property="og:url" content="https://superzlw.github.io/posts/20.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="写在前面的说明 本文总结自B站博主DR_CAN，他是整个B站我最喜欢的博主没有之一，推荐大家直接去看他的视频，这篇当作学后的回顾，链接在这\(\rightarrow\)【传送门】。">
+<meta property="og:description" content="写在前面的说明本文总结自B站博主DR_CAN，他是整个B站我最喜欢的博主没有之一，推荐大家直接去看他的视频，这篇当作学后的回顾，链接在这$\rightarrow$【传送门】。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://superzlw.github.io/images/250.png">
 <meta property="og:image" content="https://superzlw.github.io/images/271.png">
-<meta property="article:published_time" content="2021-08-12T21:50:05.144Z">
-<meta property="article:modified_time" content="2021-08-22T14:05:42.331Z">
+<meta property="article:published_time" content="2021-08-22T20:05:44.000Z">
+<meta property="article:modified_time" content="2021-08-22T20:05:44.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://superzlw.github.io/images/250.png">
@@ -219,15 +219,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-08-12 23:50:05" itemprop="dateCreated datePublished" datetime="2021-08-12T23:50:05+02:00">2021-08-12</time>
+              <time title="创建时间：2021-08-22 22:05:44" itemprop="dateCreated datePublished" datetime="2021-08-22T22:05:44+02:00">2021-08-22</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-22 16:05:42" itemprop="dateModified" datetime="2021-08-22T16:05:42+02:00">2021-08-22</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -270,313 +263,277 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="写在前面的说明">写在前面的说明</h1>
-<p>本文总结自B站博主DR_CAN，他是整个B站我最喜欢的博主没有之一，推荐大家直接去看他的视频，这篇当作学后的回顾，链接在这<span class="math inline">\(\rightarrow\)</span><a target="_blank" rel="noopener" href="https://space.bilibili.com/230105574/channel/detail?cid=139198&amp;ctype=0">【传送门】</a>。 <span id="more"></span></p>
-<h1 id="引入-递归算法">引入 —— 递归算法</h1>
-<p>卡尔曼滤波器可看作是一种“Optimal Recursive Data Processing Algorithm”，即“最优的递归数字处理算法”。与滤波器相比它更像是一种观测器。<br />
-卡尔曼滤波器的应用非常广泛，尤其是导航中，这是因为现实生活中充满大量的不确定性，当我们描述一个系统的时候，这个不确定性主要体现在以下三个方面：<br />
-</p>
+        <h1 id="写在前面的说明"><a href="#写在前面的说明" class="headerlink" title="写在前面的说明"></a>写在前面的说明</h1><p>本文总结自B站博主DR_CAN，他是整个B站我最喜欢的博主没有之一，推荐大家直接去看他的视频，这篇当作学后的回顾，链接在这$\rightarrow$<a target="_blank" rel="noopener" href="https://space.bilibili.com/230105574/channel/detail?cid=139198&amp;ctype=0">【传送门】</a>。<br><span id="more"></span></p>
+<h1 id="引入-——-递归算法"><a href="#引入-——-递归算法" class="headerlink" title="引入 —— 递归算法"></a>引入 —— 递归算法</h1><p>卡尔曼滤波器可看作是一种“Optimal Recursive Data Processing Algorithm”，即“最优的递归数字处理算法”。与滤波器相比它更像是一种观测器。\<br>卡尔曼滤波器的应用非常广泛，尤其是导航中，这是因为现实生活中充满大量的不确定性，当我们描述一个系统的时候，这个不确定性主要体现在以下三个方面：\</p>
 <blockquote>
-<ol type="1">
-<li>不存在完美的数学模型；<br />
-</li>
-<li>系统的挠动是不可控的，也很难建模；<br />
-</li>
-<li>测量传感器存在误差。 </li>
+<ol>
+<li>不存在完美的数学模型；\</li>
+<li>系统的挠动是不可控的，也很难建模；\</li>
+<li>测量传感器存在误差。\ </li>
 </ol>
 </blockquote>
-<p>举个例子：<br />
-当我们要测量一枚硬币的直径时，设第<span class="math inline">\(k\)</span>次测量结果为<span class="math inline">\(z_k\)</span>，假如三次测量分别为： <span class="math display">\[z_1=50.1mm\]</span> <span class="math display">\[z_2=50.4mm\]</span> <span class="math display">\[z_3=50.2mm\]</span> 若要估计真实数据，很自然地，我们会用平均值来表示，即第<span class="math inline">\(k\)</span>次的估计值<span class="math inline">\(\hat{x}_k\)</span>为：</p>
-<p><span class="math display">\[
+<p>举个例子：\<br>当我们要测量一枚硬币的直径时，设第$k$次测量结果为$z_k$，假如三次测量分别为：</p>
+<script type="math/tex; mode=display">z_1=50.1mm</script><script type="math/tex; mode=display">z_2=50.4mm</script><script type="math/tex; mode=display">z_3=50.2mm</script><p>若要估计真实数据，很自然地，我们会用平均值来表示，即第$k$次的估计值$\hat{x}_k$为：</p>
+<script type="math/tex; mode=display">
 \begin{split}
-\hat{x}_k &amp;= \frac{1}{k}(z_1+...+z_k)\\\\ 
- &amp;= \frac{1}{k}(z_1+...+z_{k-1})+\frac{1}{k}z_k\\\\ &amp;=
+\hat{x}_k &= \frac{1}{k}(z_1+...+z_k)\\\\ 
+ &= \frac{1}{k}(z_1+...+z_{k-1})+\frac{1}{k}z_k\\\\ &=
 \frac{1}{k}\frac{k-1}{k-1}(z_1+...+z_{k-1})+\frac{1}{k}z_k \\\\
-&amp;=\frac{k-1}{k}\hat{x}_{k-1}+\frac{1}{k}z_k\\\\
-&amp;=\hat{x}_{k-1}-\frac{1}{k}\hat{x}_{k-1}+\frac{1}{k}z_k
-\end{split}
-\]</span></p>
-<p>即是：</p>
-<p><span class="math display">\[
-\hat{x}_k=\hat{x}_{k-1}+\frac{1}{k}(z_k-\hat{x}_{k-1})
-\]</span></p>
-<p>由此可见，当<span class="math inline">\(k\)</span>逐渐增加时，<span class="math inline">\(\frac{1}{k}\rightarrow \infty\)</span>，也就是说<span class="math inline">\(\hat{x}_k\rightarrow \hat{x}_{k-1}\)</span>。<br />
-用文字描述的话，就是说随着<span class="math inline">\(k\)</span>的增加，之后测量结果也就不再重要了，也就是对前面的真实估计值已经非常有信心了。<br />
-相反，当<span class="math inline">\(k\)</span>比较小时，<span class="math inline">\(\frac{1}{k}\)</span>就会很大，也就是说此时<span class="math inline">\(z_k\)</span>的作用会很大。<br />
-现在改写一下上面的式子为： <span class="math display">\[
-\hat{x}_k=\hat{x}_{k-1}+K_k(z_k-\hat{x}_{k-1})
-\]</span> 在卡尔曼滤波器里，这个系数<span class="math inline">\(K_k\)</span>就叫Kalman Gain，中文称为卡尔曼增益/因数。<br />
-由这个式子可以看出，跟马尔科夫链类似，当前估计值只与该次测量值以及上一次的估计值有关，这体现了一种递归的思想。<br />
-这里先对这个系数作简单的讨论。首先引入两个变量：</p>
+&=\frac{k-1}{k}\hat{x}_{k-1}+\frac{1}{k}z_k\\\\
+&=\hat{x}_{k-1}-\frac{1}{k}\hat{x}_{k-1}+\frac{1}{k}z_k
+\end{split}</script><p>即是：</p>
+<script type="math/tex; mode=display">
+\hat{x}_k=\hat{x}_{k-1}+\frac{1}{k}(z_k-\hat{x}_{k-1})</script><p>由此可见，当$k$逐渐增加时，$\frac{1}{k}\rightarrow \infty$，也就是说$\hat{x}_k\rightarrow \hat{x}_{k-1}$。\<br>用文字描述的话，就是说随着$k$的增加，之后测量结果也就不再重要了，也就是对前面的真实估计值已经非常有信心了。\<br>相反，当$k$比较小时，$\frac{1}{k}$就会很大，也就是说此时$z_k$的作用会很大。\<br>现在改写一下上面的式子为：</p>
+<script type="math/tex; mode=display">
+\hat{x}_k=\hat{x}_{k-1}+K_k(z_k-\hat{x}_{k-1})</script><p>在卡尔曼滤波器里，这个系数$K_k$就叫Kalman Gain，中文称为卡尔曼增益/因数。\<br>由这个式子可以看出，跟马尔科夫链类似，当前估计值只与该次测量值以及上一次的估计值有关，这体现了一种递归的思想。\<br>这里先对这个系数作简单的讨论。首先引入两个变量：</p>
 <blockquote>
-<ol type="1">
-<li>估计误差：<span class="math inline">\(e_{EST}\)</span>；<br />
-</li>
-<li>测量误差：<span class="math inline">\(e_{MEA}\)</span>。</li>
+<ol>
+<li>估计误差：$e_{EST}$；\</li>
+<li>测量误差：$e_{MEA}$。</li>
 </ol>
 </blockquote>
-<p>卡尔曼增益就等于： <span class="math display">\[
-K_k=\frac{e_{EST_{k-1}}}{e_{EST_{k-1}}+e_{MEA_k}}
-\]</span> <strong>这个公式是卡尔曼滤波的核心公式，详细推导见后文。</strong><br />
-这里先简单讨论在<span class="math inline">\(k\)</span>时刻两个变量的作用：</p>
+<p>卡尔曼增益就等于：</p>
+<script type="math/tex; mode=display">
+K_k=\frac{e_{EST_{k-1}}}{e_{EST_{k-1}}+e_{MEA_k}}</script><p><strong>这个公式是卡尔曼滤波的核心公式，详细推导见后文。</strong>\<br>这里先简单讨论在$k$时刻两个变量的作用：</p>
 <blockquote>
-<ol type="1">
-<li>当<span class="math inline">\(e_{EST_{k-1}} \gg e_{MEA_k}\)</span>，即<span class="math inline">\(k\rightarrow 1\)</span>时，<span class="math inline">\(\hat{x}_k=\hat{x}_{k-1}+z_k-\hat{x}_{k-1}=z_{k}\)</span>；<br />
-</li>
-<li>当<span class="math inline">\(e_{EST_{k-1}} \ll e_{MEA_k}\)</span>，即<span class="math inline">\(k\rightarrow 0\)</span>时，<span class="math inline">\(\hat{x}_k=\hat{x}_{k-1}\)</span>。</li>
+<ol>
+<li>当$e_{EST_{k-1}} \gg e_{MEA_k}$，即$k\rightarrow 1$时，$\hat{x}_k=\hat{x}_{k-1}+z_k-\hat{x}_{k-1}=z_{k}$；\</li>
+<li>当$e_{EST_{k-1}} \ll e_{MEA_k}$，即$k\rightarrow 0$时，$\hat{x}_k=\hat{x}_{k-1}$。</li>
 </ol>
 </blockquote>
 <p>运用卡尔曼滤波器，真实估计值就可以表示为以下三个步骤：</p>
 <blockquote>
-<ol type="1">
-<li><strong>Step 1</strong>：计算卡尔曼增益：<span class="math inline">\(K_k=\frac{e_{EST_{k-1}}}{e_{EST_{k-1}}+e_{MEA_k}}\)</span>；<br />
-</li>
-<li><strong>Step 2</strong>：计算当前估计值<span class="math inline">\(\hat{x}_k=\hat{x}_{k-1}+K_k(z_k-\hat{x}_{k-1})\)</span>；</li>
-<li><strong>Step 3</strong>：更新<span class="math inline">\(e_{EST_k}=(1-K_k)e_{EST_{k-1}}\)</span>（这个式子后面推导）。</li>
+<ol>
+<li><strong>Step 1</strong>：计算卡尔曼增益：$K_k=\frac{e_{EST_{k-1}}}{e_{EST_{k-1}}+e_{MEA_k}}$；\</li>
+<li><strong>Step 2</strong>：计算当前估计值$\hat{x}_k=\hat{x}_{k-1}+K_k(z_k-\hat{x}_{k-1})$；</li>
+<li><strong>Step 3</strong>：更新$e_{EST_k}=(1-K_k)e_{EST_{k-1}}$（这个式子后面推导）。</li>
 </ol>
 </blockquote>
-<p>这里举个例子说明上面三个步骤：<br />
-假设我们要测量一个长度是<span class="math inline">\(50mm\)</span>的物体，第0次的估计值，也就是相当于先验吧，是<span class="math inline">\(\hat{x}_0=40mm\)</span>，第0次估计误差为<span class="math inline">\(e_{EST_0}=5mm\)</span>，第一次测量为<span class="math inline">\(z_1=51mm\)</span>，测量误差一直为<span class="math inline">\(e_{MEA_k}=3mm\)</span>。<br />
-填入起始值，如下表：<br />
-</p>
+<p>这里举个例子说明上面三个步骤：\<br>假设我们要测量一个长度是$50mm$的物体，第0次的估计值，也就是相当于先验吧，是$\hat{x}_0=40mm$，第0次估计误差为$e_{EST_0}=5mm$，第一次测量为$z_1=51mm$，测量误差一直为$e_{MEA_k}=3mm$。\<br>填入起始值，如下表：\</p>
+<div class="table-container">
 <table>
 <thead>
-<tr class="header">
-<th style="text-align: center;"><span class="math inline">\(k\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(z_k\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(e_{MEA_k}\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(\hat{x}_k\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(K_k\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(e_{EST_k}\)</span></th>
+<tr>
+<th style="text-align:center">$k$</th>
+<th style="text-align:center">$z_k$</th>
+<th style="text-align:center">$e_{MEA_k}$</th>
+<th style="text-align:center">$\hat{x}_k$</th>
+<th style="text-align:center">$K_k$</th>
+<th style="text-align:center">$e_{EST_k}$</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: center;">0</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">40</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">5</td>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">40</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">5</td>
 </tr>
-<tr class="even">
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">51</td>
-<td style="text-align: center;">3</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">51</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
 </tr>
-<tr class="odd">
-<td style="text-align: center;">2</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
+<tr>
+<td style="text-align:center">2</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
 </tr>
-<tr class="even">
-<td style="text-align: center;">3</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
+<tr>
+<td style="text-align:center">3</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
 </tr>
 </tbody>
 </table>
-<p>借助上面三个步骤：<br />
-<span class="math inline">\(k=1\)</span>时： <span class="math display">\[
-K_k=\frac{5}{5+3}=0.625
-\]</span> <span class="math display">\[
-\hat{x}_k=40+0.625(51-40)=46.875
-\]</span> <span class="math display">\[
-e_{EST}=(1-0.625)\times 5 = 1.875
-\]</span> 然后<span class="math inline">\(k=2\)</span>时，设此次测量值为<span class="math inline">\(z_2=48\)</span>，重复上面的步骤，就可以填满表格了。如下：</p>
+</div>
+<p>借助上面三个步骤：\<br>$k=1$时：</p>
+<script type="math/tex; mode=display">
+K_k=\frac{5}{5+3}=0.625</script><script type="math/tex; mode=display">
+\hat{x}_k=40+0.625(51-40)=46.875</script><script type="math/tex; mode=display">
+e_{EST}=(1-0.625)\times 5 = 1.875</script><p>然后$k=2$时，设此次测量值为$z_2=48$，重复上面的步骤，就可以填满表格了。如下：</p>
+<div class="table-container">
 <table>
 <thead>
-<tr class="header">
-<th style="text-align: center;"><span class="math inline">\(k\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(z_k\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(e_{MEA_k}\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(\hat{x}_k\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(K_k\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(e_{EST_k}\)</span></th>
+<tr>
+<th style="text-align:center">$k$</th>
+<th style="text-align:center">$z_k$</th>
+<th style="text-align:center">$e_{MEA_k}$</th>
+<th style="text-align:center">$\hat{x}_k$</th>
+<th style="text-align:center">$K_k$</th>
+<th style="text-align:center">$e_{EST_k}$</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: center;">0</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">40</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">5</td>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">40</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">5</td>
 </tr>
-<tr class="even">
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">51</td>
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">46.88</td>
-<td style="text-align: center;">0.625</td>
-<td style="text-align: center;">1.875</td>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">51</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">46.88</td>
+<td style="text-align:center">0.625</td>
+<td style="text-align:center">1.875</td>
 </tr>
-<tr class="odd">
-<td style="text-align: center;">2</td>
-<td style="text-align: center;">48</td>
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">47.31</td>
-<td style="text-align: center;">0.385</td>
-<td style="text-align: center;">1.154</td>
+<tr>
+<td style="text-align:center">2</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">47.31</td>
+<td style="text-align:center">0.385</td>
+<td style="text-align:center">1.154</td>
 </tr>
-<tr class="even">
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">47</td>
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">47.22</td>
-<td style="text-align: center;">0.278</td>
-<td style="text-align: center;">0.833</td>
+<tr>
+<td style="text-align:center">3</td>
+<td style="text-align:center">47</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">47.22</td>
+<td style="text-align:center">0.278</td>
+<td style="text-align:center">0.833</td>
 </tr>
 </tbody>
 </table>
-<p>这样不断下去，最后这个真实估计值会收敛于<span class="math inline">\(50mm\)</span>。<br />
-借用博主视频里的数值结果图片，其表现如下： <img src="/images/250.png" /> 其中蓝色线表示测量值，红色线表示估计值。</p>
-<h1 id="数据融合协方差矩阵状态空间方程">数据融合，协方差矩阵，状态空间方程</h1>
-<p>这部分是复习基础知识，可跳过。</p>
-<h2 id="数据融合">数据融合</h2>
-<p>简单讲，就是从多个测量数据中找到一个最优的。<br />
-举个例子，我们在称量一个物体的时候，两次称量结果如下： <span class="math display">\[
-z_1=30g, \quad \sigma_1=2g
-\]</span> <span class="math display">\[
-z_2=32g, \quad \sigma_2=4g
-\]</span> 根据正态分布的性质，对于第一个测量结果，真实值落在区间[28,32]的概率是68.4%；对第二个测量结果，真实值落在区间[28,36]的概率是68.4%，如果这时候要我们估计真实值的话，我们会把真实值估计在区间[30,32]之间，而且由于第一个测量标准差较小，所以真实值会更靠近于30。<br />
-如果要我们在数学上得到一个比较准确的值，就可以用上面递归的方法，写出如下等式： <span class="math display">\[
-\hat{z}=z_1+K(z_2-z_1)
-\]</span> 其中 <span class="math inline">\(K\in [0,1]\)</span>，当<span class="math inline">\(K=0\)</span>时，<span class="math inline">\(\hat{z}=z_1\)</span>；当<span class="math inline">\(K=1\)</span>时，<span class="math inline">\(\hat{z}=z_2\)</span>。<br />
-现在我们要求<span class="math inline">\(K\)</span>，使得 <span class="math inline">\(\sigma_{\hat{z}}\)</span> 最小，即是要 <span class="math inline">\(Var(\hat{z})\)</span> 最小。<br />
-而这个方差我们可以写成： <span class="math display">\[
-\sigma_{\hat{z}}^2=Var(z_1+K(z_2-z_1))=Var((1-K)z_1+Kz_2)
-\]</span> 由于括号里的两项 <span class="math inline">\((1-K)z_1\)</span> 和 <span class="math inline">\(Kz_2\)</span> 相互独立(毕竟是两个不同的称，称量结果肯定不会相互影响)，根据方差的性质，上面式子可以继续往下写： <span class="math display">\[
-Var((1-K)z_1+Kz_2)=Var((1-K)z_1)+Var(Kz_2)=(1-K)^2Var(z_1)+K^2Var(z_2)
-\]</span> 将上面两个方差代入得： <span class="math display">\[
-(1-K)^2Var(z_1)+K^2Var(z_2)=(1-K)^2\sigma_1^2+K^2\sigma_2^2
-\]</span> 也就是说： <span class="math display">\[
-\sigma_{\hat{z}}^2=(1-K)^2\sigma_1^2+K^2\sigma_2^2
-\]</span> 现在要求最小值，所以就是对<span class="math inline">\(K\)</span>进行求导： <span class="math display">\[
-\frac{d\sigma_{\hat{z}}^2}{dK}=0
-\]</span> (中间过程自行计算)<br />
-最后求出<span class="math inline">\(K\)</span>的值为： <span class="math display">\[
-K=\frac{\sigma_1^2}{\sigma_1^2+\sigma_2^2}=0.2
-\]</span> 把<span class="math inline">\(K\)</span>代入上面式子，其最佳估计值为： <span class="math display">\[
-\hat{z}=z_1+K(z_2-z_1)=30+0.2(32-30)=30.4
-\]</span> 其方差为： <span class="math display">\[
-\sigma_{\hat{z}}^2=(1-0.2)^22^2+0.2^24^2=3.2
-\]</span> 标准差为：<span class="math inline">\(\sqrt{3.2}=1.79\)</span><br />
-这个计算过程就是数据融合。<br />
-</p>
-<h2 id="协方差矩阵">协方差矩阵</h2>
-<p>协方差矩阵是将矩阵，协方差在一个矩阵中表示出来，表明变量空间的联动关系。比如说下面这个表格：</p>
+</div>
+<p>这样不断下去，最后这个真实估计值会收敛于$50mm$。\<br>借用博主视频里的数值结果图片，其表现如下：<br><img src="/images/250.png" alt=""><br>其中蓝色线表示测量值，红色线表示估计值。</p>
+<h1 id="数据融合，协方差矩阵，状态空间方程"><a href="#数据融合，协方差矩阵，状态空间方程" class="headerlink" title="数据融合，协方差矩阵，状态空间方程"></a>数据融合，协方差矩阵，状态空间方程</h1><p>这部分是复习基础知识，可跳过。</p>
+<h2 id="数据融合"><a href="#数据融合" class="headerlink" title="数据融合"></a>数据融合</h2><p>简单讲，就是从多个测量数据中找到一个最优的。\<br>举个例子，我们在称量一个物体的时候，两次称量结果如下：</p>
+<script type="math/tex; mode=display">
+z_1=30g, \quad \sigma_1=2g</script><script type="math/tex; mode=display">
+z_2=32g, \quad \sigma_2=4g</script><p>根据正态分布的性质，对于第一个测量结果，真实值落在区间[28,32]的概率是68.4%；对第二个测量结果，真实值落在区间[28,36]的概率是68.4%，如果这时候要我们估计真实值的话，我们会把真实值估计在区间[30,32]之间，而且由于第一个测量标准差较小，所以真实值会更靠近于30。\<br>如果要我们在数学上得到一个比较准确的值，就可以用上面递归的方法，写出如下等式：</p>
+<script type="math/tex; mode=display">
+\hat{z}=z_1+K(z_2-z_1)</script><p>其中 $K\in [0,1]$，当$K=0$时，$\hat{z}=z_1$；当$K=1$时，$\hat{z}=z_2$。\<br>现在我们要求$K$，使得 $\sigma_{\hat{z}}$ 最小，即是要 $Var(\hat{z})$ 最小。\<br>而这个方差我们可以写成：</p>
+<script type="math/tex; mode=display">
+\sigma_{\hat{z}}^2=Var(z_1+K(z_2-z_1))=Var((1-K)z_1+Kz_2)</script><p>由于括号里的两项 $(1-K)z_1$ 和 $Kz_2$ 相互独立(毕竟是两个不同的称，称量结果肯定不会相互影响)，根据方差的性质，上面式子可以继续往下写：</p>
+<script type="math/tex; mode=display">
+Var((1-K)z_1+Kz_2)=Var((1-K)z_1)+Var(Kz_2)=(1-K)^2Var(z_1)+K^2Var(z_2)</script><p>将上面两个方差代入得：</p>
+<script type="math/tex; mode=display">
+(1-K)^2Var(z_1)+K^2Var(z_2)=(1-K)^2\sigma_1^2+K^2\sigma_2^2</script><p>也就是说：</p>
+<script type="math/tex; mode=display">
+\sigma_{\hat{z}}^2=(1-K)^2\sigma_1^2+K^2\sigma_2^2</script><p>现在要求最小值，所以就是对$K$进行求导：</p>
+<script type="math/tex; mode=display">
+\frac{d\sigma_{\hat{z}}^2}{dK}=0</script><p>(中间过程自行计算)\<br>最后求出$K$的值为：</p>
+<script type="math/tex; mode=display">
+K=\frac{\sigma_1^2}{\sigma_1^2+\sigma_2^2}=0.2</script><p>把$K$代入上面式子，其最佳估计值为：</p>
+<script type="math/tex; mode=display">
+\hat{z}=z_1+K(z_2-z_1)=30+0.2(32-30)=30.4</script><p>其方差为：</p>
+<script type="math/tex; mode=display">
+\sigma_{\hat{z}}^2=(1-0.2)^22^2+0.2^24^2=3.2</script><p>标准差为：$\sqrt{3.2}=1.79$\<br>这个计算过程就是数据融合。\</p>
+<h2 id="协方差矩阵"><a href="#协方差矩阵" class="headerlink" title="协方差矩阵"></a>协方差矩阵</h2><p>协方差矩阵是将矩阵，协方差在一个矩阵中表示出来，表明变量空间的联动关系。比如说下面这个表格：</p>
+<div class="table-container">
 <table>
 <thead>
-<tr class="header">
-<th style="text-align: center;">名字</th>
-<th style="text-align: center;">身高<span class="math inline">\((x)\)</span></th>
-<th style="text-align: center;">体重<span class="math inline">\((y)\)</span></th>
-<th style="text-align: center;">年龄<span class="math inline">\((z)\)</span></th>
+<tr>
+<th style="text-align:center">名字</th>
+<th style="text-align:center">身高$(x)$</th>
+<th style="text-align:center">体重$(y)$</th>
+<th style="text-align:center">年龄$(z)$</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: center;">A</td>
-<td style="text-align: center;">179</td>
-<td style="text-align: center;">74</td>
-<td style="text-align: center;">33</td>
+<tr>
+<td style="text-align:center">A</td>
+<td style="text-align:center">179</td>
+<td style="text-align:center">74</td>
+<td style="text-align:center">33</td>
 </tr>
-<tr class="even">
-<td style="text-align: center;">B</td>
-<td style="text-align: center;">187</td>
-<td style="text-align: center;">80</td>
-<td style="text-align: center;">31</td>
+<tr>
+<td style="text-align:center">B</td>
+<td style="text-align:center">187</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">31</td>
 </tr>
-<tr class="odd">
-<td style="text-align: center;">C</td>
-<td style="text-align: center;">175</td>
-<td style="text-align: center;">71</td>
-<td style="text-align: center;">28</td>
+<tr>
+<td style="text-align:center">C</td>
+<td style="text-align:center">175</td>
+<td style="text-align:center">71</td>
+<td style="text-align:center">28</td>
 </tr>
-<tr class="even">
-<td style="text-align: center;">均值</td>
-<td style="text-align: center;">180.3</td>
-<td style="text-align: center;">75</td>
-<td style="text-align: center;">30.7</td>
+<tr>
+<td style="text-align:center">均值</td>
+<td style="text-align:center">180.3</td>
+<td style="text-align:center">75</td>
+<td style="text-align:center">30.7</td>
 </tr>
 </tbody>
 </table>
-<p>计算出变量<span class="math inline">\(x,y,z\)</span>的方差为： <span class="math display">\[
-\sigma_x^2=24.89,\quad \sigma_y^2=14,\quad\sigma_z^2=4.22
-\]</span> 计算协方差为： <span class="math display">\[
+</div>
+<p>计算出变量$x,y,z$的方差为：</p>
+<script type="math/tex; mode=display">
+\sigma_x^2=24.89,\quad \sigma_y^2=14,\quad\sigma_z^2=4.22</script><p>计算协方差为：</p>
+<script type="math/tex; mode=display">
 \begin{aligned}
-\sigma_x\sigma_y &amp;= \frac{1}{3}((179-180.3)(74-75)+(187-180.3)(80-75)+(175-180.3)(71-75))\\
-&amp;= 18.7=\sigma_y\sigma_x
-\end{aligned}
-\]</span> 同理： <span class="math display">\[
-\sigma_x\sigma_z=4.4=\sigma_z\sigma_x, \quad \sigma_y\sigma_z=3.3=\sigma_z\sigma_y
-\]</span> (协方差矩阵是对称矩阵。)<br />
-协方差矩阵形式如下： <span class="math display">\[
+\sigma_x\sigma_y &= \frac{1}{3}((179-180.3)(74-75)+(187-180.3)(80-75)+(175-180.3)(71-75))\\
+&= 18.7=\sigma_y\sigma_x
+\end{aligned}</script><p>同理：</p>
+<script type="math/tex; mode=display">
+\sigma_x\sigma_z=4.4=\sigma_z\sigma_x, \quad \sigma_y\sigma_z=3.3=\sigma_z\sigma_y</script><p>(协方差矩阵是对称矩阵。)\<br>协方差矩阵形式如下：</p>
+<script type="math/tex; mode=display">
  \left[
  \begin{matrix}
-   \sigma_x^2 &amp; \sigma_{x,y} &amp; \sigma_{x,z} \\
-   \sigma_{y,x} &amp; \sigma_y^2 &amp; \sigma_{y,z} \\
-   \sigma_{z,x} &amp; \sigma_{z,y} &amp; \sigma_z^2
+   \sigma_x^2 & \sigma_{x,y} & \sigma_{x,z} \\
+   \sigma_{y,x} & \sigma_y^2 & \sigma_{y,z} \\
+   \sigma_{z,x} & \sigma_{z,y} & \sigma_z^2
   \end{matrix}
-  \right]
-\]</span> 代入数据： <span class="math display">\[
+  \right]</script><p>代入数据：</p>
+<script type="math/tex; mode=display">
  \left[
  \begin{matrix}
-   24.89 &amp; 18.7 &amp; 4.4 \\
-   18.7 &amp; 14 &amp; 3.3 \\
-   4.4 &amp; 3.3 &amp; 4.22
+   24.89 & 18.7 & 4.4 \\
+   18.7 & 14 & 3.3 \\
+   4.4 & 3.3 & 4.22
   \end{matrix}
-  \right]
-\]</span> <strong>矩阵计算的方法</strong> 在写代码的时候，用矩阵计算方法计算协方差明显更容易书写，其形式如下：<br />
-过渡矩阵： <span class="math display">\[
+  \right]</script><p><strong>矩阵计算的方法</strong><br>在写代码的时候，用矩阵计算方法计算协方差明显更容易书写，其形式如下：\<br>过渡矩阵：</p>
+<script type="math/tex; mode=display">
 a=
  \left[
  \begin{matrix}
-   x_1 &amp; y_1 &amp; z_1 \\
-   x_2 &amp; y_2 &amp; z_2 \\
-   x_3 &amp; y_3 &amp; z_3
+   x_1 & y_1 & z_1 \\
+   x_2 & y_2 & z_2 \\
+   x_3 & y_3 & z_3
  \end{matrix}
  \right]
 -
 \frac{1}{3}
  \left[
  \begin{matrix}
-   1 &amp; 1 &amp; 1 \\
-   1 &amp; 1 &amp; 1 \\
-   1 &amp; 1 &amp; 1
+   1 & 1 & 1 \\
+   1 & 1 & 1 \\
+   1 & 1 & 1
   \end{matrix}
   \right]
    \left[
  \begin{matrix}
-   x_1 &amp; y_1 &amp; z_1 \\
-   x_2 &amp; y_2 &amp; z_2 \\
-   x_3 &amp; y_3 &amp; z_3
+   x_1 & y_1 & z_1 \\
+   x_2 & y_2 & z_2 \\
+   x_3 & y_3 & z_3
   \end{matrix}
-  \right]
-\]</span> 协方差矩阵： <span class="math display">\[
-P=\frac{1}{3}a^Ta
-\]</span> 现在我们观察上面得出的那个协方差矩阵，先看对角线，前两个数字都很大（其实第三个数字不应该这么小的，但毕竟只取了三个数据，偶然性太大），表明数据波动是比较大的，说明身高体重在这个群体里影响不大；接着看其它数据，比如这个18.7，说明身高跟体重是成正比的，且相关性较大，也符合常理；然后再看看4.4，说明身高跟年龄关系不大，也对，到一定年龄身高跟年龄关系就不大了……<br />
-</p>
-<h2 id="状态空间方程">状态空间方程</h2>
-<p>比如说对于一个弹簧阻尼系统：<img src="/images/271.png" /> 我们可以很容易写出如下微分方程(<span class="math inline">\(x\)</span>为位移)： <span class="math display">\[
-m\ddot{x}+c\dot{x}+kx=F
-\]</span> 状态量为： <span class="math display">\[
-x_1=x;\quad x_2=\dot{x}
-\]</span> 观测量为： <span class="math display">\[
-z_1=x=x_1;位置\quad z_2=\dot{x}=x_2速度
-\]</span> 设<span class="math inline">\(F\)</span>为输入值，等于<span class="math inline">\(u\)</span>。<br />
-写成一阶微分矩阵形式如下： <span class="math display">\[
+  \right]</script><p>协方差矩阵：</p>
+<script type="math/tex; mode=display">
+P=\frac{1}{3}a^Ta</script><p>现在我们观察上面得出的那个协方差矩阵，先看对角线，前两个数字都很大（其实第三个数字不应该这么小的，但毕竟只取了三个数据，偶然性太大），表明数据波动是比较大的，说明身高体重在这个群体里影响不大；接着看其它数据，比如这个18.7，说明身高跟体重是成正比的，且相关性较大，也符合常理；然后再看看4.4，说明身高跟年龄关系不大，也对，到一定年龄身高跟年龄关系就不大了……\</p>
+<h2 id="状态空间方程"><a href="#状态空间方程" class="headerlink" title="状态空间方程"></a>状态空间方程</h2><p>比如说对于一个弹簧阻尼系统：<img src="/images/271.png" alt=""><br>我们可以很容易写出如下微分方程($x$为位移)：</p>
+<script type="math/tex; mode=display">
+m\ddot{x}+c\dot{x}+kx=F</script><p>状态量为：</p>
+<script type="math/tex; mode=display">
+x_1=x;\quad x_2=\dot{x}</script><p>观测量为：</p>
+<script type="math/tex; mode=display">
+z_1=x=x_1;位置\quad z_2=\dot{x}=x_2速度</script><p>设$F$为输入值，等于$u$。\<br>写成一阶微分矩阵形式如下：</p>
+<script type="math/tex; mode=display">
    \left[
 \begin{matrix}
    \dot{x_1}  \\
@@ -586,8 +543,8 @@ z_1=x=x_1;位置\quad z_2=\dot{x}=x_2速度
 =
    \left[
 \begin{matrix}
-   0 &amp; 1  \\
-   -\frac{k}{m} &amp; -\frac{c}{m} 
+   0 & 1  \\
+   -\frac{k}{m} & -\frac{c}{m} 
   \end{matrix}
   \right]
      \left[
@@ -603,8 +560,8 @@ z_1=x=x_1;位置\quad z_2=\dot{x}=x_2速度
    \frac{1}{m} 
   \end{matrix}
   \right]
-u
-\]</span> 观测矩阵为： <span class="math display">\[
+u</script><p>观测矩阵为：</p>
+<script type="math/tex; mode=display">
 \left[
 \begin{matrix}
    z_1  \\
@@ -614,8 +571,8 @@ u
 =
    \left[
 \begin{matrix}
-   1 &amp; 0  \\
-   0 &amp; 1 
+   1 & 0  \\
+   0 & 1 
   \end{matrix}
   \right]
       \left[
@@ -623,49 +580,40 @@ u
    x_1  \\
    x_2
   \end{matrix}
-  \right]
-\]</span> 以上两个矩阵表达式就是状态空间表达式，归纳一下可以写为： <span class="math display">\[
-\dot{X}_t=AX_t+Bu_t
-\]</span> <span class="math display">\[
-Z_t=HX_t
-\]</span> 这是一种连续的表达式，左边<span class="math inline">\(X\)</span>是对时间求导。<br />
-写成离散形式为： <span class="math display">\[
-X_k=AX_{k-1}+Bu_{k-1}
-\]</span> <span class="math display">\[
-Z_k=HX_k
-\]</span> 其下标<span class="math inline">\(k.k+1,k+2...\)</span>为时间单位，即是采样。<br />
-在实际生活中到处充满着不确定性，上面那个离散的状态空间表达式可以写为： <span class="math display">\[
-X_k=AX_{k-1}+Bu_{k-1}+w_{k-1}
-\]</span> <span class="math display">\[
-Z_k=HX_k+v_k
-\]</span> 其中<span class="math inline">\(w_{k-1}\)</span>为过程噪音，<span class="math inline">\(v_k\)</span>为测量噪音。<br />
-根据这些如何去估计一个<span class="math inline">\(\hat{X}_k\)</span>呢？这就是卡尔曼滤波器要解决的问题。</p>
-<h1 id="卡尔曼增益的数学推导">卡尔曼增益的数学推导</h1>
-<p>在一开始我们用了卡尔曼增益，但却没有解释为什么这个增益是这种形式，这部分就是对它的推导。<br />
-将上面那个离散情况下带噪音的状态空间方程写下来如下： <span class="math display">\[
-X_k=AX_{k-1}+Bu_{k-1}+w_{k-1}
-\]</span> <span class="math display">\[
-Z_k=HX_k+v_k
-\]</span> 两个方程的噪音部分是我们不可测的，但在自然界中我们可以把这噪声假设成正态分布(why? 只能说自然界就是这么神奇)。所以我们可以把过程噪音写成： <span class="math display">\[
-P(w) \sim (0,Q)
-\]</span> 这里0是期望，<span class="math inline">\(Q\)</span>是协方差矩阵。这个<span class="math inline">\(Q\)</span>可以用下面的式子计算： <span class="math display">\[
-Q=E[ww^T]
-\]</span> 举个例子，假如现在<span class="math inline">\(X_k\)</span>由两部分组成，即是： <span class="math display">\[
+  \right]</script><p>以上两个矩阵表达式就是状态空间表达式，归纳一下可以写为：</p>
+<script type="math/tex; mode=display">
+\dot{X}_t=AX_t+Bu_t</script><script type="math/tex; mode=display">
+Z_t=HX_t</script><p>这是一种连续的表达式，左边$X$是对时间求导。\<br>写成离散形式为：</p>
+<script type="math/tex; mode=display">
+X_k=AX_{k-1}+Bu_{k-1}</script><script type="math/tex; mode=display">
+Z_k=HX_k</script><p>其下标$k.k+1,k+2…$为时间单位，即是采样。\<br>在实际生活中到处充满着不确定性，上面那个离散的状态空间表达式可以写为：</p>
+<script type="math/tex; mode=display">
+X_k=AX_{k-1}+Bu_{k-1}+w_{k-1}</script><script type="math/tex; mode=display">
+Z_k=HX_k+v_k</script><p>其中$w_{k-1}$为过程噪音，$v_k$为测量噪音。\<br>根据这些如何去估计一个$\hat{X}_k$呢？这就是卡尔曼滤波器要解决的问题。</p>
+<h1 id="卡尔曼增益的数学推导"><a href="#卡尔曼增益的数学推导" class="headerlink" title="卡尔曼增益的数学推导"></a>卡尔曼增益的数学推导</h1><p>在一开始我们用了卡尔曼增益，但却没有解释为什么这个增益是这种形式，这部分就是对它的推导。\<br>将上面那个离散情况下带噪音的状态空间方程写下来如下：</p>
+<script type="math/tex; mode=display">
+X_k=AX_{k-1}+Bu_{k-1}+w_{k-1}</script><script type="math/tex; mode=display">
+Z_k=HX_k+v_k</script><p>两个方程的噪音部分是我们不可测的，但在自然界中我们可以把这噪声假设成正态分布(why? 只能说自然界就是这么神奇)。所以我们可以把过程噪音写成：</p>
+<script type="math/tex; mode=display">
+P(w) \sim (0,Q)</script><p>这里0是期望，$Q$是协方差矩阵。这个$Q$可以用下面的式子计算：</p>
+<script type="math/tex; mode=display">
+Q=E[ww^T]</script><p>举个例子，假如现在$X_k$由两部分组成，即是：</p>
+<script type="math/tex; mode=display">
 X_k=
 \left[
   \begin{matrix}
    x_1  \\
    x_2
   \end{matrix}
-\right]
-\]</span> 则对应的过程噪音就是： <span class="math display">\[
+\right]</script><p>则对应的过程噪音就是：</p>
+<script type="math/tex; mode=display">
 \left[
 \begin{matrix}
    w_1  \\
    w_2
   \end{matrix}
-  \right]
-\]</span> 这个噪音的协方差矩阵为： <span class="math display">\[
+  \right]</script><p>这个噪音的协方差矩阵为：</p>
+<script type="math/tex; mode=display">
 E[
 \left[
 \begin{matrix}
@@ -675,21 +623,20 @@ E[
   \right]
 \left[
 \begin{matrix}
-   w_1 &amp; w_2
+   w_1 & w_2
   \end{matrix}
   \right]
 ]
 =
 \left[
 \begin{matrix}
-   E[w_1^2] &amp; E[w_1w_2]  \\
-   E[w_2w_1] &amp; E[w_2^2]
+   E[w_1^2] & E[w_1w_2]  \\
+   E[w_2w_1] & E[w_2^2]
   \end{matrix}
-  \right]
-\]</span> 另外，对于方差我们有： <span class="math display">\[
-Var(x)=E(x^2)-E^2(x)
-\]</span> 在这里噪音的期望为0，所以：<span class="math inline">\(Var(x)=E(x^2)\)</span>，上面的矩阵可以写为：<br />
-<span class="math display">\[
+  \right]</script><p>另外，对于方差我们有：</p>
+<script type="math/tex; mode=display">
+Var(x)=E(x^2)-E^2(x)</script><p>在这里噪音的期望为0，所以：$Var(x)=E(x^2)$，上面的矩阵可以写为：\</p>
+<script type="math/tex; mode=display">
 E[
 \left[
 \begin{matrix}
@@ -699,155 +646,133 @@ E[
   \right]
 \left[
 \begin{matrix}
-   w_1 &amp; w_2
+   w_1 & w_2
   \end{matrix}
   \right]
 ]
 =
 \left[
 \begin{matrix}
-   \sigma_{w_1}^2 &amp; \sigma_{w_1,w_2}  \\
-   \sigma_{w_2,w_1} &amp; \sigma_{w_2}^2
+   \sigma_{w_1}^2 & \sigma_{w_1,w_2}  \\
+   \sigma_{w_2,w_1} & \sigma_{w_2}^2
   \end{matrix}
-  \right]
-\]</span> 噪音的协方差矩阵就出来了，所以这个式子： <span class="math display">\[
-Q=E[ww^T]
-\]</span> 是正确的。 同理，对于测量噪音<span class="math inline">\(v_k\)</span>，也是一样的： <span class="math display">\[
-p(v)\sim (0,R)
-\]</span> <span class="math inline">\(R\)</span>是协方差矩阵，同样用上面的方法也可以计算。<br />
-在实际建模中，这两个噪音我们是无法建模出来的，我们能计算的只是下面这个东西： <span class="math display">\[
-X_k^-=AX_{k-1}+Bu_{k-1} \tag{1}
-\]</span> 少了噪音那项，像这种我们直接计算出来的我们称为先验估计值，表示为估计值上面带个减号。<br />
-对于测量部分，我们有： <span class="math display">\[
-\hat{X}_{k,mea}=H^{-1}Z_{k} \tag{2}
-\]</span> 这是测量估计值。<br />
-现在我们有两个结果，分别是先验估计值和测量估计值，但这两个都不具备噪声的影响，都是不准确的，然后卡尔曼滤波器的作用就出来了：通过两个不太准确的结果得出一个比较准确的结果。<br />
-根据上面【数据融合】那部分的知识，后验估计值(就是我们想要的)可以写成： <span class="math display">\[
-\hat{X}_k=\hat{X}_{k}^-+G(H^{-1}Z_k-\hat{X}_{k}^-)
-\]</span> 这里<span class="math inline">\(G\in [0,1]\)</span>，当<span class="math inline">\(G=0\)</span>时，<span class="math inline">\(\hat{X}_k=\hat{X}_{k}^-\)</span>，表明更相信计算的结果，也就是先验估计值；如果<span class="math inline">\(G=1\)</span>，<span class="math inline">\(\hat{X}_k=H^{-1}Z_{k}\)</span>，表明更相信测量的结果。<br />
-在其它地方上面的式子会写成这样： <span class="math display">\[
-\hat{X}_k=\hat{X}_k^-+K_k(Z_k-H\hat{X}_{k}^-)
-\]</span> 这里的<span class="math inline">\(G=K_kH\)</span>，其实一个一声，但要注意的是，这里的<span class="math inline">\(K\in[0,H^{-1}]\)</span>。<br />
-现在我们要做的就是寻找这个<span class="math inline">\(K_k\)</span>，使得<span class="math inline">\(\hat{X}_k\)</span>趋近于<span class="math inline">\(X_{k}\)</span>。这里我们定义一个误差： <span class="math display">\[
-e_k=X_k-\hat{X}_k
-\]</span> 这里的误差<span class="math inline">\(e_k\)</span>也是一个符合正态分布的矩阵：<span class="math inline">\(P(e_{k})\sim (0,P)\)</span>(这个应该很容易理解)，依旧按照上面的方法求这个协方差矩阵： <span class="math display">\[
+  \right]</script><p>噪音的协方差矩阵就出来了，所以这个式子：</p>
+<script type="math/tex; mode=display">
+Q=E[ww^T]</script><p>是正确的。<br>同理，对于测量噪音$v_k$，也是一样的：</p>
+<script type="math/tex; mode=display">
+p(v)\sim (0,R)</script><p>$R$是协方差矩阵，同样用上面的方法也可以计算。\<br>在实际建模中，这两个噪音我们是无法建模出来的，我们能计算的只是下面这个东西：</p>
+<script type="math/tex; mode=display">
+X_k^-=AX_{k-1}+Bu_{k-1} \tag{1}</script><p>少了噪音那项，像这种我们直接计算出来的我们称为先验估计值，表示为估计值上面带个减号。\<br>对于测量部分，我们有：</p>
+<script type="math/tex; mode=display">
+\hat{X}_{k,mea}=H^{-1}Z_{k} \tag{2}</script><p>这是测量估计值。\<br>现在我们有两个结果，分别是先验估计值和测量估计值，但这两个都不具备噪声的影响，都是不准确的，然后卡尔曼滤波器的作用就出来了：通过两个不太准确的结果得出一个比较准确的结果。\<br>根据上面【数据融合】那部分的知识，后验估计值(就是我们想要的)可以写成：</p>
+<script type="math/tex; mode=display">
+\hat{X}_k=\hat{X}_{k}^-+G(H^{-1}Z_k-\hat{X}_{k}^-)</script><p>这里$G\in [0,1]$，当$G=0$时，$\hat{X}_k=\hat{X}_{k}^-$，表明更相信计算的结果，也就是先验估计值；如果$G=1$，$\hat{X}_k=H^{-1}Z_{k}$，表明更相信测量的结果。\<br>在其它地方上面的式子会写成这样：</p>
+<script type="math/tex; mode=display">
+\hat{X}_k=\hat{X}_k^-+K_k(Z_k-H\hat{X}_{k}^-)</script><p>这里的$G=K_kH$，其实一个一声，但要注意的是，这里的$K\in[0,H^{-1}]$。\<br>现在我们要做的就是寻找这个$K_k$，使得$\hat{X}_k$趋近于$X_{k}$。这里我们定义一个误差：</p>
+<script type="math/tex; mode=display">
+e_k=X_k-\hat{X}_k</script><p>这里的误差$e_k$也是一个符合正态分布的矩阵：$P(e_{k})\sim (0,P)$(这个应该很容易理解)，依旧按照上面的方法求这个协方差矩阵：</p>
+<script type="math/tex; mode=display">
 P=E[ee^T]=
 \left[
 \begin{matrix}
-   \sigma_{e_1}^2 &amp; \sigma_{e_1,e_2}  \\
-   \sigma_{e_2,e_1} &amp; \sigma_{e_2}^2
+   \sigma_{e_1}^2 & \sigma_{e_1,e_2}  \\
+   \sigma_{e_2,e_1} & \sigma_{e_2}^2
   \end{matrix}
-  \right]
-\]</span> 我们这个估计值<span class="math inline">\(\hat{X}_k\)</span>越接近于实际值，就说明这个误差的方差越小，也就说明越接近于0。现在问题就变成了我们需要选取适当的<span class="math inline">\(K_k\)</span>，使协方差矩阵的迹最小，即<span class="math inline">\(tr(P)\)</span>最小。(元素分开考虑，所以是对角线)。 <span class="math display">\[
-tr(P)=\sigma_{e_1}^2+\sigma_{e_2}^2
-\]</span> 现在我们首先把协方差矩阵求出来，对于误差有： <span class="math display">\[
-e_k=X_k-\hat{X}_k
-\]</span> 将其代入协方差矩阵的式子得： <span class="math display">\[
+  \right]</script><p>我们这个估计值$\hat{X}_k$越接近于实际值，就说明这个误差的方差越小，也就说明越接近于0。现在问题就变成了我们需要选取适当的$K_k$，使协方差矩阵的迹最小，即$tr(P)$最小。(元素分开考虑，所以是对角线)。</p>
+<script type="math/tex; mode=display">
+tr(P)=\sigma_{e_1}^2+\sigma_{e_2}^2</script><p>现在我们首先把协方差矩阵求出来，对于误差有：</p>
+<script type="math/tex; mode=display">
+e_k=X_k-\hat{X}_k</script><p>将其代入协方差矩阵的式子得：</p>
+<script type="math/tex; mode=display">
 \begin{aligned}
-P  &amp;= E[ee^T]\\
-    &amp;=E[(X_k-\hat{X}_k)(X_k-\hat{X}_{k})^T]
-\end{aligned}
-\]</span> 将 <span class="math display">\[
-\hat{X}_k=\hat{X}_k^-+K_k(Z_k-H\hat{X}_{k}^-)
-\]</span> <span class="math display">\[
-Z_k=HX_k+v_k
-\]</span> 代入得： <span class="math display">\[
+P  &= E[ee^T]\\
+    &=E[(X_k-\hat{X}_k)(X_k-\hat{X}_{k})^T]
+\end{aligned}</script><p>将</p>
+<script type="math/tex; mode=display">
+\hat{X}_k=\hat{X}_k^-+K_k(Z_k-H\hat{X}_{k}^-)</script><script type="math/tex; mode=display">
+Z_k=HX_k+v_k</script><p>代入得：</p>
+<script type="math/tex; mode=display">
 \begin{aligned}
-X_k-\hat{X}_k &amp;= (X_k-\hat{X}_{k}^-)-K_kH(X_k-\hat{X}_{k}^-)-K_kv_k \\
-&amp;=(I-K_kH)(X_k-\hat{X}_{k}^-)-K_kv_k
-\end{aligned}
-\]</span> 定义先验误差 <span class="math inline">\(e_k^-=(X_k-\hat{X}_{k}^-)\)</span>。<br />
-所以上面的协方差矩阵可以写为： <span class="math display">\[
+X_k-\hat{X}_k &= (X_k-\hat{X}_{k}^-)-K_kH(X_k-\hat{X}_{k}^-)-K_kv_k \\
+&=(I-K_kH)(X_k-\hat{X}_{k}^-)-K_kv_k
+\end{aligned}</script><p>定义先验误差 $e_k^-=(X_k-\hat{X}_{k}^-)$。\<br>所以上面的协方差矩阵可以写为：</p>
+<script type="math/tex; mode=display">
 \begin{aligned}
-P_k  &amp;= E[ee^T]\\
-    &amp;= E[(X_k-\hat{X}_k)(X_k-\hat{X}_{k})^T]\\
-    &amp;= E[[(I-K_kH)e_k^--K_kv_k][(I-K_kH)e_k^--K_kv_k]^T]\\
-    &amp;= E[(I-K_kH)e_k^-{e_k^-}^T(I-K_kH)^T]-E[(I-K_kH)e_k^-v_k^TK_k^T]
+P_k  &= E[ee^T]\\
+    &= E[(X_k-\hat{X}_k)(X_k-\hat{X}_{k})^T]\\
+    &= E[[(I-K_kH)e_k^--K_kv_k][(I-K_kH)e_k^--K_kv_k]^T]\\
+    &= E[(I-K_kH)e_k^-{e_k^-}^T(I-K_kH)^T]-E[(I-K_kH)e_k^-v_k^TK_k^T]
         -E[K_kv_k{e_k^-}^T(I-K_kH)^T]+E[K_kv_kv_k^TK_k^T]
-\end{aligned}
-\]</span> 由于<span class="math inline">\((I-K_kH)\)</span>是常数，且对于独立的<span class="math inline">\(A,B\)</span>，有<span class="math inline">\(E(AB)=E(A)E(B)\)</span>，<span class="math inline">\(E(e_K^-)=E(v_k^T)=0\)</span>，所以上式的中间两项为0。上式可以继续化简： <span class="math display">\[
+\end{aligned}</script><p>由于$(I-K_kH)$是常数，且对于独立的$A,B$，有$E(AB)=E(A)E(B)$，$E(e_K^-)=E(v_k^T)=0$，所以上式的中间两项为0。上式可以继续化简：</p>
+<script type="math/tex; mode=display">
 \begin{aligned}
-P_k  &amp;= E[ee^T]\\
-    &amp;= E[(X_k-\hat{X}_k)(X_k-\hat{X}_{k})^T]\\
-    &amp;= E[[(I-K_kH)e_k^--K_kv_k][(I-K_kH)e_k^--K_kv_k]^T]\\
-    &amp;= E[(I-K_kH)e_k^-{e_k^-}^T(I-K_kH)^T]-E[(I-K_kH)e_k^-v_k^TK_k^T]
+P_k  &= E[ee^T]\\
+    &= E[(X_k-\hat{X}_k)(X_k-\hat{X}_{k})^T]\\
+    &= E[[(I-K_kH)e_k^--K_kv_k][(I-K_kH)e_k^--K_kv_k]^T]\\
+    &= E[(I-K_kH)e_k^-{e_k^-}^T(I-K_kH)^T]-E[(I-K_kH)e_k^-v_k^TK_k^T]
         -E[K_kv_k{e_k^-}^T(I-K_kH)^T]+E[K_kv_kv_k^TK_k^T]\\
-    &amp;= (I-K_kH)E[(e_k^-{e_k^-}^T)](I-K_kH)^T+K_kE[v_kv_k^T]K_k^T
-\end{aligned}
-\]</span> 由于<span class="math inline">\(E[(e_k^-{e_k^-}^T)]\)</span>为先验误差的协方差矩阵<span class="math inline">\(P_k^-\)</span>，<span class="math inline">\(R=E[v_kv_k^T]\)</span>上面等式就可以继续化简： <span class="math display">\[
+    &= (I-K_kH)E[(e_k^-{e_k^-}^T)](I-K_kH)^T+K_kE[v_kv_k^T]K_k^T
+\end{aligned}</script><p>由于$E[(e_k^-{e_k^-}^T)]$为先验误差的协方差矩阵$P_k^-$，$R=E[v_kv_k^T]$上面等式就可以继续化简：</p>
+<script type="math/tex; mode=display">
 \begin{aligned}
-P_k  &amp;= E[ee^T]\\
-    &amp;= E[(X_k-\hat{X}_k)(X_k-\hat{X}_{k})^T]\\
-    &amp;= E[[(I-K_kH)e_k^--K_kv_k][(I-K_kH)e_k^--K_kv_k]^T]\\
-    &amp;= E[(I-K_kH)e_k^-{e_k^-}^T(I-K_kH)^T]-E[(I-K_kH)e_k^-v_k^TK_k^T]
+P_k  &= E[ee^T]\\
+    &= E[(X_k-\hat{X}_k)(X_k-\hat{X}_{k})^T]\\
+    &= E[[(I-K_kH)e_k^--K_kv_k][(I-K_kH)e_k^--K_kv_k]^T]\\
+    &= E[(I-K_kH)e_k^-{e_k^-}^T(I-K_kH)^T]-E[(I-K_kH)e_k^-v_k^TK_k^T]
         -E[K_kv_k{e_k^-}^T(I-K_kH)^T]+E[K_kv_kv_k^TK_k^T]\\
-    &amp;= (I-K_kH)E[(e_k^-{e_k^-}^T)](I-K_kH)^T+K_kE[v_kv_k^T]K_k^T\\
-    &amp;=(P_k^--K_kHP_k^-)(I-H^TK_k^T)+K_kRK_k^T\\
-    &amp;=P_k^--K_kHP_k^--P_k^-H^TK_k^T+K_kHP_k^-H^TK_k^T+K_kRK_k^T
-\end{aligned}
-\]</span> 现在就求出这个协方差矩阵了，接下来是求迹。我们看右边第三项，对其转置： <span class="math display">\[
-((P_k^-H^T)K_k^T)^T=K_k(P_k^-H^T)^T=K_kH{P_k^-}^T
-\]</span> 也就是说，第三项的转置等于第二项，所以第三项的迹与第二项相同。所以协方差矩阵的迹为： <span class="math display">\[
-tr(P_k)=tr(P_k^-)-2tr(K_kHP_k^-)+tr(K_kHP_k^-H^TK_k^T)+tr(K_kRK_k^T)
-\]</span> 现在要求迹最小时对应的<span class="math inline">\(K_k\)</span>，即是求导等于0。<br />
-这里先说个东西： <span class="math display">\[
-\frac{dtr(AB)}{dA}=B^T
-\]</span> <span class="math display">\[
-\frac{d(ABA^T)}{dA}=2AB
-\]</span> (这个自己验证)<br />
-所以： <span class="math display">\[
-\frac{dtr(P_k)}{dK_k}=0-2(HP_k^-)^T+2K_kHP_k^-H^T+2K_kR=0
-\]</span> 即： <span class="math display">\[
--P_k^-H^T+K_k(HP_k^-H^T+R)=0
-\]</span> <span class="math display">\[
-K_k=\frac{P_k^-H^T}{HP_k^-H^T+R}
-\]</span> 这就是卡尔曼滤波器最核心的公式，分析一下，当<span class="math inline">\(R\)</span>特别大时，即测量噪声特别大时，<span class="math inline">\(K_k\)</span>就趋近于0，此时估计值<span class="math inline">\(\hat{X}_k\)</span>就等于先验估计<span class="math inline">\(\hat{X}_{k}^-\)</span>，我们就更愿意相信计算的先验估计；当<span class="math inline">\(R\)</span>很小时，<span class="math inline">\(K_k\)</span>就趋近于<span class="math inline">\(H^{-1}\)</span>，估计值就等于测量估计。</p>
-<h1 id="误差协方差矩阵">误差协方差矩阵</h1>
-<p>上面我们得出了卡尔曼增益的表达式： <span class="math display">\[
-K_k=\frac{P_k^-H^T}{HP_k^-H^T+R}
-\]</span> 在这个表达式中<span class="math inline">\(P_k^-\)</span>我们还不知道，这部分就是对这个的推导。<br />
-我们已知： <span class="math display">\[
-P_k^-=E[e_k^--{e_k^-}^T]
-\]</span> <span class="math display">\[
+    &= (I-K_kH)E[(e_k^-{e_k^-}^T)](I-K_kH)^T+K_kE[v_kv_k^T]K_k^T\\
+    &=(P_k^--K_kHP_k^-)(I-H^TK_k^T)+K_kRK_k^T\\
+    &=P_k^--K_kHP_k^--P_k^-H^TK_k^T+K_kHP_k^-H^TK_k^T+K_kRK_k^T
+\end{aligned}</script><p>现在就求出这个协方差矩阵了，接下来是求迹。我们看右边第三项，对其转置：</p>
+<script type="math/tex; mode=display">
+((P_k^-H^T)K_k^T)^T=K_k(P_k^-H^T)^T=K_kH{P_k^-}^T</script><p>也就是说，第三项的转置等于第二项，所以第三项的迹与第二项相同。所以协方差矩阵的迹为：</p>
+<script type="math/tex; mode=display">
+tr(P_k)=tr(P_k^-)-2tr(K_kHP_k^-)+tr(K_kHP_k^-H^TK_k^T)+tr(K_kRK_k^T)</script><p>现在要求迹最小时对应的$K_k$，即是求导等于0。\<br>这里先说个东西：</p>
+<script type="math/tex; mode=display">
+\frac{dtr(AB)}{dA}=B^T</script><script type="math/tex; mode=display">
+\frac{d(ABA^T)}{dA}=2AB</script><p>(这个自己验证)\<br>所以：</p>
+<script type="math/tex; mode=display">
+\frac{dtr(P_k)}{dK_k}=0-2(HP_k^-)^T+2K_kHP_k^-H^T+2K_kR=0</script><p>即：</p>
+<script type="math/tex; mode=display">
+-P_k^-H^T+K_k(HP_k^-H^T+R)=0</script><script type="math/tex; mode=display">
+K_k=\frac{P_k^-H^T}{HP_k^-H^T+R}</script><p>这就是卡尔曼滤波器最核心的公式，分析一下，当$R$特别大时，即测量噪声特别大时，$K_k$就趋近于0，此时估计值$\hat{X}_k$就等于先验估计$\hat{X}_{k}^-$，我们就更愿意相信计算的先验估计；当$R$很小时，$K_k$就趋近于$H^{-1}$，估计值就等于测量估计。</p>
+<h1 id="误差协方差矩阵"><a href="#误差协方差矩阵" class="headerlink" title="误差协方差矩阵"></a>误差协方差矩阵</h1><p>上面我们得出了卡尔曼增益的表达式：</p>
+<script type="math/tex; mode=display">
+K_k=\frac{P_k^-H^T}{HP_k^-H^T+R}</script><p>在这个表达式中$P_k^-$我们还不知道，这部分就是对这个的推导。\<br>我们已知：</p>
+<script type="math/tex; mode=display">
+P_k^-=E[e_k^--{e_k^-}^T]</script><script type="math/tex; mode=display">
 \begin{aligned}
-e_k^- &amp;=X_k-\hat{X}_k^-\\
-    &amp;= AX_{k-1}+Bu_{k-1}+w_{k-1}-A\hat{X}_{k-1}-Bu_{k-1}\\
-    &amp;= A(X_{k-1}-\hat{X}_{k-1})+w_{k-1}\\
-    &amp;= Ae_{k-1}+w_{k-1}
-\end{aligned}
-\]</span> 代入上面的协方差矩阵： <span class="math display">\[
+e_k^- &=X_k-\hat{X}_k^-\\
+    &= AX_{k-1}+Bu_{k-1}+w_{k-1}-A\hat{X}_{k-1}-Bu_{k-1}\\
+    &= A(X_{k-1}-\hat{X}_{k-1})+w_{k-1}\\
+    &= Ae_{k-1}+w_{k-1}
+\end{aligned}</script><p>代入上面的协方差矩阵：</p>
+<script type="math/tex; mode=display">
 \begin{aligned}
-P_k^- &amp;=E[e_k^--{e_k^-}^T]\\
-    &amp;= E[(Ae_{k-1}+w_{k-1})((Ae_{k-1})^T+(w_{k-1})^T)]\\
-    &amp;= E[Ae_{k-1}e_{k-1}^TA^T]+E[Ae_{k-1}w_{k-1}^T]+E[w_{k-1}e_{k-1}^TA^T]+E[w_{k-1}w_{k-1}^T]
-\end{aligned}
-\]</span> 这里，由于<span class="math inline">\(e_{k-1}\)</span>和<span class="math inline">\(w_{k-1}\)</span>是相互独立的（<span class="math inline">\(e_{k-1}\)</span>与<span class="math inline">\(w_{k-1}\)</span>无关而与<span class="math inline">\(w_{k-2}\)</span>有关），所以相乘的期望等于期望的相乘，都等于0，上面式子中间两项等于0，可以写为： <span class="math display">\[
+P_k^- &=E[e_k^--{e_k^-}^T]\\
+    &= E[(Ae_{k-1}+w_{k-1})((Ae_{k-1})^T+(w_{k-1})^T)]\\
+    &= E[Ae_{k-1}e_{k-1}^TA^T]+E[Ae_{k-1}w_{k-1}^T]+E[w_{k-1}e_{k-1}^TA^T]+E[w_{k-1}w_{k-1}^T]
+\end{aligned}</script><p>这里，由于$e_{k-1}$和$w_{k-1}$是相互独立的（$e_{k-1}$与$w_{k-1}$无关而与$w_{k-2}$有关），所以相乘的期望等于期望的相乘，都等于0，上面式子中间两项等于0，可以写为：</p>
+<script type="math/tex; mode=display">
 \begin{aligned}
-P_k^- &amp;=E[e_k^--{e_k^-}^T]\\
-    &amp;= E[(Ae_{k-1}+w_{k-1})((Ae_{k-1})^T+(w_{k-1})^T)]\\
-    &amp;= E[Ae_{k-1}e_{k-1}^TA^T]+E[Ae_{k-1}w_{k-1}^T]+E[w_{k-1}e_{k-1}^TA^T]+E[w_{k-1}w_{k-1}^T]\\
-    &amp;= AE[e_{k-1}e_{k-1}^T]+E[w_{k-1}w_{k-1}^T]\\
-    &amp;= AP_{k-1}A^T+Q
-\end{aligned}
-\]</span> 至此，就可以用卡尔曼滤波器来估计状态变量的值了。这个过程分为两步：</p>
+P_k^- &=E[e_k^--{e_k^-}^T]\\
+    &= E[(Ae_{k-1}+w_{k-1})((Ae_{k-1})^T+(w_{k-1})^T)]\\
+    &= E[Ae_{k-1}e_{k-1}^TA^T]+E[Ae_{k-1}w_{k-1}^T]+E[w_{k-1}e_{k-1}^TA^T]+E[w_{k-1}w_{k-1}^T]\\
+    &= AE[e_{k-1}e_{k-1}^T]+E[w_{k-1}w_{k-1}^T]\\
+    &= AP_{k-1}A^T+Q
+\end{aligned}</script><p>至此，就可以用卡尔曼滤波器来估计状态变量的值了。这个过程分为两步：</p>
 <blockquote>
-<p><strong>预测：</strong><br />
- 计算先验：<span class="math display">\[\hat{X}_k^-=A\hat{X}_{k-1}+Bu_{k-1} \tag{1}\]</span><br />
- 先验误差协方差：<span class="math display">\[P_k^-=AP_{k-1}A^T+Q \tag{2}\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>校正：</strong><br />
- 卡尔曼增益： <span class="math display">\[
-K_k=\frac{P_k^-H^T}{HP_k^-H^T+R} \tag{3}
-\]</span>  后验估计： <span class="math display">\[
-\hat{X}_k=\hat{X}_{k}^-+K_k(Z_k-H\hat{X}_k^-) \tag{4}
-\]</span></p>
-</blockquote>
-<p>由于在预测中用了上一次的误差协方差，所以要更新这个参数，在上一部分我们得出了： <span class="math display">\[
-P_k=P_k^--K_kHP_k^--P_k^-H^TK_k^T+K_kHP_k^-H^TK_k^T+K_kRK_k^T
-\]</span> 将算出的<span class="math inline">\(K_k\)</span>代入得： <span class="math display">\[
-P_k=P_k^--K_kHP_k^-=(I-K_kH)P_k^- \tag{5}
-\]</span> 上面公式(1) -- (5)就是卡尔曼滤波器最重要的5个公式了，在最开始的时候我们要初始化<span class="math inline">\(\hat{X}_0\)</span> 和 <span class="math inline">\(P_{0}\)</span>。</p>
+<p><strong>预测：</strong>\<br>&emsp;计算先验：<script type="math/tex">\hat{X}_k^-=A\hat{X}_{k-1}+Bu_{k-1} \tag{1}</script>\<br>&emsp;先验误差协方差：<script type="math/tex">P_k^-=AP_{k-1}A^T+Q \tag{2}</script></p>
+<p><strong>校正：</strong>\<br>&emsp;卡尔曼增益：</p>
+<script type="math/tex; mode=display">
+K_k=\frac{P_k^-H^T}{HP_k^-H^T+R} \tag{3}</script><p>&emsp;后验估计：</p>
+<script type="math/tex; mode=display">
+\hat{X}_k=\hat{X}_{k}^-+K_k(Z_k-H\hat{X}_k^-) \tag{4}</script></blockquote>
+<p>由于在预测中用了上一次的误差协方差，所以要更新这个参数，在上一部分我们得出了：</p>
+<script type="math/tex; mode=display">
+P_k=P_k^--K_kHP_k^--P_k^-H^TK_k^T+K_kHP_k^-H^TK_k^T+K_kRK_k^T</script><p>将算出的$K_k$代入得：</p>
+<script type="math/tex; mode=display">
+P_k=P_k^--K_kHP_k^-=(I-K_kH)P_k^- \tag{5}</script><p>上面公式(1) — (5)就是卡尔曼滤波器最重要的5个公式了，在最开始的时候我们要初始化$\hat{X}_0$ 和 $P_{0}$。</p>
 
     </div>
 
@@ -874,12 +799,12 @@ P_k=P_k^--K_kHP_k^-=(I-K_kH)P_k^- \tag{5}
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/posts/19.html" rel="prev" title="【ML-2020/21】Generative Adversarial Network (GAN) --- Part-2 Conditional GAN">
-      <i class="fa fa-chevron-left"></i> 【ML-2020/21】Generative Adversarial Network (GAN) --- Part-2 Conditional GAN
+    <a href="/posts/22.html" rel="prev" title="方差分析">
+      <i class="fa fa-chevron-left"></i> 方差分析
     </a></div>
       <div class="post-nav-item">
-    <a href="/posts/21.html" rel="next" title="假设性检测 (t-test, z-test)">
-      假设性检测 (t-test, z-test) <i class="fa fa-chevron-right"></i>
+    <a href="/posts/24.html" rel="next" title="数据分析中的一些常用Python指令">
+      数据分析中的一些常用Python指令 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -940,7 +865,7 @@ P_k=P_k^--K_kHP_k^-=(I-K_kH)P_k^- \tag{5}
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">写在前面的说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5-%E9%80%92%E5%BD%92%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">引入 —— 递归算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%9E%8D%E5%90%88%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5%E7%8A%B6%E6%80%81%E7%A9%BA%E9%97%B4%E6%96%B9%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">数据融合，协方差矩阵，状态空间方程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%9E%8D%E5%90%88"><span class="nav-number">3.1.</span> <span class="nav-text">数据融合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5"><span class="nav-number">3.2.</span> <span class="nav-text">协方差矩阵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E7%A9%BA%E9%97%B4%E6%96%B9%E7%A8%8B"><span class="nav-number">3.3.</span> <span class="nav-text">状态空间方程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%A1%E5%B0%94%E6%9B%BC%E5%A2%9E%E7%9B%8A%E7%9A%84%E6%95%B0%E5%AD%A6%E6%8E%A8%E5%AF%BC"><span class="nav-number">4.</span> <span class="nav-text">卡尔曼增益的数学推导</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%AF%E5%B7%AE%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5"><span class="nav-number">5.</span> <span class="nav-text">误差协方差矩阵</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">写在前面的说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5-%E2%80%94%E2%80%94-%E9%80%92%E5%BD%92%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">引入 —— 递归算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%9E%8D%E5%90%88%EF%BC%8C%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5%EF%BC%8C%E7%8A%B6%E6%80%81%E7%A9%BA%E9%97%B4%E6%96%B9%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">数据融合，协方差矩阵，状态空间方程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%9E%8D%E5%90%88"><span class="nav-number">3.1.</span> <span class="nav-text">数据融合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5"><span class="nav-number">3.2.</span> <span class="nav-text">协方差矩阵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E7%A9%BA%E9%97%B4%E6%96%B9%E7%A8%8B"><span class="nav-number">3.3.</span> <span class="nav-text">状态空间方程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%A1%E5%B0%94%E6%9B%BC%E5%A2%9E%E7%9B%8A%E7%9A%84%E6%95%B0%E5%AD%A6%E6%8E%A8%E5%AF%BC"><span class="nav-number">4.</span> <span class="nav-text">卡尔曼增益的数学推导</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%AF%E5%B7%AE%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5"><span class="nav-number">5.</span> <span class="nav-text">误差协方差矩阵</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -956,14 +881,14 @@ P_k=P_k^--K_kHP_k^-=(I-K_kH)P_k^- \tag{5}
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -991,7 +916,7 @@ P_k=P_k^--K_kHP_k^-=(I-K_kH)P_k^- \tag{5}
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

@@ -22,12 +22,12 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="写在前面的说明 这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接\(\rightarrow\)这里。">
+  <meta name="description" content="写在前面的说明这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接$\rightarrow$这里。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【ML-2020&#x2F;21】Generative Adversarial Network (GAN) --- Part-2 Conditional GAN">
 <meta property="og:url" content="https://superzlw.github.io/posts/19.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="写在前面的说明 这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接\(\rightarrow\)这里。">
+<meta property="og:description" content="写在前面的说明这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接$\rightarrow$这里。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://superzlw.github.io/images/243.jpg">
 <meta property="og:image" content="https://superzlw.github.io/images/244.png">
@@ -35,8 +35,8 @@
 <meta property="og:image" content="https://superzlw.github.io/images/246.png">
 <meta property="og:image" content="https://superzlw.github.io/images/247.png">
 <meta property="og:image" content="https://superzlw.github.io/images/249.png">
-<meta property="article:published_time" content="2021-08-10T20:28:46.696Z">
-<meta property="article:modified_time" content="2021-08-11T02:53:56.440Z">
+<meta property="article:published_time" content="2021-08-11T08:53:58.000Z">
+<meta property="article:modified_time" content="2021-08-11T08:53:58.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://superzlw.github.io/images/243.jpg">
@@ -223,15 +223,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-08-10 22:28:46" itemprop="dateCreated datePublished" datetime="2021-08-10T22:28:46+02:00">2021-08-10</time>
+              <time title="创建时间：2021-08-11 10:53:58" itemprop="dateCreated datePublished" datetime="2021-08-11T10:53:58+02:00">2021-08-11</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-11 04:53:56" itemprop="dateModified" datetime="2021-08-11T04:53:56+02:00">2021-08-11</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -274,89 +267,52 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="写在前面的说明">写在前面的说明</h1>
-<p>这个系列【ML-2020/21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接<span class="math inline">\(\rightarrow\)</span><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OP5HcXJg2Aw">这里</a>。 <span id="more"></span></p>
-<h1 id="引入">引入</h1>
-<p>根据上一篇【基本介绍】的内容可知，给GAN输入是一个向量，但这在实际中很不实用，我们更习惯用的是输入常见的信息比如语言文字，这就是Conditional GAN 所研究的东西。 举个例子，比如输入‘The Dog is running’，我们就希望生成如下图片：<img src="/images/243.jpg" /> 这就是这篇要讲的东西。</p>
-<h1 id="text-to-image">Text-to-Image</h1>
-<h2 id="traditional-supervised-approach">Traditional Supervised Approach</h2>
-<p>首先，这可以看作是一个传统的监督学习，我们要的首先是一大堆数据集（图片），每张图片都需要一个对应的文字进行描述。简单来说流程如下：<img src="/images/244.png" /> 但用这种方法会产生一个问题，比如说我们现在有一个文字描述为“car”，可能同时对应到以下两张图片，它们都是汽车只是方向不同：<img src="/images/245.png" /> 我们用上面的方法训练出来的模型输出既要像左边也要像右边，最后就会产生这种现象：输入“car”，输出的图片是上面两种图片的平均，这可能会是一张没有意义的图。 所以这种传统的方法不行。</p>
-<h2 id="conditional-gan">Conditional GAN</h2>
-<p>然后现在就要引进今天的主角了。 回顾一下，如果按照之前介绍的最原始的GAN，这个训练流程大致是这样的：</p>
+        <h1 id="写在前面的说明"><a href="#写在前面的说明" class="headerlink" title="写在前面的说明"></a>写在前面的说明</h1><p>这个系列【ML-2020/21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接$\rightarrow$<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OP5HcXJg2Aw">这里</a>。<br><span id="more"></span></p>
+<h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>根据上一篇【基本介绍】的内容可知，给GAN输入是一个向量，但这在实际中很不实用，我们更习惯用的是输入常见的信息比如语言文字，这就是Conditional GAN 所研究的东西。<br>举个例子，比如输入‘The Dog is running’，我们就希望生成如下图片：<img src="/images/243.jpg" alt=""><br>这就是这篇要讲的东西。</p>
+<h1 id="Text-to-Image"><a href="#Text-to-Image" class="headerlink" title="Text-to-Image"></a>Text-to-Image</h1><h2 id="Traditional-Supervised-Approach"><a href="#Traditional-Supervised-Approach" class="headerlink" title="Traditional Supervised Approach"></a>Traditional Supervised Approach</h2><p>首先，这可以看作是一个传统的监督学习，我们要的首先是一大堆数据集（图片），每张图片都需要一个对应的文字进行描述。简单来说流程如下：<img src="/images/244.png" alt=""><br>但用这种方法会产生一个问题，比如说我们现在有一个文字描述为“car”，可能同时对应到以下两张图片，它们都是汽车只是方向不同：<img src="/images/245.png" alt=""><br>我们用上面的方法训练出来的模型输出既要像左边也要像右边，最后就会产生这种现象：输入“car”，输出的图片是上面两种图片的平均，这可能会是一张没有意义的图。<br>所以这种传统的方法不行。</p>
+<h2 id="Conditional-GAN"><a href="#Conditional-GAN" class="headerlink" title="Conditional GAN"></a>Conditional GAN</h2><p>然后现在就要引进今天的主角了。<br>回顾一下，如果按照之前介绍的最原始的GAN，这个训练流程大致是这样的：</p>
 <blockquote>
-<ol type="1">
-<li>首先输入一组随机向量给Generation，产生数据（图片）；<br />
-</li>
-<li>将产生的图片输入Discriminator，借助真实图片，利用定义的function更新Discriminator的参数;<br />
-</li>
-<li>随机再取一组噪音数据，利用上面更新后的Discriminator更新Generation的参数；<br />
-</li>
+<ol>
+<li>首先输入一组随机向量给Generation，产生数据（图片）；\</li>
+<li>将产生的图片输入Discriminator，借助真实图片，利用定义的function更新Discriminator的参数;\</li>
+<li>随机再取一组噪音数据，利用上面更新后的Discriminator更新Generation的参数；\</li>
 <li>重复上面两个步骤。</li>
 </ol>
 </blockquote>
-<p>然而在Conditional-GAN中，我们输入给Generation的不再是单一的向量，同时还有（Condition）文字信息比如所“car”，借助这两个信息产生新的数据（图片）<span class="math inline">\(x\)</span>；<br />
-对于Discriminator，其输入除了之前产生的图片<span class="math inline">\(x\)</span>，还有(Condition)文字信息<span class="math inline">\(c\)</span>，输出是一个标量，这个标量描述以下两个方面：</p>
+<p>然而在Conditional-GAN中，我们输入给Generation的不再是单一的向量，同时还有（Condition）文字信息比如所“car”，借助这两个信息产生新的数据（图片）$x$；\<br>对于Discriminator，其输入除了之前产生的图片$x$，还有(Condition)文字信息$c$，输出是一个标量，这个标量描述以下两个方面：</p>
 <blockquote>
-<ol type="1">
-<li><span class="math inline">\(x\)</span>是否是一张真实的图片（这点跟最原始的GAN一样）；<br />
-</li>
-<li><span class="math inline">\(c\)</span>和<span class="math inline">\(x\)</span>是否符合。</li>
+<ol>
+<li>$x$是否是一张真实的图片（这点跟最原始的GAN一样）；\</li>
+<li>$c$和$x$是否符合。</li>
 </ol>
 </blockquote>
 <p>这个标量的评分标准如下：</p>
 <blockquote>
-<ol type="1">
-<li>高分（1分）：<br />
-  a). 正确的文字与真实的图片。<br />
-</li>
-<li>低分（0分）：<br />
-  a). 正确的文字与生成的图片；<br />
-  b). 错误的文字与真实的图片。</li>
+<ol>
+<li>高分（1分）：\<br>&emsp; a). 正确的文字与真实的图片。\</li>
+<li>低分（0分）：\<br>&emsp; a). 正确的文字与生成的图片；\<br>&emsp; b). 错误的文字与真实的图片。</li>
 </ol>
 </blockquote>
 <p>基本的训练流程如下：</p>
 <blockquote>
-<p><strong>D-Learning:</strong><br />
-  1. 从database中取<span class="math inline">\(m\)</span>个样本：<span class="math inline">\(\left\{ (c^1,x^1),(c^2,x^2),...,(c^m,x^m)\right\}\)</span> (这个对于Discriminator来说是要给高分的)；<br />
-  2. 随机取样<span class="math inline">\(m\)</span>个噪音样本：{<span class="math inline">\(z^1,...,z^m\)</span>}，这<span class="math inline">\(m\)</span>个样本加上上面的文字信息<span class="math inline">\(c\)</span>组成新的数据<span class="math inline">\((c^i,z^i)\)</span>；<br />
-  3. 通过Generation获取生成数据：{<span class="math inline">\(\widetilde{x}^1,...,\widetilde{x}^m\)</span>}，<span class="math inline">\(\widetilde{x}^i=G(c^i,z^i)\)</span><br />
-  4. 从database中取样新的<span class="math inline">\(m\)</span>个数据{<span class="math inline">\(\hat{x}^1,...,\hat{x}^m\)</span>}<br />
-  5. 更新Discriminator的参数<span class="math inline">\(\theta_d\)</span>，以最大化下面这个方程：<span class="math display">\[\widetilde{V}=\frac{1}{m}\sum_{i=1}^m\log D(c^i,x^i)+\frac{1}{m}\sum_{i=1}^m\log(1 - D(c^i,\widetilde{x}^i))-\frac{1}{m}\sum_{i=1}^m\log(1 - D(c^i,\hat{x}^i))\]</span> <span class="math display">\[\theta_d \leftarrow \theta_d +\eta \nabla \widetilde{V}(\theta_d)\]</span></p>
-</blockquote>
+<p><strong>D-Learning:</strong>\<br>&emsp; 1. 从database中取$m$个样本：$\left\{ (c^1,x^1),(c^2,x^2),…,(c^m,x^m)\right\}$ (这个对于Discriminator来说是要给高分的)；\<br>&emsp; 2. 随机取样$m$个噪音样本：{$z^1,…,z^m$}，这$m$个样本加上上面的文字信息$c$组成新的数据$(c^i,z^i)$；\<br>&emsp; 3. 通过Generation获取生成数据：{$\widetilde{x}^1,…,\widetilde{x}^m$}，$\widetilde{x}^i=G(c^i,z^i)$\<br>&emsp; 4. 从database中取样新的$m$个数据{$\hat{x}^1,…,\hat{x}^m$}\<br>&emsp; 5. 更新Discriminator的参数$\theta_d$，以最大化下面这个方程：<script type="math/tex">\widetilde{V}=\frac{1}{m}\sum_{i=1}^m\log D(c^i,x^i)+\frac{1}{m}\sum_{i=1}^m\log(1 - D(c^i,\widetilde{x}^i))-\frac{1}{m}\sum_{i=1}^m\log(1 - D(c^i,\hat{x}^i))</script></p>
+<script type="math/tex; mode=display">\theta_d \leftarrow \theta_d +\eta \nabla \widetilde{V}(\theta_d)</script><p><strong>G-Leaarning:</strong>\<br>&emsp; 1. 取样$m$个噪声样本：{$z^1,…,z^m$}；\<br>&emsp; 2. 从database中取$m$个condition：{$c^1,…,c^m$}；\<br>&emsp; 3. 更新Generator的参数$\theta_g$，以最大化下面这个方程：<script type="math/tex">\widetilde{V}=\frac{1}{m}\sum_{i=1}^m\log(D(G()c^i,z^i))</script></p>
+<script type="math/tex; mode=display">\theta_g \leftarrow \theta_g +\eta \nabla \widetilde{V}(\theta_g)</script></blockquote>
+<h2 id="Discriminator-架构"><a href="#Discriminator-架构" class="headerlink" title="Discriminator 架构"></a>Discriminator 架构</h2><p>常见的Discriminator架构如下：<br><img src="/images/246.png" alt=""><br>同时，又有人提出另一种架构：<br><img src="/images/247.png" alt=""></p>
+<h2 id="更进一步-——-Stack-GAN"><a href="#更进一步-——-Stack-GAN" class="headerlink" title="更进一步 —— Stack GAN"></a>更进一步 —— Stack GAN</h2><p>Stack-GAN技术能让模型的性能更加优秀，其基本的想法是：先产生小张的图，再根据小张的图产生大张的图。\<br>比如说，我们要产生$256\times 256$的图，但如果直接生成这么大的图，图很可能会坏，所以Stack-GAN在train的时候把整个训练过程拆分为两部分，大概流程是：</p>
 <blockquote>
-<p><strong>G-Leaarning:</strong><br />
-  1. 取样<span class="math inline">\(m\)</span>个噪声样本：{<span class="math inline">\(z^1,...,z^m\)</span>}；<br />
-  2. 从database中取<span class="math inline">\(m\)</span>个condition：{<span class="math inline">\(c^1,...,c^m\)</span>}；<br />
-  3. 更新Generator的参数<span class="math inline">\(\theta_g\)</span>，以最大化下面这个方程：<span class="math display">\[\widetilde{V}=\frac{1}{m}\sum_{i=1}^m\log(D(G()c^i,z^i))\]</span> <span class="math display">\[\theta_g \leftarrow \theta_g +\eta \nabla \widetilde{V}(\theta_g)\]</span></p>
-</blockquote>
-<h2 id="discriminator-架构">Discriminator 架构</h2>
-<p>常见的Discriminator架构如下： <img src="/images/246.png" /> 同时，又有人提出另一种架构： <img src="/images/247.png" /></p>
-<h2 id="更进一步-stack-gan">更进一步 —— Stack GAN</h2>
-<p>Stack-GAN技术能让模型的性能更加优秀，其基本的想法是：先产生小张的图，再根据小张的图产生大张的图。<br />
-比如说，我们要产生<span class="math inline">\(256\times 256\)</span>的图，但如果直接生成这么大的图，图很可能会坏，所以Stack-GAN在train的时候把整个训练过程拆分为两部分，大概流程是：</p>
-<blockquote>
-<ol type="1">
-<li>输入一个文字以及一段噪声，拼接，通过第一个Generator产生一个<span class="math inline">\(64\times 64\)</span>的图；<br />
-</li>
-<li>这个图片进入第一个Discriminator，判断其和文字是否match；<br />
-</li>
-<li>然后第二部分，输入一个文字信息以及<span class="math inline">\(64\times 64\)</span>的图片，产生一张<span class="math inline">\(256\times 256\)</span>的图片；<br />
-</li>
-<li>最后第二个Discriminator判断这个<span class="math inline">\(256\times 256\)</span>的图片是不是足够真实。</li>
+<ol>
+<li>输入一个文字以及一段噪声，拼接，通过第一个Generator产生一个$64\times 64$的图；\</li>
+<li>这个图片进入第一个Discriminator，判断其和文字是否match；\</li>
+<li>然后第二部分，输入一个文字信息以及$64\times 64$的图片，产生一张$256\times 256$的图片；\</li>
+<li>最后第二个Discriminator判断这个$256\times 256$的图片是不是足够真实。</li>
 </ol>
 </blockquote>
 <p><em>具体可参看paper：StackGAN:Text to Photo-realistic Image Synthesis with Stack Generative Adversarial Network. 【ICCV, 2017】</em></p>
-<h1 id="image-to-image">Image-to-Image</h1>
-<p>这种即是：输入图片，输出也是图片。比如说黑白图片变彩色，白天变黑夜。</p>
-<h2 id="traditional-supervised-approach-1">Traditional Supervised Approach</h2>
-<p>理论上也是可以用传统的监督学习实现，但也会遇到跟上面类似的问题，导致最终产生出来的图片特别模糊。</p>
-<h2 id="conditional-gan-1">Conditional GAN</h2>
-<p>用GAN的话，以下图为例<img src="/images/249.png" /> 也就是输入左边简单的图片，希望产生右边真实复杂的图。<br />
-其基本流程就是：将简单的图片与噪音一起输入Generator，产生一张图片；接着将这张图片与原来简单的图片一起输入Discriminator，产生一个标量。这个标量可参看上面的解释。<br />
-单单这么做的话，产生的图像虽然清晰，正确率也不错，但图片里可能会产生一些奇奇怪怪的部分。为了消除这种现象，我们可以加额外的约束，比如：在Generator的输出中，我们将产生的图片与真实图片作对比，也就是说，我们希望Generator产生的图片，既能骗过Discriminator，又跟目标图片相差不要太大，如此以来，模型性能会好很多。<br />
-</p>
-<h2 id="patch-gan">Patch GAN</h2>
-<p>如果图片很大张，那么Discriminator就不能直接接受整张Image，因为参数会很多，容易过拟合。所以措施是分区域输入，每次检查一小块，看这一小块是好的还是坏的，至于区域设置多大，这个就自己调了。</p>
+<h1 id="Image-to-Image"><a href="#Image-to-Image" class="headerlink" title="Image-to-Image"></a>Image-to-Image</h1><p>这种即是：输入图片，输出也是图片。比如说黑白图片变彩色，白天变黑夜。</p>
+<h2 id="Traditional-Supervised-Approach-1"><a href="#Traditional-Supervised-Approach-1" class="headerlink" title="Traditional Supervised Approach"></a>Traditional Supervised Approach</h2><p>理论上也是可以用传统的监督学习实现，但也会遇到跟上面类似的问题，导致最终产生出来的图片特别模糊。</p>
+<h2 id="Conditional-GAN-1"><a href="#Conditional-GAN-1" class="headerlink" title="Conditional GAN"></a>Conditional GAN</h2><p>用GAN的话，以下图为例<img src="/images/249.png" alt=""><br>也就是输入左边简单的图片，希望产生右边真实复杂的图。\<br>其基本流程就是：将简单的图片与噪音一起输入Generator，产生一张图片；接着将这张图片与原来简单的图片一起输入Discriminator，产生一个标量。这个标量可参看上面的解释。\<br>单单这么做的话，产生的图像虽然清晰，正确率也不错，但图片里可能会产生一些奇奇怪怪的部分。为了消除这种现象，我们可以加额外的约束，比如：在Generator的输出中，我们将产生的图片与真实图片作对比，也就是说，我们希望Generator产生的图片，既能骗过Discriminator，又跟目标图片相差不要太大，如此以来，模型性能会好很多。\</p>
+<h2 id="Patch-GAN"><a href="#Patch-GAN" class="headerlink" title="Patch GAN"></a>Patch GAN</h2><p>如果图片很大张，那么Discriminator就不能直接接受整张Image，因为参数会很多，容易过拟合。所以措施是分区域输入，每次检查一小块，看这一小块是好的还是坏的，至于区域设置多大，这个就自己调了。</p>
 
     </div>
 
@@ -383,12 +339,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/posts/18.html" rel="prev" title="【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍">
-      <i class="fa fa-chevron-left"></i> 【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍
+    <a href="/posts/2.html" rel="prev" title="学习记录_Computer Vision1_作业1_(1) Bayer Interpolation">
+      <i class="fa fa-chevron-left"></i> 学习记录_Computer Vision1_作业1_(1) Bayer Interpolation
     </a></div>
       <div class="post-nav-item">
-    <a href="/posts/20.html" rel="next" title="卡尔曼滤波（Kalman Filter）">
-      卡尔曼滤波（Kalman Filter） <i class="fa fa-chevron-right"></i>
+    <a href="/posts/3.html" rel="next" title="四元数（三维旋转）">
+      四元数（三维旋转） <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -449,7 +405,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">写在前面的说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#text-to-image"><span class="nav-number">3.</span> <span class="nav-text">Text-to-Image</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#traditional-supervised-approach"><span class="nav-number">3.1.</span> <span class="nav-text">Traditional Supervised Approach</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conditional-gan"><span class="nav-number">3.2.</span> <span class="nav-text">Conditional GAN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#discriminator-%E6%9E%B6%E6%9E%84"><span class="nav-number">3.3.</span> <span class="nav-text">Discriminator 架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E8%BF%9B%E4%B8%80%E6%AD%A5-stack-gan"><span class="nav-number">3.4.</span> <span class="nav-text">更进一步 —— Stack GAN</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#image-to-image"><span class="nav-number">4.</span> <span class="nav-text">Image-to-Image</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#traditional-supervised-approach-1"><span class="nav-number">4.1.</span> <span class="nav-text">Traditional Supervised Approach</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conditional-gan-1"><span class="nav-number">4.2.</span> <span class="nav-text">Conditional GAN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#patch-gan"><span class="nav-number">4.3.</span> <span class="nav-text">Patch GAN</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">写在前面的说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Text-to-Image"><span class="nav-number">3.</span> <span class="nav-text">Text-to-Image</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Traditional-Supervised-Approach"><span class="nav-number">3.1.</span> <span class="nav-text">Traditional Supervised Approach</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conditional-GAN"><span class="nav-number">3.2.</span> <span class="nav-text">Conditional GAN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Discriminator-%E6%9E%B6%E6%9E%84"><span class="nav-number">3.3.</span> <span class="nav-text">Discriminator 架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E8%BF%9B%E4%B8%80%E6%AD%A5-%E2%80%94%E2%80%94-Stack-GAN"><span class="nav-number">3.4.</span> <span class="nav-text">更进一步 —— Stack GAN</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Image-to-Image"><span class="nav-number">4.</span> <span class="nav-text">Image-to-Image</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Traditional-Supervised-Approach-1"><span class="nav-number">4.1.</span> <span class="nav-text">Traditional Supervised Approach</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conditional-GAN-1"><span class="nav-number">4.2.</span> <span class="nav-text">Conditional GAN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Patch-GAN"><span class="nav-number">4.3.</span> <span class="nav-text">Patch GAN</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -465,14 +421,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -500,7 +456,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

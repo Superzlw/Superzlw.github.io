@@ -22,12 +22,12 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Introduction This blog is a summary of the papers I read recently, and it is also convenient for viewing at any time during the current project.">
+  <meta name="description" content="IntroductionThis blog is a summary of the papers I read recently, and it is also convenient for viewing at any time during the current project.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Summary - “Attention is all you need”">
 <meta property="og:url" content="https://superzlw.github.io/posts/34.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="Introduction This blog is a summary of the papers I read recently, and it is also convenient for viewing at any time during the current project.">
+<meta property="og:description" content="IntroductionThis blog is a summary of the papers I read recently, and it is also convenient for viewing at any time during the current project.">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://superzlw.github.io/images/327.png">
 <meta property="og:image" content="https://superzlw.github.io/images/328.png">
@@ -51,8 +51,8 @@
 <meta property="og:image" content="https://superzlw.github.io/images/346.png">
 <meta property="og:image" content="https://superzlw.github.io/images/347.png">
 <meta property="og:image" content="https://superzlw.github.io/images/348.png">
-<meta property="article:published_time" content="2022-05-11T22:31:54.081Z">
-<meta property="article:modified_time" content="2022-10-15T23:08:05.388Z">
+<meta property="article:published_time" content="2022-10-16T05:08:06.000Z">
+<meta property="article:modified_time" content="2022-10-16T05:08:06.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://superzlw.github.io/images/327.png">
@@ -239,15 +239,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-05-12 00:31:54" itemprop="dateCreated datePublished" datetime="2022-05-12T00:31:54+02:00">2022-05-12</time>
+              <time title="创建时间：2022-10-16 07:08:06" itemprop="dateCreated datePublished" datetime="2022-10-16T07:08:06+02:00">2022-10-16</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-16 01:08:05" itemprop="dateModified" datetime="2022-10-16T01:08:05+02:00">2022-10-16</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -290,92 +283,83 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="introduction">Introduction</h1>
-<p>This blog is a summary of the papers I read recently, and it is also convenient for viewing at any time during the current project. <span id="more"></span></p>
+        <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>This blog is a summary of the papers I read recently, and it is also convenient for viewing at any time during the current project.<br><span id="more"></span></p>
 <p>The project is based on viT semantic segmentation, so the papers here are related to it, including the following:</p>
 <ul>
-<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2011.14503">End-to-End Video Instance Segmentation with Transformers</a></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2105.05633">Segmenter: Transformer for Semantic Segmentation</a></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2010.11929">An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale</a></p></li>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a> </p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2011.14503">End-to-End Video Instance Segmentation with Transformers</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2105.05633">Segmenter: Transformer for Semantic Segmentation</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2010.11929">An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale</a></p>
+</li>
 </ul>
 <p>(<em>Due to the limitations of English, the expression may be a bit strange, but as long as the meaning is correct, who cares?</em>)</p>
-<h1 id="attention-is-all-you-need">Attention is all you need</h1>
-<p>(The Chinese version can refer to my previous blog: <a href="https://superzlw.github.io/posts/16.html">here</a>, the content is different from this one, and relatively brief, but also could be very helpful to understand it.)</p>
-<p>(Here I recommend a awesome <a target="_blank" rel="noopener" href="http://jalammar.github.io/illustrated-transformer/">blog</a>. Most of the pictures here are from this blog as well as my previous blog.)</p>
-<h2 id="what-and-why">WHAT? and WHY?</h2>
-<p>First, I will give a brief introduction to this paper from these two parts, and then elaborate on its principles later.</p>
-<h3 id="what-is-it">What is it?</h3>
-<p>"Attention" is a method proposed by Bengio's team in 2014 and widely used in various deep learning fields.</p>
-<p>On this basis, this paper further proposes a new concept: Transformer. As the title of the paper says, the traditional CNN and RNN are abandoned in the Transformer, and the entire network structure is completely composed of the Attention mechanism. More precisely, the Transformer consists of and only consists of self-Attenion and Feed Forward Neural Network.</p>
-<p>A trainable neural network based on Transformer can be built by stacking Transformers. The author's experiment is to build an encoder-decoder with 6 layers of encoder and decoder, and a total of 12 layers of Encoder-Decoder, which performed best in machine translate.</p>
-<h3 id="why-use-it">Why use it?</h3>
-<p>The reason why the author uses "Attention" is to consider that the calculation of RNN (or LSTM, GRU, etc.) is limited to sequential, that is to say, RNN-related algorithms can only be calculated from left to right or from right to left. The mechanism brings up two problems:</p>
+<h1 id="Attention-is-all-you-need"><a href="#Attention-is-all-you-need" class="headerlink" title="Attention is all you need"></a>Attention is all you need</h1><p>(The Chinese version can refer to my previous blog: <a href="https://superzlw.github.io/posts/16.html">here</a>,<br>the content is different from this one, and relatively brief, but also could be very helpful to understand it.)</p>
+<p>(Here I recommend a awesome <a target="_blank" rel="noopener" href="http://jalammar.github.io/illustrated-transformer/">blog</a>.<br>Most of the pictures here are from this blog as well as my previous blog.)</p>
+<h2 id="WHAT-and-WHY"><a href="#WHAT-and-WHY" class="headerlink" title="WHAT? and WHY?"></a>WHAT? and WHY?</h2><p>First, I will give a brief introduction to this paper from these two parts, and then elaborate on its principles later.</p>
+<h3 id="What-is-it"><a href="#What-is-it" class="headerlink" title="What is it?"></a>What is it?</h3><p>“Attention” is a method proposed by Bengio’s team in 2014 and widely used in various deep learning fields. </p>
+<p>On this basis, this paper further proposes a new concept: Transformer. As the title of the paper says,<br>the traditional CNN and RNN are abandoned in the Transformer,<br>and the entire network structure is completely composed of the Attention mechanism.<br>More precisely, the Transformer consists of and only consists of self-Attenion<br>and Feed Forward Neural Network.</p>
+<p>A trainable neural network based on Transformer can be built by stacking Transformers.<br>The author’s experiment is to build an encoder-decoder with 6 layers<br>of encoder and decoder, and a total of 12 layers of Encoder-Decoder, which performed best<br>in machine translate.</p>
+<h3 id="Why-use-it"><a href="#Why-use-it" class="headerlink" title="Why use it?"></a>Why use it?</h3><p>The reason why the author uses “Attention” is to consider that the calculation<br>of RNN (or LSTM, GRU, etc.) is limited to sequential, that is to say,<br>RNN-related algorithms can only be calculated from left to right or from<br>right to left. The mechanism brings up two problems:</p>
 <ul>
-<li><p>The calculation at time t depends on the calculation result at time t-1, which limits the parallelism of the model;</p></li>
-<li><p>Information will be lost in the process of sequential calculation. Although LSTM and other structures alleviate the problem of long-term dependence to a certain extent, it is still powerless for particularly long-term dependence.</p></li>
+<li><p>The calculation at time t depends on the calculation result at time t-1,<br>which limits the parallelism of the model;</p>
+</li>
+<li><p>Information will be lost in the process of sequential calculation. Although<br>LSTM and other structures alleviate the problem of long-term dependence to a<br>certain extent, it is still powerless for particularly long-term dependence.</p>
+</li>
 </ul>
-<p>The proposal of Transformer solves the above two problems. First, it uses "Attention" to reduce the distance between any two positions in the sequence to a constant; second, it is not a sequential structure similar to RNN, so it has better Parallelism, in line with existing GPU frameworks.</p>
+<p>The proposal of Transformer solves the above two problems. First, it uses “Attention”<br>to reduce the distance between any two positions in the sequence to a constant; second,<br>it is not a sequential structure similar to RNN, so it has better Parallelism, in line<br>with existing GPU frameworks.</p>
 <p>Said in the paper:</p>
 <blockquote>
 <p>Transformer is the first transduction model relying entirely on self-attention to compute representations of its input and output without using sequence aligned RNNs or convolution。</p>
 </blockquote>
-<h2 id="principle">Principle</h2>
-<h3 id="structure-of-the-transformer">Structure of the Transformer</h3>
-<p>Here take the machine translation as example, if we want to translate a sentence as below: <img src="/images/327.png" /></p>
-<p>Expand the transformer module, we can see: <img src="/images/328.png" /></p>
-<p>The Encoder-Decoder are what we mention above. Further expand the module, we can get that: <img src="/images/329.png" /></p>
-<p>And the Encoder-Decoder looks like: <img src="/images/330.png" /></p>
-<h3 id="how-it-works">How it works</h3>
-<p>First of all, we need to do word-embedding as the input of the first Encoder, all the encoder receive a list of vectors each of the size 512, it means that, both word-embedding and the output of a Encoder should be in the same size, that is, list of vectors each of the size 512. This size(512) is depended on the longest word of our training data, it should be a hyperparameter.</p>
-<p>We could see this figure, the FC layer is also named feed forward layer. <img src="/images/331.png" /></p>
-<p>It shows that, after self-attention, there are dependencies between these paths, but no dependencies in feed forward layer, thus the various paths can be executed in parallel while flowing through the feed-forward layer.</p>
-<h3 id="detail-of-the-self-attention">Detail of the "Self-Attention"</h3>
-<p><strong>Step 1: create 3 vectors</strong></p>
-<p>After Embedding of one word, we get an embedding vector, with 512 size. Next, we need to create 3 new vector, named: Queries Vector, Keys Vector and Values Vector. The size of these 3 vectors should be smaller than Embedding Vector, usually, they could be 64.</p>
+<h2 id="Principle"><a href="#Principle" class="headerlink" title="Principle"></a>Principle</h2><h3 id="Structure-of-the-Transformer"><a href="#Structure-of-the-Transformer" class="headerlink" title="Structure of the Transformer"></a>Structure of the Transformer</h3><p>Here take the machine translation as example, if we want to translate a sentence as below:<br><img src="/images/327.png" alt=""></p>
+<p>Expand the transformer module, we can see:<br><img src="/images/328.png" alt=""></p>
+<p>The Encoder-Decoder are what we mention above.<br>Further expand the module, we can get that:<br><img src="/images/329.png" alt=""></p>
+<p>And the Encoder-Decoder looks like:<br><img src="/images/330.png" alt=""></p>
+<h3 id="How-it-works"><a href="#How-it-works" class="headerlink" title="How it works"></a>How it works</h3><p>First of all, we need to do word-embedding as the input of<br>the first Encoder, all the encoder receive a list of vectors each<br>of the size 512, it means that, both word-embedding and<br>the output of a Encoder should be in the same size, that is,<br>list of vectors each of the size 512. This size(512) is<br>depended on the longest word of our training data, it should be<br>a hyperparameter.</p>
+<p>We could see this figure, the FC layer is also named feed<br>forward layer.<br><img src="/images/331.png" alt=""></p>
+<p>It shows that, after self-attention, there are dependencies<br>between these paths, but no dependencies in feed forward layer,<br>thus the various paths can be executed in parallel while<br>flowing through the feed-forward layer.</p>
+<h3 id="Detail-of-the-“Self-Attention”"><a href="#Detail-of-the-“Self-Attention”" class="headerlink" title="Detail of the “Self-Attention”"></a>Detail of the “Self-Attention”</h3><p><strong>Step 1: create 3 vectors</strong></p>
+<p>After Embedding of one word, we get an embedding vector, with 512<br>size. Next, we need to create 3 new vector, named: Queries<br>Vector, Keys Vector and Values Vector. The size of these 3 vectors<br>should be smaller than Embedding Vector, usually, they could be 64.</p>
 <p>But how can we obtain these 3 vectors?</p>
-<p>Here we need 3 matrix, that is <span class="math inline">\(W^q\)</span>, <span class="math inline">\(W^k\)</span> and <span class="math inline">\(W^v\)</span>. We multiply embedding vector by the <span class="math inline">\(W^q\)</span> to obtain vector q, that is, Queries Vector, and the same to get other two vectors.</p>
-<p><strong>Step 2: compute scores</strong> These scores are used to measure how much focus to place on other parts of the input sentence as we encode a word at a certain position. For example, we have the following sentence:</p>
+<p>Here we need 3 matrix, that is $W^q$, $W^k$ and $W^v$. We multiply embedding<br>vector by the $W^q$ to obtain vector q, that is, Queries Vector, and the same to get<br>other two vectors.</p>
+<p><strong>Step 2: compute scores</strong><br>These scores are used to measure how much focus to place on other parts of the<br>input sentence as we encode a word at a certain position. For example, we have the<br>following sentence:</p>
 <blockquote>
-<p>The animal didn't cross the street because it was too tired</p>
+<p>The animal didn’t cross the street because it was too tired</p>
 </blockquote>
-<p>What does <code>it</code> mean here? Fur us, it is a quite easy question, but computer does not think so. So it is necessary to compute this score. Just like the figure below: <img src="/images/332.png" /></p>
-<p>To calculate these scores, there are 2 common methods: <img src="/images/333.png" /></p>
-<p>Here we only consider the left one. It means that, we use dot product of the query vector with the key vector of the respective word we’re scoring.</p>
-<p><strong>Step 3, 4</strong> Divide the score by 8 (the square root of the dimension of the key vectors used in the paper), and then use SOftmax to normalizes the score. Such as the figure below: <img src="/images/334.png" /></p>
+<p>What does <code>it</code> mean here? Fur us, it is a quite easy question, but<br>computer does not think so. So it is necessary to compute this score.<br>Just like the figure below:<br><img src="/images/332.png" alt=""></p>
+<p>To calculate these scores, there are 2 common methods:<br><img src="/images/333.png" alt=""></p>
+<p>Here we only consider the left one. It means that, we use dot product<br>of the query vector with the key vector of the respective word we’re scoring.</p>
+<p><strong>Step 3, 4</strong><br>Divide the score by 8 (the square root of the dimension of the key vectors<br>used in the paper), and then use SOftmax to normalizes the score.<br>Such as the figure below:<br><img src="/images/334.png" alt=""></p>
 <blockquote>
-<p><strong>Note</strong>: the score of itself is also required and the score above should first divide by 8, and then softmax. The activate function could also be replaced by other function likes ReLU.</p>
+<p><strong>Note</strong>: the score of itself is also required and the<br>score above should first divide by 8, and then softmax. The activate<br>function could also be replaced by other function likes ReLU.</p>
 </blockquote>
-<p><strong>Step 5, 6</strong> Multiply each value vector by the softmax score, this step can be used to ignore the unrelated word.</p>
-<p>And then sum up the weighted value vectors, to produces the output of the self-attention layer at this position.</p>
-<p>Such as the figure below: <img src="/images/335.png" /></p>
-<h4 id="in-matrix-form">In Matrix Form</h4>
-<p>This part shows how to compute with matrix, several picture are enough: <img src="/images/336.png" /> <img src="/images/337.png" /> <img src="/images/338.png" /></p>
+<p><strong>Step 5, 6</strong><br>Multiply each value vector by the softmax score, this step<br>can be used to ignore the unrelated word.</p>
+<p>And then sum up the weighted value vectors, to produces the<br>output of the self-attention layer at this position.</p>
+<p>Such as the figure below:<br><img src="/images/335.png" alt=""></p>
+<h4 id="In-Matrix-Form"><a href="#In-Matrix-Form" class="headerlink" title="In Matrix Form"></a>In Matrix Form</h4><p>This part shows how to compute with matrix, several picture are<br>enough:<br><img src="/images/336.png" alt=""><br><img src="/images/337.png" alt=""><br><img src="/images/338.png" alt=""></p>
 <blockquote>
-<p><strong>Note</strong>: Only <span class="math inline">\(W^q\)</span>, <span class="math inline">\(W^k\)</span> and <span class="math inline">\(W^v\)</span> should be learned.</p>
+<p><strong>Note</strong>: Only $W^q$, $W^k$ and $W^v$ should be learned.</p>
 </blockquote>
-<h3 id="multi-head-self-attention">Multi-head-Self-attention</h3>
-<p>Use multi-head can improve the ability of the model to focus on different positions. Take 2 heads as example: <img src="/images/339.png" /> There are 2 sets of Query/Key/Value weight matrices, that means that, we will get 2 <span class="math inline">\(b\)</span> by using one embedding vector, but we only need one vector as input for next layer.</p>
-<p>So here we introduce a new weight matrix <span class="math inline">\(W^0\)</span>: <img src="/images/340.png" /> It means that, We concat the matrices then multiply them by an additional weights matrix <span class="math inline">\(W^0\)</span> <img src="/images/341.png" /> (<strong>this image takes 8 heads as example</strong>)</p>
-<h3 id="position-encoding">Position Encoding</h3>
-<p>The last problem is, although we consider the whole sentence, we do not consider the relative position of the individual words.</p>
-<p>To solve this problem, we need to use an additional vector, which can tell the model the exactly position of each word, or the distance between different word. And this vector could be considered in embedding vector.</p>
-<p>For example, if the dimension of the embedding vector is 4, it could be: <img src="/images/342.png" /></p>
-<p>This position vector in paper looks like this: <img src="/images/343.png" /> Each column represents a position vector. The first column will be the vector we want to add to the first word embedding in the input sequence. Each column contains 512 values, each with a value between 1 and -1</p>
-<h3 id="a-small-detail">A small detail</h3>
-<p>One detail in the encoder architecture is that each sub-layer (self-attention, ffnn) in each encoder has a residual connection around it, followed by a layer normalization step. Such like this: <img src="/images/344.png" /> More specifically: <img src="/images/345.png" /></p>
-<h2 id="decoder">Decoder</h2>
-<p>After learning the principle of the Transformer as well as the Encoder, now we could start our Decoder.</p>
-<p>After processing the input sequence by encoder, the output of the top encoder is then transformed into a set of attention vectors K and V. These are to be used by each decoder in its “encoder-decoder attention” layer which helps the decoder focus on appropriate places in the input sequence: <img src="/images/346.png" /></p>
-<p>Repeat this process, until a special signal is outputted, to tell the decoder that the process should be finished.</p>
-<p>What's more, the self-attention in decoder is a bit different from the self-attention in encoder. In the decoder, the self-attention layer is only allowed to attend to earlier positions in the output sequence.</p>
-<p>This process can be showed as below: <img src="/images/347.png" /> <img src="/images/348.png" /> we could see that, the self-attention of decoder only care about the earlier positions in the output sequence, for example, we use "I", "am", "a" that we obtained before to get the new word "student".</p>
-<p>It should be noted that, the K and V vectors from encoder should be used in every decoder part.</p>
-<p>Finally, we get a float vector, we should turn it into a word, this is what the last layer, softmax layer, do. It is a simple full connected layer, that projects the vector produced by the stack of decoders, into a much, much larger vector called a logits vector.</p>
-<h1 id="reference">Reference</h1>
-<p>[1] Paper: Attention is all you need</p>
-<p>[2] http://jalammar.github.io/illustrated-transformer/</p>
-<p>[3] https://zhuanlan.zhihu.com/p/48508221</p>
+<h3 id="Multi-head-Self-attention"><a href="#Multi-head-Self-attention" class="headerlink" title="Multi-head-Self-attention"></a>Multi-head-Self-attention</h3><p>Use multi-head can improve the ability of the model to focus<br>on different positions. Take 2 heads as example:<br><img src="/images/339.png" alt=""><br>There are 2 sets of Query/Key/Value weight matrices, that means that,<br>we will get 2 $b$ by using one embedding vector, but we only need<br>one vector as input for next layer.</p>
+<p>So here we introduce a new weight matrix $W^0$:<br><img src="/images/340.png" alt=""><br>It means that, We concat the matrices then multiply them by an additional<br>weights matrix $W^0$<br><img src="/images/341.png" alt=""><br>(<strong>this image takes 8 heads as example</strong>)</p>
+<h3 id="Position-Encoding"><a href="#Position-Encoding" class="headerlink" title="Position Encoding"></a>Position Encoding</h3><p>The last problem is, although we consider the whole sentence, we do not consider<br>the relative position of the individual words.</p>
+<p>To solve this problem, we need to use an additional vector, which<br>can tell the model the exactly position of each word, or the distance<br>between different word. And this vector could be considered in<br>embedding vector.</p>
+<p>For example, if the dimension of the embedding vector is 4, it could<br>be:<br><img src="/images/342.png" alt=""></p>
+<p>This position vector in paper looks like this:<br><img src="/images/343.png" alt=""><br>Each column represents a position vector. The first column will be<br>the vector we want to add to the first word embedding in the<br>input sequence. Each column contains 512 values, each with a value<br>between 1 and -1</p>
+<h3 id="A-small-detail"><a href="#A-small-detail" class="headerlink" title="A small detail"></a>A small detail</h3><p>One detail in the encoder architecture is that each sub-layer<br>(self-attention, ffnn) in each encoder has a residual connection around it,<br>followed by a layer normalization step. Such like this:<br><img src="/images/344.png" alt=""><br>More specifically:<br><img src="/images/345.png" alt=""></p>
+<h2 id="Decoder"><a href="#Decoder" class="headerlink" title="Decoder"></a>Decoder</h2><p>After learning the principle of the Transformer as well as<br>the Encoder, now we could start our Decoder.</p>
+<p>After processing the input sequence by encoder, the output of<br>the top encoder is then transformed into a set of attention vectors<br>K and V. These are to be used by each decoder in its “encoder-decoder<br>attention” layer which helps the decoder focus on appropriate places in<br>the input sequence:<br><img src="/images/346.png" alt=""></p>
+<p>Repeat this process, until a special signal is outputted, to tell<br>the decoder that the process should be finished.</p>
+<p>What’s more, the self-attention in decoder is a bit different from the<br>self-attention in encoder. In the decoder, the self-attention layer is only<br>allowed to attend to earlier positions in the output sequence. </p>
+<p>This process can be showed as below:<br><img src="/images/347.png" alt=""><br><img src="/images/348.png" alt=""><br>we could see that, the self-attention of decoder only care about<br>the earlier positions in the output sequence, for example, we use<br>“I”, “am”, “a” that we obtained before to get the new word “student”.</p>
+<p>It should be noted that, the K and V vectors from encoder should be used<br>in every decoder part.</p>
+<p>Finally, we get a float vector, we should turn it into a word, this is what<br>the last layer, softmax layer, do. It is a simple full connected layer,<br>that projects the vector produced by the stack of decoders, into a much,<br>much larger vector called a logits vector.</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] Paper: Attention is all you need</p>
+<p>[2] <a target="_blank" rel="noopener" href="http://jalammar.github.io/illustrated-transformer/">http://jalammar.github.io/illustrated-transformer/</a></p>
+<p>[3] <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/48508221">https://zhuanlan.zhihu.com/p/48508221</a></p>
 
     </div>
 
@@ -468,7 +452,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#attention-is-all-you-need"><span class="nav-number">2.</span> <span class="nav-text">Attention is all you need</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#what-and-why"><span class="nav-number">2.1.</span> <span class="nav-text">WHAT? and WHY?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#what-is-it"><span class="nav-number">2.1.1.</span> <span class="nav-text">What is it?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#why-use-it"><span class="nav-number">2.1.2.</span> <span class="nav-text">Why use it?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#principle"><span class="nav-number">2.2.</span> <span class="nav-text">Principle</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#structure-of-the-transformer"><span class="nav-number">2.2.1.</span> <span class="nav-text">Structure of the Transformer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#how-it-works"><span class="nav-number">2.2.2.</span> <span class="nav-text">How it works</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#detail-of-the-self-attention"><span class="nav-number">2.2.3.</span> <span class="nav-text">Detail of the &quot;Self-Attention&quot;</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#in-matrix-form"><span class="nav-number">2.2.3.1.</span> <span class="nav-text">In Matrix Form</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#multi-head-self-attention"><span class="nav-number">2.2.4.</span> <span class="nav-text">Multi-head-Self-attention</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#position-encoding"><span class="nav-number">2.2.5.</span> <span class="nav-text">Position Encoding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#a-small-detail"><span class="nav-number">2.2.6.</span> <span class="nav-text">A small detail</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#decoder"><span class="nav-number">2.3.</span> <span class="nav-text">Decoder</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">3.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Attention-is-all-you-need"><span class="nav-number">2.</span> <span class="nav-text">Attention is all you need</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WHAT-and-WHY"><span class="nav-number">2.1.</span> <span class="nav-text">WHAT? and WHY?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#What-is-it"><span class="nav-number">2.1.1.</span> <span class="nav-text">What is it?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Why-use-it"><span class="nav-number">2.1.2.</span> <span class="nav-text">Why use it?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Principle"><span class="nav-number">2.2.</span> <span class="nav-text">Principle</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Structure-of-the-Transformer"><span class="nav-number">2.2.1.</span> <span class="nav-text">Structure of the Transformer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-it-works"><span class="nav-number">2.2.2.</span> <span class="nav-text">How it works</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Detail-of-the-%E2%80%9CSelf-Attention%E2%80%9D"><span class="nav-number">2.2.3.</span> <span class="nav-text">Detail of the “Self-Attention”</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#In-Matrix-Form"><span class="nav-number">2.2.3.1.</span> <span class="nav-text">In Matrix Form</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multi-head-Self-attention"><span class="nav-number">2.2.4.</span> <span class="nav-text">Multi-head-Self-attention</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Position-Encoding"><span class="nav-number">2.2.5.</span> <span class="nav-text">Position Encoding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-small-detail"><span class="nav-number">2.2.6.</span> <span class="nav-text">A small detail</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Decoder"><span class="nav-number">2.3.</span> <span class="nav-text">Decoder</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">3.</span> <span class="nav-text">Reference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -484,14 +468,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -519,7 +503,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

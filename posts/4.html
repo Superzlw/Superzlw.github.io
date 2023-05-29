@@ -22,12 +22,12 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="1. 群的定义 群(Group)是一种集合加上一种运算的代数结构，以A表示集合，“·”表示运算，则群一般写作 G(A, ·)。群要求满足以下四个条件：">
+  <meta name="description" content="1. 群的定义群(Group)是一种集合加上一种运算的代数结构，以A表示集合，“·”表示运算，则群一般写作 G(A, ·)。群要求满足以下四个条件：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="李群和李代数">
 <meta property="og:url" content="https://superzlw.github.io/posts/4.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="1. 群的定义 群(Group)是一种集合加上一种运算的代数结构，以A表示集合，“·”表示运算，则群一般写作 G(A, ·)。群要求满足以下四个条件：">
+<meta property="og:description" content="1. 群的定义群(Group)是一种集合加上一种运算的代数结构，以A表示集合，“·”表示运算，则群一般写作 G(A, ·)。群要求满足以下四个条件：">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210429051226112.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210501063426658.png#pic_center">
@@ -42,8 +42,8 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210504001031241.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210504001730154.png#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210507171027871.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="article:published_time" content="2021-08-03T19:05:39.337Z">
-<meta property="article:modified_time" content="2021-08-11T01:18:32.412Z">
+<meta property="article:published_time" content="2021-08-11T07:18:34.000Z">
+<meta property="article:modified_time" content="2021-08-11T07:18:34.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210429051226112.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
@@ -230,15 +230,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-08-03 21:05:39" itemprop="dateCreated datePublished" datetime="2021-08-03T21:05:39+02:00">2021-08-03</time>
+              <time title="创建时间：2021-08-11 09:18:34" itemprop="dateCreated datePublished" datetime="2021-08-11T09:18:34+02:00">2021-08-11</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-11 03:18:32" itemprop="dateModified" datetime="2021-08-11T03:18:32+02:00">2021-08-11</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -281,44 +274,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="群的定义">1. 群的定义</h2>
-<p>群(Group)是<strong>一种集合</strong>加上<strong>一种运算</strong>的代数结构，以A表示集合，“·”表示运算，则群一般写作 G(A, ·)。群要求满足以下四个条件： <span id="more"></span> <img src="https://img-blog.csdnimg.cn/20210429051226112.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 举个例子，旋转矩阵和乘法可以构成旋转矩阵群，因为其满足：</p>
+        <h2 id="1-群的定义"><a href="#1-群的定义" class="headerlink" title="1. 群的定义"></a>1. 群的定义</h2><p>群(Group)是<strong>一种集合</strong>加上<strong>一种运算</strong>的代数结构，以A表示集合，“·”表示运算，则群一般写作 G(A, ·)。群要求满足以下四个条件：<br><span id="more"></span><br><img src="https://img-blog.csdnimg.cn/20210429051226112.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>举个例子，旋转矩阵和乘法可以构成旋转矩阵群，因为其满足：</p>
 <pre><code>1). 旋转矩阵相乘后仍是旋转矩阵；
 2). 矩阵乘法满足结合律；
 3). 幺元为单位矩阵，也属旋转矩阵；
-4). 旋转矩阵的逆也为旋转矩阵，且相乘为单位矩阵。</code></pre>
-<p>常见的群有： <img src="https://img-blog.csdnimg.cn/20210501063426658.png#pic_center" alt="在这里插入图片描述" /></p>
-<h2 id="李群">2. 李群</h2>
-<p>李群是指拥有(连续)光滑性质的群，比如上面提到的旋转矩阵群，因其能在空间中连续旋转，变换矩阵群也是李群（就是在旋转过程中加上平移）。</p>
-<h2 id="李代数的引入">3. 李代数的引入</h2>
-<h3 id="直观的导出">直观的导出</h3>
-<p>在视觉SLAM中，我们需要做的就是不断计算相机的位姿和构建地图（其中的相机位姿表现在其变换矩阵T），但由于干扰的存在，我们无法准确获得所需要的信息，所以我们转而求其最小误差。<br />
-现假设我们有N个三维点p和对应的观测值z，那么我们的目标就是寻找一个最佳的位姿T，使得整体误差最小化，也就是求： <img src="https://img-blog.csdnimg.cn/20210501044418122.png#pic_center" alt="在这里插入图片描述" /> 要求解上面的方程，即是要求目标函数J对T的导数，但由于T所在的变换矩阵群（下面用SO(3)空间表示）对加法不封闭，无法直接求取，所以我们需要引入一个新的量，通过对该量的计算间接获得对变换矩阵T的求导，这个引入的量就是李代数。</p>
-<h3 id="数学层面的导出">数学层面的导出</h3>
-<p><strong>（之后的部分《视觉SLAM 十四讲》里写得已经很精炼很清楚了，这里大概重述一遍以加深印象，也方便以后的查询）</strong></p>
+4). 旋转矩阵的逆也为旋转矩阵，且相乘为单位矩阵。
+</code></pre><p>常见的群有：<br><img src="https://img-blog.csdnimg.cn/20210501063426658.png#pic_center" alt="在这里插入图片描述"></p>
+<h2 id="2-李群"><a href="#2-李群" class="headerlink" title="2. 李群"></a>2. 李群</h2><p>李群是指拥有(连续)光滑性质的群，比如上面提到的旋转矩阵群，因其能在空间中连续旋转，变换矩阵群也是李群（就是在旋转过程中加上平移）。</p>
+<h2 id="3-李代数的引入"><a href="#3-李代数的引入" class="headerlink" title="3. 李代数的引入"></a>3. 李代数的引入</h2><h3 id="直观的导出"><a href="#直观的导出" class="headerlink" title="直观的导出"></a>直观的导出</h3><p>在视觉SLAM中，我们需要做的就是不断计算相机的位姿和构建地图（其中的相机位姿表现在其变换矩阵T），但由于干扰的存在，我们无法准确获得所需要的信息，所以我们转而求其最小误差。\<br>现假设我们有N个三维点p和对应的观测值z，那么我们的目标就是寻找一个最佳的位姿T，使得整体误差最小化，也就是求：<br><img src="https://img-blog.csdnimg.cn/20210501044418122.png#pic_center" alt="在这里插入图片描述"><br>要求解上面的方程，即是要求目标函数J对T的导数，但由于T所在的变换矩阵群（下面用SO(3)空间表示）对加法不封闭，无法直接求取，所以我们需要引入一个新的量，通过对该量的计算间接获得对变换矩阵T的求导，这个引入的量就是李代数。</p>
+<h3 id="数学层面的导出"><a href="#数学层面的导出" class="headerlink" title="数学层面的导出"></a>数学层面的导出</h3><p><strong>（之后的部分《视觉SLAM 十四讲》里写得已经很精炼很清楚了，这里大概重述一遍以加深印象，也方便以后的查询）</strong></p>
 <p>先给一个结论：<strong>李代数对应李群的正切空间，描述了李群的局部导数。</strong></p>
-<p>这里用旋转矩阵群SO(3)为例：<br />
-我们知道旋转矩阵满足以下关系：<span class="math display">\[ RR^{T}=I\]</span> 然后引入时间变量<span class="math inline">\(t\)</span>变为时间的函数<span class="math inline">\(R(t)\)</span>，即是有：<span class="math display">\[ R(t)R(t)^{T}=I\]</span> 对两边求导得到：<span class="math display">\[\dot{R}(t)R(t)^{T}+\dot{R}(t)^{T}R(t)=0\]</span> 整理得：<span class="math display">\[\dot{R}(t)R(t)^{T}=-(\dot{R}(t)R(t)^{T})^{T}\]</span> 可见，<span class="math inline">\(\dot{R}(t)R(t)^{T}\)</span>是一个反对称矩阵。用符号<span class="math inline">\(^{\land}\)</span>表示反对称矩阵，设：<span class="math display">\[ a=\begin{bmatrix} a_{1} \\ a_{2} \\ a_{3} \end{bmatrix}\]</span> 则<span class="math inline">\(a^{\land}\)</span>为：<span class="math display">\[ a^{\land}=A=\begin{bmatrix} 0 &amp; -a_{3} &amp; a_{2} \\ a_{3} &amp; 0 &amp; -a_{1} \\ -a_{2} &amp; a_{1} &amp; 0 \end{bmatrix}\]</span> 同理：<span class="math display">\[A^{\vee}=a\]</span> 我们设一个三维向量<span class="math inline">\(\phi(t)\in\Re^{3}\)</span>与反对称矩阵<span class="math inline">\(\dot{R}(t)R(t)^{T}\)</span>对应，即：<span class="math display">\[\dot{R}(t)R(t)^{T}=\phi(t)^{\land}\]</span> 等式两边右乘<span class="math inline">\(R(t)\)</span>，由于<span class="math inline">\(R\)</span>为正交阵，得：<span class="math display">\[\dot{R}(t)=\phi(t)^{\land}R(t)=\begin{bmatrix}0 &amp; -\phi_{3} &amp; \phi_{2}\\\phi_{3}&amp;0&amp;-\phi_{1}\\-\phi_{2}&amp;\phi_{1}&amp;0\end{bmatrix}R(t)\]</span> 由此可见，每对<span class="math inline">\(R\)</span>求一次导数，只需左乘一个<span class="math inline">\(\phi^{\land}(t)\)</span>即可。<br />
-当<span class="math inline">\(t=0\)</span>时，设此时<span class="math inline">\(R(0)=I\)</span>，把<span class="math inline">\(R(t)\)</span>在<span class="math inline">\(t=0\)</span>附近进行一阶泰勒展开得：<span class="math display">\[R(t)\approx R(t_{0})+\dot{R}(t_{0})(t-t_{0})=I+\phi(t_{0})^{\land}(t)\]</span> 可见，<span class="math inline">\(\phi\)</span>反映了<span class="math inline">\(R\)</span>的导数性质，所以称它为SO(3)原点附近的正切空间。同时在<span class="math inline">\(t_{0}\)</span>附近设<span class="math inline">\(\phi\)</span>保持为常数<span class="math inline">\(\phi(t_{0})=\phi_{0}\)</span>，故有：<span class="math display">\[\dot{R}(t)=\phi(t_{0})^{\land}R(t)=\phi_{0}^{\land}R(t)\]</span> 这是一个关于<span class="math inline">\(R\)</span>的微分方程，且初始值<span class="math inline">\(R(0)=I\)</span>，解得：<span class="math display">\[R(t)=exp(\phi_{0}^{\land}t)\]</span> 表明，旋转矩阵可由<span class="math inline">\(exp(\phi_{0}^{\land}t)\)</span>计算出来，给定某时刻的<span class="math inline">\(R\)</span>我们就能求得一个<span class="math inline">\(\phi\)</span>，它描述<span class="math inline">\(R\)</span>在局部的导数关系，<strong>这个<span class="math inline">\(\phi\)</span>正是对应到SO(3)上的李代数so(3)</strong>。</p>
-<h2 id="李代数的定义">4. 李代数的定义</h2>
-<p>每个李群都有其对应的李代数，一般李代数的定义如下： <img src="https://img-blog.csdnimg.cn/20210501060351439.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 二元运算[,]称为李括号，表达两元素的差异。举个例子，三维向量<span class="math inline">\(\Re^{3}\)</span>的叉积就是一种李括号，因此<span class="math inline">\(g=(\Re^{3},\Re,\times)\)</span>构成了一个李代数。</p>
-<h2 id="李代数so3">5. 李代数so(3)</h2>
-<p>由上面的结果可得，三维向量<span class="math inline">\(\phi\)</span>为李群SO(3)所对应的，定义在<span class="math inline">\(\Re^{3}\)</span>上的李代数，每个<span class="math inline">\(\phi\)</span>对应一个反对称矩阵：<span class="math display">\[\Phi=\phi(t)^{\land}R(t)=\begin{bmatrix}0 &amp; -\phi_{3} &amp; \phi_{2}\\\phi_{3}&amp;0&amp;-\phi_{1}\\-\phi_{2}&amp;\phi_{1}&amp;0\end{bmatrix}\in \Re^{3\times3}\]</span> 两个向量<span class="math inline">\(\phi_{1},\phi_{2}\)</span>的李括号为：<span class="math display">\[[\phi_{1},\phi_{2}]=(\Phi_{1}\Phi_{2}-\Phi_{2}\Phi_{1})^{\vee}\]</span> 它与SO(3)的关系由指数映射指定：<span class="math display">\[R=exp(\phi^{\land})\]</span></p>
-<h2 id="李代数se3">6. 李代数se(3)</h2>
-<p>SE(3)对应的李代数se(3)与so(3)类似，但其定义在<span class="math inline">\(\Re^{6}\)</span>空间中，如下： <img src="https://img-blog.csdnimg.cn/20210501232727577.png#pic_center" alt="在这里插入图片描述" /> 我们把每个se(3)的元素记作<span class="math inline">\(\xi\)</span>，表示一个六维向量，前三维表平移，但不同于变换矩阵的平移，记作<span class="math inline">\(\rho\)</span>，后三维表旋转，记作<span class="math inline">\(\phi\)</span>，其实就是上面提到的so(3)元素。se(3)表示如下（<strong>注：这里的<span class="math inline">\(\land\)</span>不再表示反对称矩阵，而是表示六维向量向四维矩阵的转换</strong>）： <span class="math display">\[\xi^{\land}=\begin{bmatrix}\phi^{\land}&amp;\rho\\0^{T}&amp;0\end{bmatrix}\]</span> (注：<span class="math inline">\(\land\)</span>和<span class="math inline">\(\vee\)</span>这里表示“从向量到矩阵”和“从矩阵到向量”，se(3)可理解成：由平移加上一个so(3)元素构成的向量)<br />
-其李括号为：<span class="math display">\[[\xi_{1},\xi_{2}]=(\xi^{\land}_{1}\xi^{\land}_{2}-\xi^{\land}_{2}\xi^{\land}_{1})^{\vee}\]</span></p>
-<h2 id="指数与对数映射">7. 指数与对数映射</h2>
-<p>矩阵的指数如<span class="math inline">\(exp(\phi^{\land})\)</span>在李群李代数中称为指数映射。</p>
-<h3 id="关于so3的映射">关于so(3)的映射</h3>
-<p>那么如何计算<span class="math inline">\(exp(\phi^{\land})\)</span>呢？首先，任何矩阵<span class="math inline">\(A\)</span>的指数都可以表示成一个泰勒展开，但只有收敛的情况下才会有结果，结果如下：<span class="math display">\[exp(A)=\sum_{n=0}^{\infty}\frac{1}{n!}A^{n}\]</span> 即是对so(3)的元素有：<span class="math display">\[exp(\phi^{\land})=\sum_{n=0}^{\infty}\frac{1}{n!}(\phi^{\land})^{n}\]</span> 但要计算这个太复杂，因为有无穷次幂。所以一般情况下我们用下面的方法：<span class="math inline">\(\phi\)</span>是一个三维向量，我们定义其模长和方向，分别记为<span class="math inline">\(\theta\)</span>和<span class="math inline">\(a\)</span>，写作<span class="math inline">\(\phi=\theta a\)</span>，这里<span class="math inline">\(a\)</span>的模长为1.即: <span class="math inline">\(||a||=1\)</span>: <span class="math display">\[a = [a_{1}, a_{2}, a_{3}]^{T}\]</span> <span class="math display">\[a^{2}_{1}+a^{2}_{2}+a^{2}_{3}=1\]</span> 对于<span class="math inline">\(a^{\land}\)</span>有以下性质： <img src="https://img-blog.csdnimg.cn/20210502002859946.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 图里的两个式子提供了处理高阶<span class="math inline">\(a^{\land}\)</span>的方法，所以其指数映射可写成一个神奇的形式：（<em>最好自己写一遍</em>） <img src="https://img-blog.csdnimg.cn/20210503231438538.png#pic_center" alt="在这里插入图片描述" /> <img src="https://img-blog.csdnimg.cn/20210503231603885.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 这个式子与罗德里格斯公式如出一辙。</p>
-<p>这里简单回顾下罗德里格斯公式（旋转向量到旋转矩阵的转化）： <span class="math display">\[R=cos\theta I+(1-cos\theta)nn^{T}+sin\theta n^{\land}\]</span> 两边取迹（即是求矩阵对角线元素之和）：<span class="math display">\[tr(R)=cos\theta tr(I)+(1-cos\theta)tr(nn^{T})+sin\theta tr(n^{\land})\\=3cos\theta+(1-cos\theta)=1+2cos\theta\]</span> 所以角度为： <span class="math display">\[\theta=arc cos\frac{tr(R)-1}{2} \]</span> 这表明，so(3)实际就是由旋转向量组成的空间，而指数映射即是罗德里格斯公式。<br />
-反之，通过对数映射也可以将SO(3)的元素对应到so(3)中： <img src="https://img-blog.csdnimg.cn/202105032347198.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 对这个式子的求解也没必要用泰勒展开，而是可以通过迹的性质分别求解转角和转轴（上面回顾罗德里格斯公式的时候已经一起列出来了）。<br />
-最后需要提一下：每个SO(3)中的元素都可以找到一个so(3)元素与之对应，但一个so(3)元素却可能有多个SO(3)中的元素，直观一点理解的话：比如旋转360度会对应一个周期。</p>
-<h3 id="关于se3的映射待补充">关于se(3)的映射（待补充。。。）</h3>
-<p>与so(3)的过程类似，所以这里主要给结论（<strong>这个过程没具体算，之后补上。</strong>）。<br />
-se(3)的指数映射形式如下： <img src="https://img-blog.csdnimg.cn/20210504000629746.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 同样令<span class="math inline">\(\phi=\theta a\)</span>，<span class="math inline">\(a\)</span>为单位向量，则： <img src="https://img-blog.csdnimg.cn/20210504001031241.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 从结果来看，<span class="math inline">\(\xi\)</span>的指数映射左上角的<span class="math inline">\(R\)</span>就是上面的SO(3)，与se(3)中的旋转部分<span class="math inline">\(\phi\)</span>对应，而右上角的<span class="math inline">\(J\)</span>由上面图里的推导给出，即： <img src="https://img-blog.csdnimg.cn/20210504001730154.png#pic_center" alt="在这里插入图片描述" /></p>
-<h3 id="映射表">映射表*</h3>
-<p>这里给出SO(3), SE(3), so(3), se(3)的对应映射表 <img src="https://img-blog.csdnimg.cn/20210507171027871.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+<p>这里用旋转矩阵群SO(3)为例：\<br>我们知道旋转矩阵满足以下关系：<script type="math/tex">RR^{T}=I</script><br>然后引入时间变量$t$变为时间的函数$R(t)$，即是有：<script type="math/tex">R(t)R(t)^{T}=I</script><br>对两边求导得到：<script type="math/tex">\dot{R}(t)R(t)^{T}+\dot{R}(t)^{T}R(t)=0</script><br>整理得：<script type="math/tex">\dot{R}(t)R(t)^{T}=-(\dot{R}(t)R(t)^{T})^{T}</script><br>可见，$\dot{R}(t)R(t)^{T}$是一个反对称矩阵。用符号$^{\land}$表示反对称矩阵，设：<script type="math/tex">a=\begin{bmatrix} a_{1} \\ a_{2} \\ a_{3} \end{bmatrix}</script><br>则$a^{\land}$为：<script type="math/tex">a^{\land}=A=\begin{bmatrix} 0 & -a_{3} & a_{2} \\ a_{3} & 0 & -a_{1} \\ -a_{2} & a_{1} & 0 \end{bmatrix}</script><br>同理：<script type="math/tex">A^{\vee}=a</script><br>我们设一个三维向量$\phi(t)\in\Re^{3}$与反对称矩阵$\dot{R}(t)R(t)^{T}$对应，即：<script type="math/tex">\dot{R}(t)R(t)^{T}=\phi(t)^{\land}</script><br>等式两边右乘$R(t)$，由于$R$为正交阵，得：<script type="math/tex">\dot{R}(t)=\phi(t)^{\land}R(t)=\begin{bmatrix}0 & -\phi_{3} & \phi_{2}\\\phi_{3}&0&-\phi_{1}\\-\phi_{2}&\phi_{1}&0\end{bmatrix}R(t)</script><br>由此可见，每对$R$求一次导数，只需左乘一个$\phi^{\land}(t)$即可。\<br>当$t=0$时，设此时$R(0)=I$，把$R(t)$在$t=0$附近进行一阶泰勒展开得：<script type="math/tex">R(t)\approx R(t_{0})+\dot{R}(t_{0})(t-t_{0})=I+\phi(t_{0})^{\land}(t)</script><br>可见，$\phi$反映了$R$的导数性质，所以称它为SO(3)原点附近的正切空间。同时在$t_{0}$附近设$\phi$保持为常数$\phi(t_{0})=\phi_{0}$，故有：<script type="math/tex">\dot{R}(t)=\phi(t_{0})^{\land}R(t)=\phi_{0}^{\land}R(t)</script><br>这是一个关于$R$的微分方程，且初始值$R(0)=I$，解得：<script type="math/tex">R(t)=exp(\phi_{0}^{\land}t)</script><br>表明，旋转矩阵可由$exp(\phi_{0}^{\land}t)$计算出来，给定某时刻的$R$我们就能求得一个$\phi$，它描述$R$在局部的导数关系，<strong>这个$\phi$正是对应到SO(3)上的李代数so(3)</strong>。</p>
+<h2 id="4-李代数的定义"><a href="#4-李代数的定义" class="headerlink" title="4. 李代数的定义"></a>4. 李代数的定义</h2><p>每个李群都有其对应的李代数，一般李代数的定义如下：<br><img src="https://img-blog.csdnimg.cn/20210501060351439.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>二元运算[,]称为李括号，表达两元素的差异。举个例子，三维向量$\Re^{3}$的叉积就是一种李括号，因此$g=(\Re^{3},\Re,\times)$构成了一个李代数。</p>
+<h2 id="5-李代数so-3"><a href="#5-李代数so-3" class="headerlink" title="5. 李代数so(3)"></a>5. 李代数so(3)</h2><p>由上面的结果可得，三维向量$\phi$为李群SO(3)所对应的，定义在$\Re^{3}$上的李代数，每个$\phi$对应一个反对称矩阵：<script type="math/tex">\Phi=\phi(t)^{\land}R(t)=\begin{bmatrix}0 & -\phi_{3} & \phi_{2}\\\phi_{3}&0&-\phi_{1}\\-\phi_{2}&\phi_{1}&0\end{bmatrix}\in \Re^{3\times3}</script><br>两个向量$\phi_{1},\phi_{2}$的李括号为：<script type="math/tex">[\phi_{1},\phi_{2}]=(\Phi_{1}\Phi_{2}-\Phi_{2}\Phi_{1})^{\vee}</script><br>它与SO(3)的关系由指数映射指定：<script type="math/tex">R=exp(\phi^{\land})</script></p>
+<h2 id="6-李代数se-3"><a href="#6-李代数se-3" class="headerlink" title="6. 李代数se(3)"></a>6. 李代数se(3)</h2><p>SE(3)对应的李代数se(3)与so(3)类似，但其定义在$\Re^{6}$空间中，如下：<br><img src="https://img-blog.csdnimg.cn/20210501232727577.png#pic_center" alt="在这里插入图片描述"><br>我们把每个se(3)的元素记作$\xi$，表示一个六维向量，前三维表平移，但不同于变换矩阵的平移，记作$\rho$，后三维表旋转，记作$\phi$，其实就是上面提到的so(3)元素。se(3)表示如下（<strong>注：这里的$\land$不再表示反对称矩阵，而是表示六维向量向四维矩阵的转换</strong>）：</p>
+<script type="math/tex; mode=display">\xi^{\land}=\begin{bmatrix}\phi^{\land}&\rho\\0^{T}&0\end{bmatrix}</script><p>(注：$\land$和$\vee$这里表示“从向量到矩阵”和“从矩阵到向量”，se(3)可理解成：由平移加上一个so(3)元素构成的向量)\<br>其李括号为：<script type="math/tex">[\xi_{1},\xi_{2}]=(\xi^{\land}_{1}\xi^{\land}_{2}-\xi^{\land}_{2}\xi^{\land}_{1})^{\vee}</script></p>
+<h2 id="7-指数与对数映射"><a href="#7-指数与对数映射" class="headerlink" title="7. 指数与对数映射"></a>7. 指数与对数映射</h2><p>矩阵的指数如$exp(\phi^{\land})$在李群李代数中称为指数映射。</p>
+<h3 id="关于so-3-的映射"><a href="#关于so-3-的映射" class="headerlink" title="关于so(3)的映射"></a>关于so(3)的映射</h3><p>那么如何计算$exp(\phi^{\land})$呢？首先，任何矩阵$A$的指数都可以表示成一个泰勒展开，但只有收敛的情况下才会有结果，结果如下：<script type="math/tex">exp(A)=\sum_{n=0}^{\infty}\frac{1}{n!}A^{n}</script><br>即是对so(3)的元素有：<script type="math/tex">exp(\phi^{\land})=\sum_{n=0}^{\infty}\frac{1}{n!}(\phi^{\land})^{n}</script><br>但要计算这个太复杂，因为有无穷次幂。所以一般情况下我们用下面的方法：$\phi$是一个三维向量，我们定义其模长和方向，分别记为$\theta$和$a$，写作$\phi=\theta a$，这里$a$的模长为1.即: $||a||=1$:</p>
+<script type="math/tex; mode=display">a = [a_{1}, a_{2}, a_{3}]^{T}$$ $$a^{2}_{1}+a^{2}_{2}+a^{2}_{3}=1</script><p>对于$a^{\land}$有以下性质：<br><img src="https://img-blog.csdnimg.cn/20210502002859946.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>图里的两个式子提供了处理高阶$a^{\land}$的方法，所以其指数映射可写成一个神奇的形式：（<em>最好自己写一遍</em>）<br><img src="https://img-blog.csdnimg.cn/20210503231438538.png#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210503231603885.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>这个式子与罗德里格斯公式如出一辙。</p>
+<p>这里简单回顾下罗德里格斯公式（旋转向量到旋转矩阵的转化）：</p>
+<script type="math/tex; mode=display">R=cos\theta I+(1-cos\theta)nn^{T}+sin\theta n^{\land}$$ 两边取迹（即是求矩阵对角线元素之和）：$$tr(R)=cos\theta tr(I)+(1-cos\theta)tr(nn^{T})+sin\theta tr(n^{\land})\\=3cos\theta+(1-cos\theta)=1+2cos\theta</script><p>所以角度为：</p>
+<script type="math/tex; mode=display">\theta=arc cos\frac{tr(R)-1}{2}</script><p>这表明，so(3)实际就是由旋转向量组成的空间，而指数映射即是罗德里格斯公式。\<br>反之，通过对数映射也可以将SO(3)的元素对应到so(3)中：<br><img src="https://img-blog.csdnimg.cn/202105032347198.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>对这个式子的求解也没必要用泰勒展开，而是可以通过迹的性质分别求解转角和转轴（上面回顾罗德里格斯公式的时候已经一起列出来了）。\<br>最后需要提一下：每个SO(3)中的元素都可以找到一个so(3)元素与之对应，但一个so(3)元素却可能有多个SO(3)中的元素，直观一点理解的话：比如旋转360度会对应一个周期。</p>
+<h3 id="关于se-3-的映射（待补充。。。）"><a href="#关于se-3-的映射（待补充。。。）" class="headerlink" title="关于se(3)的映射（待补充。。。）"></a>关于se(3)的映射（待补充。。。）</h3><p>与so(3)的过程类似，所以这里主要给结论（<strong>这个过程没具体算，之后补上。</strong>）。\<br>se(3)的指数映射形式如下：<br><img src="https://img-blog.csdnimg.cn/20210504000629746.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>同样令$\phi=\theta a$，$a$为单位向量，则：<br><img src="https://img-blog.csdnimg.cn/20210504001031241.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>从结果来看，$\xi$的指数映射左上角的$R$就是上面的SO(3)，与se(3)中的旋转部分$\phi$对应，而右上角的$J$由上面图里的推导给出，即：<br><img src="https://img-blog.csdnimg.cn/20210504001730154.png#pic_center" alt="在这里插入图片描述"></p>
+<h3 id="映射表"><a href="#映射表" class="headerlink" title="映射表*"></a>映射表*</h3><p>这里给出SO(3), SE(3), so(3), se(3)的对应映射表<br><img src="https://img-blog.csdnimg.cn/20210507171027871.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
 <p><strong><em>本文主要参考《视觉SLAM十四讲》</em></strong></p>
 
     </div>
@@ -346,12 +324,12 @@ se(3)的指数映射形式如下： <img src="https://img-blog.csdnimg.cn/202105
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/posts/1.html" rel="prev" title="学习记录_Computer Vision1_作业1_(2) Projective Transformation">
-      <i class="fa fa-chevron-left"></i> 学习记录_Computer Vision1_作业1_(2) Projective Transformation
+    <a href="/posts/5.html" rel="prev" title="李代数和扰动模型">
+      <i class="fa fa-chevron-left"></i> 李代数和扰动模型
     </a></div>
       <div class="post-nav-item">
-    <a href="/posts/5.html" rel="next" title="李代数和扰动模型">
-      李代数和扰动模型 <i class="fa fa-chevron-right"></i>
+    <a href="/posts/1.html" rel="next" title="学习记录_Computer Vision1_作业1_(2) Projective Transformation">
+      学习记录_Computer Vision1_作业1_(2) Projective Transformation <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -412,7 +390,7 @@ se(3)的指数映射形式如下： <img src="https://img-blog.csdnimg.cn/202105
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BE%A4%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">1. 群的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%8E%E7%BE%A4"><span class="nav-number">2.</span> <span class="nav-text">2. 李群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%8E%E4%BB%A3%E6%95%B0%E7%9A%84%E5%BC%95%E5%85%A5"><span class="nav-number">3.</span> <span class="nav-text">3. 李代数的引入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B4%E8%A7%82%E7%9A%84%E5%AF%BC%E5%87%BA"><span class="nav-number">3.1.</span> <span class="nav-text">直观的导出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E5%AD%A6%E5%B1%82%E9%9D%A2%E7%9A%84%E5%AF%BC%E5%87%BA"><span class="nav-number">3.2.</span> <span class="nav-text">数学层面的导出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%8E%E4%BB%A3%E6%95%B0%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">4.</span> <span class="nav-text">4. 李代数的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%8E%E4%BB%A3%E6%95%B0so3"><span class="nav-number">5.</span> <span class="nav-text">5. 李代数so(3)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%8E%E4%BB%A3%E6%95%B0se3"><span class="nav-number">6.</span> <span class="nav-text">6. 李代数se(3)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E4%B8%8E%E5%AF%B9%E6%95%B0%E6%98%A0%E5%B0%84"><span class="nav-number">7.</span> <span class="nav-text">7. 指数与对数映射</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Eso3%E7%9A%84%E6%98%A0%E5%B0%84"><span class="nav-number">7.1.</span> <span class="nav-text">关于so(3)的映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Ese3%E7%9A%84%E6%98%A0%E5%B0%84%E5%BE%85%E8%A1%A5%E5%85%85"><span class="nav-number">7.2.</span> <span class="nav-text">关于se(3)的映射（待补充。。。）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%A0%E5%B0%84%E8%A1%A8"><span class="nav-number">7.3.</span> <span class="nav-text">映射表*</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%BE%A4%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">1. 群的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%9D%8E%E7%BE%A4"><span class="nav-number">2.</span> <span class="nav-text">2. 李群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%9D%8E%E4%BB%A3%E6%95%B0%E7%9A%84%E5%BC%95%E5%85%A5"><span class="nav-number">3.</span> <span class="nav-text">3. 李代数的引入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B4%E8%A7%82%E7%9A%84%E5%AF%BC%E5%87%BA"><span class="nav-number">3.1.</span> <span class="nav-text">直观的导出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E5%AD%A6%E5%B1%82%E9%9D%A2%E7%9A%84%E5%AF%BC%E5%87%BA"><span class="nav-number">3.2.</span> <span class="nav-text">数学层面的导出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%9D%8E%E4%BB%A3%E6%95%B0%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">4.</span> <span class="nav-text">4. 李代数的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%9D%8E%E4%BB%A3%E6%95%B0so-3"><span class="nav-number">5.</span> <span class="nav-text">5. 李代数so(3)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E6%9D%8E%E4%BB%A3%E6%95%B0se-3"><span class="nav-number">6.</span> <span class="nav-text">6. 李代数se(3)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E6%8C%87%E6%95%B0%E4%B8%8E%E5%AF%B9%E6%95%B0%E6%98%A0%E5%B0%84"><span class="nav-number">7.</span> <span class="nav-text">7. 指数与对数映射</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Eso-3-%E7%9A%84%E6%98%A0%E5%B0%84"><span class="nav-number">7.1.</span> <span class="nav-text">关于so(3)的映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Ese-3-%E7%9A%84%E6%98%A0%E5%B0%84%EF%BC%88%E5%BE%85%E8%A1%A5%E5%85%85%E3%80%82%E3%80%82%E3%80%82%EF%BC%89"><span class="nav-number">7.2.</span> <span class="nav-text">关于se(3)的映射（待补充。。。）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%A0%E5%B0%84%E8%A1%A8"><span class="nav-number">7.3.</span> <span class="nav-text">映射表*</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -428,14 +406,14 @@ se(3)的指数映射形式如下： <img src="https://img-blog.csdnimg.cn/202105
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -463,7 +441,7 @@ se(3)的指数映射形式如下： <img src="https://img-blog.csdnimg.cn/202105
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

@@ -22,12 +22,12 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="引入 记录一种基于α拓展和图像切割技术的图像去噪的方法，作业的其中一题，貌似也没在网上看到相关的东西，觉得挺有意思就记一下。顺便也总结一下其中用到的方法。">
+  <meta name="description" content="引入记录一种基于α拓展和图像切割技术的图像去噪的方法，作业的其中一题，貌似也没在网上看到相关的东西，觉得挺有意思就记一下。顺便也总结一下其中用到的方法。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="图像去噪 (Graphcuts + α-expansion)">
 <meta property="og:url" content="https://superzlw.github.io/posts/31.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="引入 记录一种基于α拓展和图像切割技术的图像去噪的方法，作业的其中一题，貌似也没在网上看到相关的东西，觉得挺有意思就记一下。顺便也总结一下其中用到的方法。">
+<meta property="og:description" content="引入记录一种基于α拓展和图像切割技术的图像去噪的方法，作业的其中一题，貌似也没在网上看到相关的东西，觉得挺有意思就记一下。顺便也总结一下其中用到的方法。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://superzlw.github.io/images/316.png">
 <meta property="og:image" content="https://superzlw.github.io/images/317.png">
@@ -40,8 +40,8 @@
 <meta property="og:image" content="https://superzlw.github.io/images/324.png">
 <meta property="og:image" content="https://superzlw.github.io/images/325.png">
 <meta property="og:image" content="https://superzlw.github.io/images/326.png">
-<meta property="article:published_time" content="2021-10-10T11:45:26.471Z">
-<meta property="article:modified_time" content="2021-10-11T17:23:09.154Z">
+<meta property="article:published_time" content="2021-10-11T23:23:10.000Z">
+<meta property="article:modified_time" content="2021-10-11T23:23:10.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://superzlw.github.io/images/316.png">
@@ -228,15 +228,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-10-10 13:45:26" itemprop="dateCreated datePublished" datetime="2021-10-10T13:45:26+02:00">2021-10-10</time>
+              <time title="创建时间：2021-10-12 01:23:10" itemprop="dateCreated datePublished" datetime="2021-10-12T01:23:10+02:00">2021-10-12</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-11 19:23:09" itemprop="dateModified" datetime="2021-10-11T19:23:09+02:00">2021-10-11</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -279,59 +272,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="引入">引入</h1>
-<p>记录一种基于α拓展和图像切割技术的图像去噪的方法，作业的其中一题，貌似也没在网上看到相关的东西，觉得挺有意思就记一下。顺便也总结一下其中用到的方法。 <span id="more"></span></p>
-<h1 id="graph-cuts">Graph Cuts</h1>
-<p>这里以二元分割为例，即是说 disparity 只取[0, 1]，如下图所示：<img src="/images/316.png" /> 然后现在就要对每个像素进行分类，或者说切割，但我们要怎么判断一个像素属于哪个 disparity 呢，这里就要引入Cost，有两种，第一种如下图：<img src="/images/317.png" /> 也就是说这里的 5 表示该像素<strong>不</strong>分配到 <span class="math inline">\(d=1\)</span>的Cost，同理，对于下面<span class="math inline">\(d=0\)</span>也会有对应的Cost；<br />
-第二种是：<img src="/images/318.png" /> 也即是说这里的2表示把相邻像素分配给不同disparity的Cost。<br />
-现在我们要考虑的就是如何把不同的像素归到不同的disparity，这里介绍一种最常用的方法：最大流/最小割法 (max-flow/min-cut)。</p>
-<h2 id="最大流最小割法-max-flowmin-cut">最大流/最小割法 (max-flow/min-cut)</h2>
-<h3 id="最大流">最大流</h3>
-<p><strong>这部分直接去看【参考1】比较好</strong></p>
-<p>乍看之下这好像是两种方法，但在这里这两个东西其实本质上是一样的。<br />
-【参考1】其实已经讲得很好了，我这里结合【参考2】再理一遍，至少让我印象深刻一点。<br />
-以水管输送水为例，要从起始点送水到目标点，某一路径最大允许流量应取决于该路径最脆弱那段水管所能承受的最大流量，不然会爆，以下图为例: <img src="/images/319.png" title="图源于参考1" /> 这里只有一条路径，且最小值为2，即是说该路径的最大流为2。<br />
-如果路径多一点的话那就不太好算了，以下图为例：<img src="/images/320.png" title="图源于参考1" /> 对于路径“s-&gt;u-&gt;v-&gt;t”，最小值为2，即该路径允许的最大流为2，用了流量2后当前状态就变成下图的状态了：<img src="/images/321.png" title="图源于参考1" /> (这里的x/y 表示容量最大为y，现已经用了x。)<br />
-这时候就会发现没路径可走了，并作出判断：该图最大流为2。但显然这种判断是错的，下面这种情况才是对的：<img src="/images/322.png" title="图源于参考1" /> 为了得到正确的流量，上面那种简单路径叠加的方法明显是行不通的，这时候就要用residual graph了。</p>
-<h4 id="residual-graph">residual graph</h4>
-<p>这个方法的核心思想就是可以撤销之前的操作，这样就可以考虑得更全面(学过“图”算法的应该很容易理解，但我没学过，只在leetcode上做过广度/深度优先搜索算法题，意思差不多，所以对这部分我只是基本理解，并不全面)。<br />
-当我们选择了路径“s-&gt;u-&gt;v-&gt;t”时，其允许的最大流为<strong>2</strong>，此时按照这个流量从终点往起点回溯，图如下：<img src="/images/323.png" title="图源于参考1" />抵消部分如果是0就省略了。<br />
-然后现在在根据这个新图找一条新的路径，比如说“s-&gt;v-&gt;u-&gt;t”，其允许的最大流为<strong>1</strong>，回溯后又得到一个新图如下：<img src="/images/324.png" title="图源于参考1" /> 根据这个图我们没办法找到新路径了，所以最大流为2+1=3，这就是最终的结果了。<br />
-</p>
-<h3 id="最小割">最小割</h3>
-<p>最小割的话就简单说了，即是把不同像素归到不同的disparity，使这种归类所需的能量最小，比如说下面这幅图：<img src="/images/325.png" /></p>
-<h1 id="𝝰-expansion">𝝰-expansion</h1>
-<p>上面的图割法显然只对二分类有用，经常用于分离背景和目标物，但如果要处理多个标签，就要用到𝝰-expansion了。<br />
-这种方法简单说就是迭代地使用图割找到能量(或者对数后验)地局部最优解。<br />
-基本思想是：</p>
+        <h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>记录一种基于α拓展和图像切割技术的图像去噪的方法，作业的其中一题，貌似也没在网上看到相关的东西，觉得挺有意思就记一下。顺便也总结一下其中用到的方法。<br><span id="more"></span></p>
+<h1 id="Graph-Cuts"><a href="#Graph-Cuts" class="headerlink" title="Graph Cuts"></a>Graph Cuts</h1><p>这里以二元分割为例，即是说 disparity 只取[0, 1]，如下图所示：<img src="/images/316.png" alt=""><br>然后现在就要对每个像素进行分类，或者说切割，但我们要怎么判断一个像素属于哪个 disparity 呢，这里就要引入Cost，有两种，第一种如下图：<img src="/images/317.png" alt=""><br>也就是说这里的 5 表示该像素<strong>不</strong>分配到 $d=1$的Cost，同理，对于下面$d=0$也会有对应的Cost；\<br>第二种是：<img src="/images/318.png" alt=""><br>也即是说这里的2表示把相邻像素分配给不同disparity的Cost。\<br>现在我们要考虑的就是如何把不同的像素归到不同的disparity，这里介绍一种最常用的方法：最大流/最小割法 (max-flow/min-cut)。</p>
+<h2 id="最大流-最小割法-max-flow-min-cut"><a href="#最大流-最小割法-max-flow-min-cut" class="headerlink" title="最大流/最小割法 (max-flow/min-cut)"></a>最大流/最小割法 (max-flow/min-cut)</h2><h3 id="最大流"><a href="#最大流" class="headerlink" title="最大流"></a>最大流</h3><p><strong>这部分直接去看【参考1】比较好</strong></p>
+<p>乍看之下这好像是两种方法，但在这里这两个东西其实本质上是一样的。\<br>【参考1】其实已经讲得很好了，我这里结合【参考2】再理一遍，至少让我印象深刻一点。\<br>以水管输送水为例，要从起始点送水到目标点，某一路径最大允许流量应取决于该路径最脆弱那段水管所能承受的最大流量，不然会爆，以下图为例: <img src="/images/319.png" alt="" title="图源于参考1"><br>这里只有一条路径，且最小值为2，即是说该路径的最大流为2。\<br>如果路径多一点的话那就不太好算了，以下图为例：<img src="/images/320.png" alt="" title="图源于参考1"><br>对于路径“s-&gt;u-&gt;v-&gt;t”，最小值为2，即该路径允许的最大流为2，用了流量2后当前状态就变成下图的状态了：<img src="/images/321.png" alt="" title="图源于参考1"><br>(这里的x/y 表示容量最大为y，现已经用了x。)\<br>这时候就会发现没路径可走了，并作出判断：该图最大流为2。但显然这种判断是错的，下面这种情况才是对的：<img src="/images/322.png" alt="" title="图源于参考1"><br>为了得到正确的流量，上面那种简单路径叠加的方法明显是行不通的，这时候就要用residual graph了。</p>
+<h4 id="residual-graph"><a href="#residual-graph" class="headerlink" title="residual graph"></a>residual graph</h4><p>这个方法的核心思想就是可以撤销之前的操作，这样就可以考虑得更全面(学过“图”算法的应该很容易理解，但我没学过，只在leetcode上做过广度/深度优先搜索算法题，意思差不多，所以对这部分我只是基本理解，并不全面)。\<br>当我们选择了路径“s-&gt;u-&gt;v-&gt;t”时，其允许的最大流为<strong>2</strong>，此时按照这个流量从终点往起点回溯，图如下：<img src="/images/323.png" alt="" title="图源于参考1">抵消部分如果是0就省略了。\<br>然后现在在根据这个新图找一条新的路径，比如说“s-&gt;v-&gt;u-&gt;t”，其允许的最大流为<strong>1</strong>，回溯后又得到一个新图如下：<img src="/images/324.png" alt="" title="图源于参考1"><br>根据这个图我们没办法找到新路径了，所以最大流为2+1=3，这就是最终的结果了。\</p>
+<h3 id="最小割"><a href="#最小割" class="headerlink" title="最小割"></a>最小割</h3><p>最小割的话就简单说了，即是把不同像素归到不同的disparity，使这种归类所需的能量最小，比如说下面这幅图：<img src="/images/325.png" alt=""></p>
+<h1 id="𝝰-expansion"><a href="#𝝰-expansion" class="headerlink" title="𝝰-expansion"></a>𝝰-expansion</h1><p>上面的图割法显然只对二分类有用，经常用于分离背景和目标物，但如果要处理多个标签，就要用到𝝰-expansion了。\<br>这种方法简单说就是迭代地使用图割找到能量(或者对数后验)地局部最优解。\<br>基本思想是：</p>
 <blockquote>
-<ol type="1">
-<li>初始化disparity map，比如全部设0；<br />
-</li>
-<li>以随机顺序反复扫过所有的disparity；<br />
-</li>
-<li>将中间解决方案视为一个disparity level，当前提出的disparity level视为另一个；<br />
-</li>
-<li>解决二进制的图割问题；<br />
-</li>
+<ol>
+<li>初始化disparity map，比如全部设0；\</li>
+<li>以随机顺序反复扫过所有的disparity；\</li>
+<li>将中间解决方案视为一个disparity level，当前提出的disparity level视为另一个；\</li>
+<li>解决二进制的图割问题；\</li>
 <li>重复进行，直到在一次扫描中没有像素被更新为止。　</li>
 </ol>
 </blockquote>
-<p>用图表示的话就是：<img src="/images/326.png" /> 简单解释一下：𝝰-expansion将多标签问题表示成一系列的二元子问题，在每一步里，我们选择一个标签 α 并拓展：对于每个像素，要么保持标签原样，要么用 α 替换。每个子问题都能以全局最优的方式得到解决。 a) 初始标签。 b) 橙色标签扩大：每个标签保持不变或变成橙色。 c) 黄色标签扩大。 d) 红色标签扩大。</p>
-<h1 id="作业解释">作业解释</h1>
-<p>(作业代码依旧在GitHub里，如果没有，那就是还没整理好)<br />
-</p>
-<p>𝝰-expansion 提供了一种对具有多个标签的马尔科夫随机网格（MRF）进行推理的方法，将解决方案分解为一系列二进制问题，其中每个问题都可以被精确解决。其主要思想是对每个标签进行迭代，在每次迭代中，所有节点都可以选择保留其当前标签或切换到新标签，如上图所示。<br />
-这里实现一种近似版本的𝝰-expansion，现假设图像被标准差为<span class="math inline">\(\sigma_N\)</span>的高斯噪音破坏，并且这个高斯噪音是像素独立的(pixelwise independent)。<br />
-对于尺寸为<span class="math inline">\(H\times W\)</span>的图像，放弃一些常数项，我们可以写出一个适当的似然模型： <span class="math display">\[
-p(y|x) \propto \prod_{i,j}exp\left\{-\frac{1}{2\sigma^2_N}(x_{i,j}-y_{i,j})^2\right\}
-\]</span> 这里<span class="math inline">\(x,y\in R^{H\times W}\)</span>分别是原始图像和被破坏的图像。<br />
-</p>
+<p>用图表示的话就是：<img src="/images/326.png" alt=""><br>简单解释一下：𝝰-expansion将多标签问题表示成一系列的二元子问题，在每一步里，我们选择一个标签 α 并拓展：对于每个像素，要么保持标签原样，要么用 α 替换。每个子问题都能以全局最优的方式得到解决。 a) 初始标签。 b) 橙色标签扩大：每个标签保持不变或变成橙色。 c) 黄色标签扩大。 d) 红色标签扩大。</p>
+<h1 id="作业解释"><a href="#作业解释" class="headerlink" title="作业解释"></a>作业解释</h1><p>(作业代码依旧在GitHub里，如果没有，那就是还没整理好)\</p>
+<p>𝝰-expansion 提供了一种对具有多个标签的马尔科夫随机网格（MRF）进行推理的方法，将解决方案分解为一系列二进制问题，其中每个问题都可以被精确解决。其主要思想是对每个标签进行迭代，在每次迭代中，所有节点都可以选择保留其当前标签或切换到新标签，如上图所示。\<br>这里实现一种近似版本的𝝰-expansion，现假设图像被标准差为$\sigma_N$的高斯噪音破坏，并且这个高斯噪音是像素独立的(pixelwise independent)。\<br>对于尺寸为$H\times W$的图像，放弃一些常数项，我们可以写出一个适当的似然模型：</p>
+<script type="math/tex; mode=display">
+p(y|x) \propto \prod_{i,j}exp\left\{-\frac{1}{2\sigma^2_N}(x_{i,j}-y_{i,j})^2\right\}</script><p>这里$x,y\in R^{H\times W}$分别是原始图像和被破坏的图像。\</p>
 <p>不写下去了，到时候直接在代码里加注释吧。。。</p>
-<h1 id="参考">参考</h1>
-<p><a target="_blank" rel="noopener" href="https://seineo.github.io/%E5%9B%BE%E8%AE%BA%EF%BC%9A%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2%E8%AF%A6%E8%A7%A3.html">参考1</a><br />
-<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/58185005">参考2</a><br />
-</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://seineo.github.io/%E5%9B%BE%E8%AE%BA%EF%BC%9A%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2%E8%AF%A6%E8%A7%A3.html">参考1</a> \<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/58185005">参考2</a>\</p>
 
     </div>
 
@@ -362,8 +325,8 @@ p(y|x) \propto \prod_{i,j}exp\left\{-\frac{1}{2\sigma^2_N}(x_{i,j}-y_{i,j})^2\ri
       <i class="fa fa-chevron-left"></i> 三维重建基础与极几何
     </a></div>
       <div class="post-nav-item">
-    <a href="/posts/33.html" rel="next" title="一次项目的反思和总结">
-      一次项目的反思和总结 <i class="fa fa-chevron-right"></i>
+    <a href="/posts/30.html" rel="next" title="高斯过程">
+      高斯过程 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -424,7 +387,7 @@ p(y|x) \propto \prod_{i,j}exp\left\{-\frac{1}{2\sigma^2_N}(x_{i,j}-y_{i,j})^2\ri
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#graph-cuts"><span class="nav-number">2.</span> <span class="nav-text">Graph Cuts</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E6%B5%81%E6%9C%80%E5%B0%8F%E5%89%B2%E6%B3%95-max-flowmin-cut"><span class="nav-number">2.1.</span> <span class="nav-text">最大流&#x2F;最小割法 (max-flow&#x2F;min-cut)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E6%B5%81"><span class="nav-number">2.1.1.</span> <span class="nav-text">最大流</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#residual-graph"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">residual graph</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E5%89%B2"><span class="nav-number">2.1.2.</span> <span class="nav-text">最小割</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%F0%9D%9D%B0-expansion"><span class="nav-number">3.</span> <span class="nav-text">𝝰-expansion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%9C%E4%B8%9A%E8%A7%A3%E9%87%8A"><span class="nav-number">4.</span> <span class="nav-text">作业解释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Graph-Cuts"><span class="nav-number">2.</span> <span class="nav-text">Graph Cuts</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E6%B5%81-%E6%9C%80%E5%B0%8F%E5%89%B2%E6%B3%95-max-flow-min-cut"><span class="nav-number">2.1.</span> <span class="nav-text">最大流&#x2F;最小割法 (max-flow&#x2F;min-cut)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E6%B5%81"><span class="nav-number">2.1.1.</span> <span class="nav-text">最大流</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#residual-graph"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">residual graph</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E5%89%B2"><span class="nav-number">2.1.2.</span> <span class="nav-text">最小割</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%F0%9D%9D%B0-expansion"><span class="nav-number">3.</span> <span class="nav-text">𝝰-expansion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%9C%E4%B8%9A%E8%A7%A3%E9%87%8A"><span class="nav-number">4.</span> <span class="nav-text">作业解释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -440,14 +403,14 @@ p(y|x) \propto \prod_{i,j}exp\left\{-\frac{1}{2\sigma^2_N}(x_{i,j}-y_{i,j})^2\ri
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -475,7 +438,7 @@ p(y|x) \propto \prod_{i,j}exp\left\{-\frac{1}{2\sigma^2_N}(x_{i,j}-y_{i,j})^2\ri
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

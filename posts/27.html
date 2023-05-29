@@ -22,16 +22,16 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="引入 当我们有一组数据需要拟合模型的时候，最简单的是用最小二乘法，又叫线性回归去拟合，然而这种方法是用所有数据去拟合，如果所有数据都是跟模型有关的话，那效果应该还行，但如果我们的数据集有很多数据是属于&quot;outliers&quot;的话，效果就会很差，这时候可以用这篇的这个算法：RANSAC算法。">
+  <meta name="description" content="引入当我们有一组数据需要拟合模型的时候，最简单的是用最小二乘法，又叫线性回归去拟合，然而这种方法是用所有数据去拟合，如果所有数据都是跟模型有关的话，那效果应该还行，但如果我们的数据集有很多数据是属于”outliers”的话，效果就会很差，这时候可以用这篇的这个算法：RANSAC算法。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RANSAC算法">
 <meta property="og:url" content="https://superzlw.github.io/posts/27.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="引入 当我们有一组数据需要拟合模型的时候，最简单的是用最小二乘法，又叫线性回归去拟合，然而这种方法是用所有数据去拟合，如果所有数据都是跟模型有关的话，那效果应该还行，但如果我们的数据集有很多数据是属于&quot;outliers&quot;的话，效果就会很差，这时候可以用这篇的这个算法：RANSAC算法。">
+<meta property="og:description" content="引入当我们有一组数据需要拟合模型的时候，最简单的是用最小二乘法，又叫线性回归去拟合，然而这种方法是用所有数据去拟合，如果所有数据都是跟模型有关的话，那效果应该还行，但如果我们的数据集有很多数据是属于”outliers”的话，效果就会很差，这时候可以用这篇的这个算法：RANSAC算法。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://superzlw.github.io/images/285.png">
-<meta property="article:published_time" content="2021-09-12T19:23:20.461Z">
-<meta property="article:modified_time" content="2021-09-12T22:49:30.646Z">
+<meta property="article:published_time" content="2021-09-13T04:49:32.000Z">
+<meta property="article:modified_time" content="2021-09-13T04:49:32.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://superzlw.github.io/images/285.png">
@@ -218,15 +218,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-09-12 21:23:20" itemprop="dateCreated datePublished" datetime="2021-09-12T21:23:20+02:00">2021-09-12</time>
+              <time title="创建时间：2021-09-13 06:49:32" itemprop="dateCreated datePublished" datetime="2021-09-13T06:49:32+02:00">2021-09-13</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-13 00:49:30" itemprop="dateModified" datetime="2021-09-13T00:49:30+02:00">2021-09-13</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -269,33 +262,26 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="引入">引入</h1>
-<p>当我们有一组数据需要拟合模型的时候，最简单的是用最小二乘法，又叫线性回归去拟合，然而这种方法是用所有数据去拟合，如果所有数据都是跟模型有关的话，那效果应该还行，但如果我们的数据集有很多数据是属于"outliers"的话，效果就会很差，这时候可以用这篇的这个算法：RANSAC算法。 <span id="more"></span></p>
-<h1 id="简介">简介</h1>
-<p>用这个算法的前提是，我们假设：我们的数据是由"inliers"和"outliers"组成的，并且这个"outliers"还不少(少的话也可以用，看有没有必要而已)，而且我们需要知道这个"inliers"大概占了多少，这个量属于先验，需要事先知道的。实际实现算法时我们还需要确定的有以下几个参数</p>
+        <h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>当我们有一组数据需要拟合模型的时候，最简单的是用最小二乘法，又叫线性回归去拟合，然而这种方法是用所有数据去拟合，如果所有数据都是跟模型有关的话，那效果应该还行，但如果我们的数据集有很多数据是属于”outliers”的话，效果就会很差，这时候可以用这篇的这个算法：RANSAC算法。<br><span id="more"></span></p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>用这个算法的前提是，我们假设：我们的数据是由”inliers”和”outliers”组成的，并且这个”outliers”还不少(少的话也可以用，看有没有必要而已)，而且我们需要知道这个”inliers”大概占了多少，这个量属于先验，需要事先知道的。实际实现算法时我们还需要确定的有以下几个参数</p>
 <blockquote>
-<ol type="1">
-<li>得到正确模型的概率：字面意思，就是说有多大概率能得到正确模型，即是选出的用于拟合模型的点都是"inliers"，这个参数是用来算最大迭代次数的;</li>
+<ol>
+<li>得到正确模型的概率：字面意思，就是说有多大概率能得到正确模型，即是选出的用于拟合模型的点都是”inliers”，这个参数是用来算最大迭代次数的;</li>
 <li>迭代次数：这个可以根据上面的概率来算，下面会解释;</li>
 <li>模型参数的数目：也就是说我们要知道拟合的这个模型我们需要多少参数，比如直线是2个，Homography矩阵是4个;</li>
-<li>阈值：即是判断点属于"inliers"还是"outliers"。</li>
+<li>阈值：即是判断点属于”inliers”还是”outliers”。</li>
 </ol>
 </blockquote>
-<h2 id="计算迭代次数">计算迭代次数</h2>
-<p>比如说，所有数据中"inliers"占的比重为<span class="math inline">\(w\)</span>，拟合模型需要<span class="math inline">\(d\)</span>个参数，也就是说<span class="math inline">\(d\)</span>个数据点，那么我们从数据中选出<span class="math inline">\(d\)</span>个数据都是"inliers"的概率是: <span class="math inline">\(w^d\)</span>，至少有一个"outliers"的概率是 <span class="math inline">\((1-w^d)\)</span>，<span class="math inline">\(k\)</span>次循环每次都至少有一个"outliers"的概率是： <span class="math display">\[
-(1-w^d)^k
-\]</span> 那么选到正确<span class="math inline">\(d\)</span>个"inliers"的概率是： <span class="math display">\[
-P=1-(1-w^d)^k
-\]</span> 求得： <span class="math display">\[
-k=\frac{\log(1-P)}{\log(1-w^d)}
-\]</span></p>
-<h1 id="代码">代码</h1>
-<p>(因为这个算法不难，这个代码也是随手写的，所以这个代码风格很不好，参数命名也不太行。所以这东西，大概看看就好)。<br />
-这里是用最简单的直线拟合，有40个"inliers"，都添加了高斯噪音，并且有60个随机的"outliers"，代码如下：</p>
+<h2 id="计算迭代次数"><a href="#计算迭代次数" class="headerlink" title="计算迭代次数"></a>计算迭代次数</h2><p>比如说，所有数据中”inliers”占的比重为$w$，拟合模型需要$d$个参数，也就是说$d$个数据点，那么我们从数据中选出$d$个数据都是”inliers”的概率是: $w^d$，至少有一个”outliers”的概率是 $(1-w^d)$，$k$次循环每次都至少有一个”outliers”的概率是：</p>
+<script type="math/tex; mode=display">
+(1-w^d)^k</script><p>那么选到正确$d$个”inliers”的概率是：</p>
+<script type="math/tex; mode=display">
+P=1-(1-w^d)^k</script><p>求得：</p>
+<script type="math/tex; mode=display">
+k=\frac{\log(1-P)}{\log(1-w^d)}</script><h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>(因为这个算法不难，这个代码也是随手写的，所以这个代码风格很不好，参数命名也不太行。所以这东西，大概看看就好)。\<br>这里是用最简单的直线拟合，有40个”inliers”，都添加了高斯噪音，并且有60个随机的”outliers”，代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">Gauss_noise</span>(<span class="params">data</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        data: ndarray, (2,n)</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    noise_x = np.random.normal(<span class="number">0</span>,<span class="number">1</span>,<span class="built_in">len</span>(data[<span class="number">0</span>]))</span><br><span class="line">    noise_y = np.random.normal(<span class="number">0</span>,<span class="number">1</span>,<span class="built_in">len</span>(data[<span class="number">1</span>]))</span><br><span class="line">    data[<span class="number">1</span>] += noise_y</span><br><span class="line">    data[<span class="number">0</span>] += noise_x</span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">real_model</span>(<span class="params">x</span>):</span></span><br><span class="line">    a = <span class="number">4</span></span><br><span class="line">    b = <span class="number">6.9</span></span><br><span class="line">    y = a * x + b</span><br><span class="line">    <span class="keyword">return</span> y</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">outliers</span>(<span class="params">nums = <span class="number">60</span></span>):</span></span><br><span class="line">    down = <span class="number">0</span></span><br><span class="line">    up = <span class="number">40</span></span><br><span class="line">    outliers = np.random.rand(<span class="number">2</span>, nums)*<span class="number">60</span></span><br><span class="line">    <span class="keyword">return</span> outliers</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">inliers_nums = <span class="number">40</span></span><br><span class="line">outliers_nums = <span class="number">60</span></span><br><span class="line">x = np.linspace(<span class="number">0</span>,<span class="number">20</span>,inliers_nums).reshape(<span class="number">1</span>,-<span class="number">1</span>)</span><br><span class="line">y = real_model(x)</span><br><span class="line">inliers = np.concatenate((x,y), axis=<span class="number">0</span>)</span><br><span class="line">inliers = Gauss_noise(inliers)</span><br><span class="line">outliers = outliers(outliers_nums)</span><br><span class="line"></span><br><span class="line">data = np.concatenate((inliers, outliers),axis=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">data_nums = <span class="built_in">len</span>(data[<span class="number">0</span>])</span><br><span class="line">    </span><br><span class="line">estimate_a = <span class="number">0.</span></span><br><span class="line">estimate_b = <span class="number">0.</span></span><br><span class="line"></span><br><span class="line">accuracy = <span class="number">0.99</span></span><br><span class="line">error = <span class="number">0.8</span></span><br><span class="line">current_inliers = <span class="number">0</span></span><br><span class="line">curr_iter = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">accept_nums = <span class="built_in">int</span>(<span class="number">0.4</span> * data_nums)</span><br><span class="line"></span><br><span class="line">max_iter = np.log(<span class="number">1</span> - accuracy) / np.log(<span class="number">1</span> - (inliers_nums / data_nums)**<span class="number">2</span>)</span><br><span class="line"><span class="keyword">while</span> current_inliers &lt; accept_nums <span class="keyword">and</span> curr_iter &lt; max_iter:</span><br><span class="line">    curr_iter += <span class="number">1</span></span><br><span class="line">    ids = np.random.choice(<span class="built_in">range</span>(data_nums), <span class="number">2</span>, replace = <span class="literal">False</span>)</span><br><span class="line">    x_1 = data[<span class="number">0</span>,ids[<span class="number">0</span>]]</span><br><span class="line">    x_2 = data[<span class="number">0</span>,ids[<span class="number">1</span>]]</span><br><span class="line">    y_1 = data[<span class="number">1</span>,ids[<span class="number">0</span>]]</span><br><span class="line">    y_2 = data[<span class="number">1</span>,ids[<span class="number">1</span>]]</span><br><span class="line"></span><br><span class="line">    a = (y_2 - y_1) / (x_2 - x_1)</span><br><span class="line">    b = y_1 - a * x_1</span><br><span class="line"></span><br><span class="line">    tmp_inliers = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(data_nums):</span><br><span class="line">        y = a * data[<span class="number">0</span>,i] + b</span><br><span class="line">        <span class="keyword">if</span> np.<span class="built_in">abs</span>(data[<span class="number">1</span>,i] - y) &lt; error:</span><br><span class="line">            tmp_inliers += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> tmp_inliers &gt;= current_inliers:</span><br><span class="line">        estimate_a = a</span><br><span class="line">        estimate_b = b</span><br><span class="line">        current_inliers = tmp_inliers</span><br><span class="line"></span><br><span class="line">plt.figure()</span><br><span class="line">plt.scatter(data[<span class="number">0</span>],data[<span class="number">1</span>])</span><br><span class="line">plt.plot(data[<span class="number">0</span>,:<span class="number">40</span>], estimate_a * data[<span class="number">0</span>,:<span class="number">40</span>] + estimate_b, color=<span class="string">&#x27;r&#x27;</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>效果如下： <img src="/images/285.png" /></p>
-<p>再提一个，既然这个算法可以用来区分"inliers"和"outliers"，那要是我先用这个算法把"inliers"分出来，然后用线性回归，效果会不会更好？<br />
-然而试验发现，好是有好那么一点点吧，主要是那个bias更接近了，但区别真的不大，代码写得很乱就不贴了，反正貌似也没啥意义。。。</p>
+<p>效果如下：<br><img src="/images/285.png" alt=""></p>
+<p>再提一个，既然这个算法可以用来区分”inliers”和”outliers”，那要是我先用这个算法把”inliers”分出来，然后用线性回归，效果会不会更好？\<br>然而试验发现，好是有好那么一点点吧，主要是那个bias更接近了，但区别真的不大，代码写得很乱就不贴了，反正貌似也没啥意义。。。</p>
 
     </div>
 
@@ -326,8 +312,8 @@ k=\frac{\log(1-P)}{\log(1-w^d)}
       <i class="fa fa-chevron-left"></i> 相机模型与标定
     </a></div>
       <div class="post-nav-item">
-    <a href="/posts/28.html" rel="next" title="三维重建基础与极几何">
-      三维重建基础与极几何 <i class="fa fa-chevron-right"></i>
+    <a href="/posts/23.html" rel="next" title="拟合优度检验">
+      拟合优度检验 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -404,14 +390,14 @@ k=\frac{\log(1-P)}{\log(1-w^d)}
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -439,7 +425,7 @@ k=\frac{\log(1-P)}{\log(1-w^d)}
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

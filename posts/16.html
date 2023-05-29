@@ -22,12 +22,12 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="写在前面的说明 这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接\(\rightarrow\)这里。 这里介绍两个常见的Network架构，分别为CNN 和 Self-Attention。">
+  <meta name="description" content="写在前面的说明这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接$\rightarrow$这里。 这里介绍两个常见的Network架构，分别为CNN 和 Self-Attention。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【ML-2020&#x2F;21】CNN &amp; Self-Attention">
 <meta property="og:url" content="https://superzlw.github.io/posts/16.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="写在前面的说明 这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接\(\rightarrow\)这里。 这里介绍两个常见的Network架构，分别为CNN 和 Self-Attention。">
+<meta property="og:description" content="写在前面的说明这个系列【ML-2020&#x2F;21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接$\rightarrow$这里。 这里介绍两个常见的Network架构，分别为CNN 和 Self-Attention。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/d439d0b3fc954e7ab460385d90d50a23.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/170e557b01da49bc93680928517a2df0.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
@@ -54,8 +54,8 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/17615172e1b343028283242f4f910432.png#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/c5c7c0b35d9c471ba36a69f54dbb2ff4.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/f961ce0ac8284eb1938aed959001fc4a.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="article:published_time" content="2021-08-03T21:59:14.964Z">
-<meta property="article:modified_time" content="2021-08-03T22:16:03.549Z">
+<meta property="article:published_time" content="2021-08-04T04:16:04.000Z">
+<meta property="article:modified_time" content="2021-08-04T04:16:04.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/d439d0b3fc954e7ab460385d90d50a23.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
@@ -242,15 +242,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-08-03 23:59:14" itemprop="dateCreated datePublished" datetime="2021-08-03T23:59:14+02:00">2021-08-03</time>
+              <time title="创建时间：2021-08-04 06:16:04" itemprop="dateCreated datePublished" datetime="2021-08-04T06:16:04+02:00">2021-08-04</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-04 00:16:03" itemprop="dateModified" datetime="2021-08-04T00:16:03+02:00">2021-08-04</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -293,49 +286,39 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="写在前面的说明">写在前面的说明</h1>
-<p>这个系列【ML-2020/21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接<span class="math inline">\(\rightarrow\)</span><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OP5HcXJg2Aw">这里</a>。</p>
-<p>这里介绍两个常见的Network架构，分别为CNN 和 Self-Attention。 <span id="more"></span></p>
-<h1 id="cnn">CNN</h1>
-<p>CNN主要是用来处理图像的，对于Fully Connected Network，每个神经元都要观察整张图片，这明显不是高效率的做法，所以更常见的是让每个神经元处理某一特定的pattern,，比如说就像下图： <img src="https://img-blog.csdnimg.cn/d439d0b3fc954e7ab460385d90d50a23.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 我们就希望能简化这个网络，这里有两种解释。</p>
-<h2 id="两种解释">两种解释</h2>
-<h3 id="receptive-field">1. Receptive field</h3>
-<p>就像下图那样： <img src="https://img-blog.csdnimg.cn/170e557b01da49bc93680928517a2df0.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
-<p>每个神经元只负责其中一个区域的信息，并且，同个区域可以有多个不同的神经元负责。 另外，这个Receptive field可以有大有小，也可以让Receptive field只考虑某一特定的channel，比如rgb里的红色区域。 一般来说，最经典的size大小是<span class="math inline">\(3\times 3\)</span>，然后对于同一个Receptive field，一般会有一组神经元（比如64或者128个）去处理它，而且一般来说这个Receptive field的排布是会重叠的，以保证覆盖整个图像，如下： <img src="https://img-blog.csdnimg.cn/1229bff146434d25b5e3639067b5ed76.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
-<h4 id="parameter-sharing">parameter sharing</h4>
-<p>对于下面这种情况： <img src="https://img-blog.csdnimg.cn/9c209adfd54248839f667259ba391907.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 鸟喙出现在图中的不同位置，由于每个pattern都有很多个神经元去处理，所以理所当然地，这两种情况都能把鸟喙给检测出来，但对于同种作用的检测器，我们明显不希望它们分属两个不同的东西，不然参数会很多，所以就希望，对于相同作用的检测器，它们的参数应该是相同的（即参数共享）。 至此，就一步步地将模型简化了，如下图所示： <img src="https://img-blog.csdnimg.cn/d006bd63940c41afbf60c143a3d3902e.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 这就是convolutional layer，而用了convolutional layer的就是CNN。另外，CNN的<span class="math inline">\(bias\)</span>一般会比较大。</p>
-<h3 id="filter">2. Filter</h3>
-<p>对于convolutional layer的另一种解释是用Filter。如下图： <img src="https://img-blog.csdnimg.cn/bd774849c64f4b7d916fc491c7939ef4.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 以右上角这个filter为例，从图片左上角一直滑到右下角，对应相乘后相加。对于每个卷积层都有很多个Filters。 另外，虽然这个filter只是<span class="math inline">\(3\times 3\)</span>的，但由于不断进行卷积，每一个卷积层都把它的考虑范围扩大了，如下图，下面那层的<span class="math inline">\(3\times 3\)</span>等于是考虑了上面那层的<span class="math inline">\(5\times 5\)</span>范围： <img src="https://img-blog.csdnimg.cn/fa0ca16f08df47cf89241d5df3be1e5b.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 也就是说，network越深考虑的范围越大。</p>
+        <h1 id="写在前面的说明"><a href="#写在前面的说明" class="headerlink" title="写在前面的说明"></a>写在前面的说明</h1><p>这个系列【ML-2020/21】大部分是课上内容的简单复述，之前上过但因为笔记写得很乱就忘了很多，所以重来一遍。与其看我这篇，不如直接去看视频，讲得还更生动。视频系列链接$\rightarrow$<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OP5HcXJg2Aw">这里</a>。</p>
+<p>这里介绍两个常见的Network架构，分别为CNN 和 Self-Attention。<br><span id="more"></span></p>
+<h1 id="CNN"><a href="#CNN" class="headerlink" title="CNN"></a>CNN</h1><p>CNN主要是用来处理图像的，对于Fully Connected Network，每个神经元都要观察整张图片，这明显不是高效率的做法，所以更常见的是让每个神经元处理某一特定的pattern,，比如说就像下图：<br><img src="https://img-blog.csdnimg.cn/d439d0b3fc954e7ab460385d90d50a23.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>我们就希望能简化这个网络，这里有两种解释。</p>
+<h2 id="两种解释"><a href="#两种解释" class="headerlink" title="两种解释"></a>两种解释</h2><h3 id="1-Receptive-field"><a href="#1-Receptive-field" class="headerlink" title="1. Receptive field"></a>1. Receptive field</h3><p>就像下图那样：<br><img src="https://img-blog.csdnimg.cn/170e557b01da49bc93680928517a2df0.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>每个神经元只负责其中一个区域的信息，并且，同个区域可以有多个不同的神经元负责。<br>另外，这个Receptive field可以有大有小，也可以让Receptive field只考虑某一特定的channel，比如rgb里的红色区域。<br>一般来说，最经典的size大小是$3\times 3$，然后对于同一个Receptive field，一般会有一组神经元（比如64或者128个）去处理它，而且一般来说这个Receptive field的排布是会重叠的，以保证覆盖整个图像，如下：<br><img src="https://img-blog.csdnimg.cn/1229bff146434d25b5e3639067b5ed76.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h4 id="parameter-sharing"><a href="#parameter-sharing" class="headerlink" title="parameter sharing"></a>parameter sharing</h4><p>对于下面这种情况：<br><img src="https://img-blog.csdnimg.cn/9c209adfd54248839f667259ba391907.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>鸟喙出现在图中的不同位置，由于每个pattern都有很多个神经元去处理，所以理所当然地，这两种情况都能把鸟喙给检测出来，但对于同种作用的检测器，我们明显不希望它们分属两个不同的东西，不然参数会很多，所以就希望，对于相同作用的检测器，它们的参数应该是相同的（即参数共享）。<br>至此，就一步步地将模型简化了，如下图所示：<br><img src="https://img-blog.csdnimg.cn/d006bd63940c41afbf60c143a3d3902e.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>这就是convolutional layer，而用了convolutional layer的就是CNN。另外，CNN的$bias$一般会比较大。</p>
+<h3 id="2-Filter"><a href="#2-Filter" class="headerlink" title="2. Filter"></a>2. Filter</h3><p>对于convolutional layer的另一种解释是用Filter。如下图：<br><img src="https://img-blog.csdnimg.cn/bd774849c64f4b7d916fc491c7939ef4.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>以右上角这个filter为例，从图片左上角一直滑到右下角，对应相乘后相加。对于每个卷积层都有很多个Filters。<br>另外，虽然这个filter只是$3\times 3$的，但由于不断进行卷积，每一个卷积层都把它的考虑范围扩大了，如下图，下面那层的$3\times 3$等于是考虑了上面那层的$5\times 5$范围：<br><img src="https://img-blog.csdnimg.cn/fa0ca16f08df47cf89241d5df3be1e5b.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>也就是说，network越深考虑的范围越大。</p>
 <blockquote>
-<p>上面的parameter sharing实际就是这里的filter扫过各个区域过程。 上面的receptive filter实际就是这里的不同的filter。 所以两种解释其实是一模一样的。</p>
+<p>上面的parameter sharing实际就是这里的filter扫过各个区域过程。<br>上面的receptive filter实际就是这里的不同的filter。<br>所以两种解释其实是一模一样的。</p>
 </blockquote>
-<h2 id="pooling">Pooling</h2>
-<p>pooling的思想源于降采样，即是对于一幅图，我们把它进行将采用，比如把一幅图的偶数像素都删除，并不妨碍我们识别这幅图。如下图： <img src="https://img-blog.csdnimg.cn/c61338aae46b4c5a88911345f1aa50ff.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> pooling是不需要学习的，就跟激活函数类似。</p>
-<h3 id="max-pooling">Max Pooling</h3>
-<p>除了Max pooling，还有mean Pooling之类的，都差不多。 基本概念就是选各个区域最大的那个数，比如下图： <img src="https://img-blog.csdnimg.cn/3cb5104423b940a78fec669d4a55b660.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 选完之后就变成下面这样了： <img src="https://img-blog.csdnimg.cn/1dcccadc91294bf5bc1e2a9e39708a55.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 这里区域大小也是自己定的，不一定要用<span class="math inline">\(2\times 2\)</span>。通过这个操作就能把”图片“变小。这个池化层一般是和卷积层交替使用的。 &gt;pooling 是为了减少运算量，但现在由于运算能力的发展，越来越多地方开始去除pooling层了，这也是一种趋势。</p>
-<p>至此就有了CNN的基本架构了： <img src="https://img-blog.csdnimg.cn/b5dea29b55ef46c6bc23242e6a4e6bcf.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
-<h1 id="self-attention">Self-Attention</h1>
-<p>在CNN中，我们的输入都是一个向量，但如果遇到输入是一组向量的话该怎么办？比如说语言处理，输入的单词长度都不一样，Self-Attention 就是解决这种问题的一种办法。 在这种架构中对于输出一般有以下三种情况：</p>
+<h2 id="Pooling"><a href="#Pooling" class="headerlink" title="Pooling"></a>Pooling</h2><p>pooling的思想源于降采样，即是对于一幅图，我们把它进行将采用，比如把一幅图的偶数像素都删除，并不妨碍我们识别这幅图。如下图：<br><img src="https://img-blog.csdnimg.cn/c61338aae46b4c5a88911345f1aa50ff.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>pooling是不需要学习的，就跟激活函数类似。</p>
+<h3 id="Max-Pooling"><a href="#Max-Pooling" class="headerlink" title="Max Pooling"></a>Max Pooling</h3><p>除了Max pooling，还有mean Pooling之类的，都差不多。<br>基本概念就是选各个区域最大的那个数，比如下图：<br><img src="https://img-blog.csdnimg.cn/3cb5104423b940a78fec669d4a55b660.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>选完之后就变成下面这样了：<br><img src="https://img-blog.csdnimg.cn/1dcccadc91294bf5bc1e2a9e39708a55.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>这里区域大小也是自己定的，不一定要用$2\times 2$。通过这个操作就能把”图片“变小。这个池化层一般是和卷积层交替使用的。</p>
 <blockquote>
-<ol type="1">
-<li><span class="math inline">\(N\)</span>个输入对应<span class="math inline">\(N\)</span>个输出，比如说输入一句话，我们要分析每个单词对应的词性。</li>
-<li><span class="math inline">\(N\)</span>个输入对应<span class="math inline">\(1\)</span>个输出，比如输入一句话，分析其是褒义还是贬义。</li>
-<li><span class="math inline">\(N\)</span>个输入对应<span class="math inline">\(M\)</span>个输出，比如翻译。</li>
+<p>pooling 是为了减少运算量，但现在由于运算能力的发展，越来越多地方开始去除pooling层了，这也是一种趋势。</p>
+</blockquote>
+<p>至此就有了CNN的基本架构了：<br><img src="https://img-blog.csdnimg.cn/b5dea29b55ef46c6bc23242e6a4e6bcf.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h1 id="Self-Attention"><a href="#Self-Attention" class="headerlink" title="Self-Attention"></a>Self-Attention</h1><p>在CNN中，我们的输入都是一个向量，但如果遇到输入是一组向量的话该怎么办？比如说语言处理，输入的单词长度都不一样，Self-Attention 就是解决这种问题的一种办法。<br>在这种架构中对于输出一般有以下三种情况：</p>
+<blockquote>
+<ol>
+<li>$N$个输入对应$N$个输出，比如说输入一句话，我们要分析每个单词对应的词性。</li>
+<li>$N$个输入对应$1$个输出，比如输入一句话，分析其是褒义还是贬义。</li>
+<li>$N$个输入对应$M$个输出，比如翻译。</li>
 </ol>
 </blockquote>
-<p>这里先介绍第一种，即同维度输入输出。以输入一句话为例。 第一种最直接的想法是用Fully Connected，由于要考虑单词间的联系，就有了如下这种结构： <img src="https://img-blog.csdnimg.cn/7739d772a5e948c98fdd41d5c82a9a71.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 这确实能做，某些情况下效果也不坏，但如果我们要考虑整句话，而不是图中的红色框框呢？又一个直接的想法是：扩大window的大小以囊括整句话。 但，这里每句话的长度是不相等的，如果要用这种方法，那就要首先检测数据集中最长那句话有多长，但这样运算量会非常大，而且容易overfitting，而且在测试中也不一定适用。 另一种更好的方法就是Self-Attention，其基本结构如下： <img src="https://img-blog.csdnimg.cn/93e6bba2e2574e2c9c5cea382972a37c.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 也就是说，我们先把整句话用self-attention处理，对应产生新的向量，这时候的每个向量就已经是考虑整句话后的向量了。 这两种网络是可以交替使用的，比如下面这个： <img src="https://img-blog.csdnimg.cn/fa7650543232479f877f07d793263602.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
-<h2 id="运作">运作</h2>
-<p>假设我们的输入（或者中间某一层的输出）为这四个向量<span class="math inline">\([a^1,a^2,a^3,a^4]\)</span>，现在我们想要做的就是每一个向量与其它向量的关联程度。 以两个向量为例，计算关联度有很多种方法，比如下面两种： <img src="https://img-blog.csdnimg.cn/cf7e419319e54afebcd5aaadc7724300.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> <strong>以下都用左边那种</strong> 对于四个向量，计算与<span class="math inline">\(a^1\)</span>的关联度如下图： <img src="https://img-blog.csdnimg.cn/f79769229bcc44af8cd9135f94d11a67.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+<p>这里先介绍第一种，即同维度输入输出。以输入一句话为例。<br>第一种最直接的想法是用Fully Connected，由于要考虑单词间的联系，就有了如下这种结构：<br><img src="https://img-blog.csdnimg.cn/7739d772a5e948c98fdd41d5c82a9a71.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>这确实能做，某些情况下效果也不坏，但如果我们要考虑整句话，而不是图中的红色框框呢？又一个直接的想法是：扩大window的大小以囊括整句话。<br>但，这里每句话的长度是不相等的，如果要用这种方法，那就要首先检测数据集中最长那句话有多长，但这样运算量会非常大，而且容易overfitting，而且在测试中也不一定适用。<br>另一种更好的方法就是Self-Attention，其基本结构如下：<br><img src="https://img-blog.csdnimg.cn/93e6bba2e2574e2c9c5cea382972a37c.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>也就是说，我们先把整句话用self-attention处理，对应产生新的向量，这时候的每个向量就已经是考虑整句话后的向量了。<br>这两种网络是可以交替使用的，比如下面这个：<br><img src="https://img-blog.csdnimg.cn/fa7650543232479f877f07d793263602.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h2 id="运作"><a href="#运作" class="headerlink" title="运作"></a>运作</h2><p>假设我们的输入（或者中间某一层的输出）为这四个向量$[a^1,a^2,a^3,a^4]$，现在我们想要做的就是每一个向量与其它向量的关联程度。<br>以两个向量为例，计算关联度有很多种方法，比如下面两种：<br><img src="https://img-blog.csdnimg.cn/cf7e419319e54afebcd5aaadc7724300.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br><strong>以下都用左边那种</strong><br>对于四个向量，计算与$a^1$的关联度如下图：<br><img src="https://img-blog.csdnimg.cn/f79769229bcc44af8cd9135f94d11a67.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
 <blockquote>
 <p>注意，这里也要计算与自身的关联度。</p>
 </blockquote>
-<p>这里的激活函数不一定要用Soft-max，也可以用其他的比如ReLu。 接下来计算新的向量，也就是根据关联性计算，如下： <img src="https://img-blog.csdnimg.cn/2275dfc0a96049f19baae048018e16bf.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 以上过程可以用矩阵乘法表示。</p>
-<h3 id="矩阵乘法表示">矩阵乘法表示</h3>
-<p>（这部分很无聊可以直接跳过）<img src="https://img-blog.csdnimg.cn/288c02b8a420479f9e272d7d552e0f28.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> <img src="https://img-blog.csdnimg.cn/6f9c645c1c114706ba87a7d1b06bfeb5.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> <img src="https://img-blog.csdnimg.cn/7ead13e9d4be40ff989996100ac166d7.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> <img src="https://img-blog.csdnimg.cn/c4b2fb755df94b35b09b8753761128bb.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 这其中只有<span class="math inline">\(W^q,W^k,W^v\)</span>是需要学习的。</p>
-<h2 id="multi-head-self-attention">Multi-head-Self-attention</h2>
-<p>这里以两个head为例： <img src="https://img-blog.csdnimg.cn/d881b6f1cb0f4337a0e9ada6ba36db3d.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 对于两个head计算出的<span class="math inline">\(b^{i,1},b^{i,2}\)</span>可通过新引入的矩阵进行结合： <img src="https://img-blog.csdnimg.cn/17615172e1b343028283242f4f910432.png#pic_center" alt="在这里插入图片描述" /></p>
-<h2 id="position-encoding">Position Encoding</h2>
-<p>现在还剩一个问题，就是我们虽然考虑了整个句子，但我们没有考虑各个单词的相对位置。 这里需要引入一个位置参数<span class="math inline">\(e^i\)</span>，每个向量都要加上特定的位置参数，如下： <img src="https://img-blog.csdnimg.cn/c5c7c0b35d9c471ba36a69f54dbb2ff4.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 最早的<span class="math inline">\(e^i\)</span>（也就是在paper”Attention all you need“里）长这样： <img src="https://img-blog.csdnimg.cn/f961ce0ac8284eb1938aed959001fc4a.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 这个图的每一列代表一个<span class="math inline">\(e^i\)</span>。位置参数不一定要用这种，可以自己研究。</p>
+<p>这里的激活函数不一定要用Soft-max，也可以用其他的比如ReLu。<br>接下来计算新的向量，也就是根据关联性计算，如下：<br><img src="https://img-blog.csdnimg.cn/2275dfc0a96049f19baae048018e16bf.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>以上过程可以用矩阵乘法表示。</p>
+<h3 id="矩阵乘法表示"><a href="#矩阵乘法表示" class="headerlink" title="矩阵乘法表示"></a>矩阵乘法表示</h3><p> （这部分很无聊可以直接跳过）<img src="https://img-blog.csdnimg.cn/288c02b8a420479f9e272d7d552e0f28.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/6f9c645c1c114706ba87a7d1b06bfeb5.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/7ead13e9d4be40ff989996100ac166d7.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/c4b2fb755df94b35b09b8753761128bb.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>这其中只有$W^q,W^k,W^v$是需要学习的。</p>
+<h2 id="Multi-head-Self-attention"><a href="#Multi-head-Self-attention" class="headerlink" title="Multi-head-Self-attention"></a>Multi-head-Self-attention</h2><p>这里以两个head为例：<br><img src="https://img-blog.csdnimg.cn/d881b6f1cb0f4337a0e9ada6ba36db3d.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>对于两个head计算出的$b^{i,1},b^{i,2}$可通过新引入的矩阵进行结合：<br><img src="https://img-blog.csdnimg.cn/17615172e1b343028283242f4f910432.png#pic_center" alt="在这里插入图片描述"></p>
+<h2 id="Position-Encoding"><a href="#Position-Encoding" class="headerlink" title="Position Encoding"></a>Position Encoding</h2><p>现在还剩一个问题，就是我们虽然考虑了整个句子，但我们没有考虑各个单词的相对位置。<br>这里需要引入一个位置参数$e^i$，每个向量都要加上特定的位置参数，如下：<br><img src="https://img-blog.csdnimg.cn/c5c7c0b35d9c471ba36a69f54dbb2ff4.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>最早的$e^i$（也就是在paper”Attention all you need“里）长这样：<br><img src="https://img-blog.csdnimg.cn/f961ce0ac8284eb1938aed959001fc4a.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>这个图的每一列代表一个$e^i$。位置参数不一定要用这种，可以自己研究。</p>
 
     </div>
 
@@ -362,8 +345,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/posts/15.html" rel="prev" title="非线性优化">
-      <i class="fa fa-chevron-left"></i> 非线性优化
+    <a href="/posts/12.html" rel="prev" title="【学习随记】各种空间的简单介绍">
+      <i class="fa fa-chevron-left"></i> 【学习随记】各种空间的简单介绍
     </a></div>
       <div class="post-nav-item">
     <a href="/posts/17.html" rel="next" title="深度学习中的正则化">
@@ -428,7 +411,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">写在前面的说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#cnn"><span class="nav-number">2.</span> <span class="nav-text">CNN</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E8%A7%A3%E9%87%8A"><span class="nav-number">2.1.</span> <span class="nav-text">两种解释</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#receptive-field"><span class="nav-number">2.1.1.</span> <span class="nav-text">1. Receptive field</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#parameter-sharing"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">parameter sharing</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#filter"><span class="nav-number">2.1.2.</span> <span class="nav-text">2. Filter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pooling"><span class="nav-number">2.2.</span> <span class="nav-text">Pooling</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#max-pooling"><span class="nav-number">2.2.1.</span> <span class="nav-text">Max Pooling</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#self-attention"><span class="nav-number">3.</span> <span class="nav-text">Self-Attention</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E4%BD%9C"><span class="nav-number">3.1.</span> <span class="nav-text">运作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5%E4%B9%98%E6%B3%95%E8%A1%A8%E7%A4%BA"><span class="nav-number">3.1.1.</span> <span class="nav-text">矩阵乘法表示</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#multi-head-self-attention"><span class="nav-number">3.2.</span> <span class="nav-text">Multi-head-Self-attention</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#position-encoding"><span class="nav-number">3.3.</span> <span class="nav-text">Position Encoding</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">写在前面的说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CNN"><span class="nav-number">2.</span> <span class="nav-text">CNN</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E8%A7%A3%E9%87%8A"><span class="nav-number">2.1.</span> <span class="nav-text">两种解释</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Receptive-field"><span class="nav-number">2.1.1.</span> <span class="nav-text">1. Receptive field</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#parameter-sharing"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">parameter sharing</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Filter"><span class="nav-number">2.1.2.</span> <span class="nav-text">2. Filter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pooling"><span class="nav-number">2.2.</span> <span class="nav-text">Pooling</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Max-Pooling"><span class="nav-number">2.2.1.</span> <span class="nav-text">Max Pooling</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Self-Attention"><span class="nav-number">3.</span> <span class="nav-text">Self-Attention</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E4%BD%9C"><span class="nav-number">3.1.</span> <span class="nav-text">运作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5%E4%B9%98%E6%B3%95%E8%A1%A8%E7%A4%BA"><span class="nav-number">3.1.1.</span> <span class="nav-text">矩阵乘法表示</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Multi-head-Self-attention"><span class="nav-number">3.2.</span> <span class="nav-text">Multi-head-Self-attention</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Position-Encoding"><span class="nav-number">3.3.</span> <span class="nav-text">Position Encoding</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -444,14 +427,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -479,7 +462,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

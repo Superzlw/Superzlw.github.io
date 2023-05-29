@@ -29,8 +29,8 @@
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
 <meta property="og:description" content="因为经常遇到各种特定的空间，有些没接触过，有些又容易弄混，这里做个记录，这篇应该会不断更新，毕竟空间概念这么多。（注：这里只是最简单的介绍）">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-08-03T21:40:01.415Z">
-<meta property="article:modified_time" content="2021-08-03T21:48:33.256Z">
+<meta property="article:published_time" content="2021-08-04T03:48:34.000Z">
+<meta property="article:modified_time" content="2021-08-04T03:48:34.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 
@@ -215,9 +215,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-08-03 23:40:01 / 修改时间：23:48:33" itemprop="dateCreated datePublished" datetime="2021-08-03T23:40:01+02:00">2021-08-03</time>
+              <time title="创建时间：2021-08-04 05:48:34" itemprop="dateCreated datePublished" datetime="2021-08-04T05:48:34+02:00">2021-08-04</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -261,82 +260,72 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>因为经常遇到各种特定的空间，有些没接触过，有些又容易弄混，这里做个记录，这篇应该会不断更新，毕竟空间概念这么多。（注：这里只是最简单的介绍） <span id="more"></span> 先解释相关概念。</p>
-<h1 id="相关概念">相关概念：</h1>
-<h2 id="完备性">完备性</h2>
-<p>简单说的话，就是对极限封闭。也就是说，如果对于空间<span class="math inline">\(S\)</span>内的一点<span class="math inline">\(s_i\)</span>，<span class="math inline">\(\lim_{i\rightarrow\infty}s_i=s\)</span>，<span class="math inline">\(s\)</span>也属于空间<span class="math inline">\(S\)</span>的话，则称该空间具有完备性。</p>
-<h2 id="内积">内积</h2>
-<p>说到内积，第一反应应该就是向量内积，即：<span class="math display">\[\langle a,b \rangle = |a|*|b|*\cos\theta\]</span>，但更广泛的话，内积应该满足以下三个条件(<span class="math inline">\(f,g\)</span>都是空间元素)：</p>
+        <p>因为经常遇到各种特定的空间，有些没接触过，有些又容易弄混，这里做个记录，这篇应该会不断更新，毕竟空间概念这么多。（注：这里只是最简单的介绍）<br><span id="more"></span><br>先解释相关概念。</p>
+<h1 id="相关概念："><a href="#相关概念：" class="headerlink" title="相关概念："></a>相关概念：</h1><h2 id="完备性"><a href="#完备性" class="headerlink" title="完备性"></a>完备性</h2><p>简单说的话，就是对极限封闭。也就是说，如果对于空间$S$内的一点$s_i$，$\lim_{i\rightarrow\infty}s_i=s$，$s$也属于空间$S$的话，则称该空间具有完备性。</p>
+<h2 id="内积"><a href="#内积" class="headerlink" title="内积"></a>内积</h2><p>说到内积，第一反应应该就是向量内积，即：<script type="math/tex">\langle a,b \rangle = |a|*|b|*\cos\theta</script>，但更广泛的话，内积应该满足以下三个条件($f,g$都是空间元素)：</p>
 <blockquote>
-<ol type="1">
-<li>对称性：<span class="math inline">\(\langle f,g \rangle = \langle g,f \rangle\)</span>；</li>
-<li>正定性：<span class="math inline">\(\langle f,f \rangle \ge0\)</span>，当且仅当<span class="math inline">\(f=0\)</span>时等号成立。</li>
-<li>线性：<span class="math inline">\(\langle r_1f_1+r_2f_2,g \rangle = r_1\langle f_1,g \rangle+r_2\langle f_2,g \rangle\)</span></li>
+<ol>
+<li>对称性：$\langle f,g \rangle = \langle g,f \rangle$；</li>
+<li>正定性：$\langle f,f \rangle \ge0$，当且仅当$f=0$时等号成立。</li>
+<li>线性：$\langle r_1f_1+r_2f_2,g \rangle = r_1\langle f_1,g \rangle+r_2\langle f_2,g \rangle$</li>
 </ol>
 </blockquote>
-<h1 id="空间">空间</h1>
-<h2 id="度量距离空间">度量（距离）空间</h2>
-<p>设<span class="math inline">\(X\)</span>是非空集合，对于<span class="math inline">\(X\)</span>中的任意两个元素<span class="math inline">\(x,y\)</span>，按某一法则都对应唯一的实数<span class="math inline">\(\rho(x,y)\)</span>，并满足下面三个条件（距离公理）：</p>
+<h1 id="空间"><a href="#空间" class="headerlink" title="空间"></a>空间</h1><h2 id="度量（距离）空间"><a href="#度量（距离）空间" class="headerlink" title="度量（距离）空间"></a>度量（距离）空间</h2><p>设$X$是非空集合，对于$X$中的任意两个元素$x,y$，按某一法则都对应唯一的实数$\rho(x,y)$，并满足下面三个条件（距离公理）：</p>
 <blockquote>
-<ol type="1">
-<li>非负性：<span class="math inline">\(\rho(x,y)\ge0\)</span>，当且仅当<span class="math inline">\(x=y\)</span>时，<span class="math inline">\(\rho(x,y)=0\)</span>;</li>
-<li>对称性：<span class="math inline">\(\rho(x,y)=\rho(y,x)\)</span>;</li>
-<li>三角不等式：对任意<span class="math inline">\(x,y,z\)</span>，<span class="math inline">\(\rho(x,y)\leq\rho(x,z)+\rho(z,y)\)</span></li>
+<ol>
+<li>非负性：$\rho(x,y)\ge0$，当且仅当$x=y$时，$\rho(x,y)=0$;</li>
+<li>对称性：$\rho(x,y)=\rho(y,x)$;</li>
+<li>三角不等式：对任意$x,y,z$，$\rho(x,y)\leq\rho(x,z)+\rho(z,y)$</li>
 </ol>
 </blockquote>
-<p>则称<span class="math inline">\(\rho(x,y)\)</span>为<span class="math inline">\(x\)</span>与<span class="math inline">\(y\)</span>的距离（或度量），并称<span class="math inline">\(X\)</span>是以<span class="math inline">\(\rho\)</span>为距离的距离空间，记作<span class="math inline">\((X,\rho)\)</span>。 这里的距离不局限于“点空间”内的距离，比如下面两个也满足距离：<span class="math display">\[\rho(x,y)=\max\limits_{1\leq k\leq n}|x_k-y_k|\]</span><span class="math display">\[\rho(x,y)=\sum_{k=1}^{n}|x_k-y_k|\]</span> <span class="math inline">\(L^p[a,b]\)</span>表示区间<span class="math inline">\([a,b]\)</span>绝对值<span class="math inline">\(p\)</span>次幂<span class="math inline">\(L\)</span>可积函数的全体，并把几乎处处相等的函数看成是同一个函数，对于<span class="math inline">\(x,y\in L^p[a,b]\)</span>，规定<span class="math display">\[\rho(x,y)=[\int_a^b|x(t)-y(t)|^pdt]^{1/p},p\ge1\]</span>则<span class="math inline">\(L^p[a,b]\)</span>构成一个距离空间，称为<span class="math inline">\(p\)</span>次幂可积函数空间。</p>
-<h2 id="线性空间">线性空间</h2>
-<p>直观理解的话就是拥有加法和数乘的非空集合。首先要求非空，其次满足加法运算的4个属性：</p>
+<p>则称$\rho(x,y)$为$x$与$y$的距离（或度量），并称$X$是以$\rho$为距离的距离空间，记作$(X,\rho)$。<br>这里的距离不局限于“点空间”内的距离，比如下面两个也满足距离：<script type="math/tex">\rho(x,y)=\max\limits_{1\leq k\leq n}|x_k-y_k|$$$$\rho(x,y)=\sum_{k=1}^{n}|x_k-y_k|</script> $L^p[a,b]$表示区间$[a,b]$绝对值$p$次幂$L$可积函数的全体，并把几乎处处相等的函数看成是同一个函数，对于$x,y\in L^p[a,b]$，规定<script type="math/tex">\rho(x,y)=[\int_a^b|x(t)-y(t)|^pdt]^{1/p},p\ge1</script>则$L^p[a,b]$构成一个距离空间，称为$p$次幂可积函数空间。</p>
+<h2 id="线性空间"><a href="#线性空间" class="headerlink" title="线性空间"></a>线性空间</h2><p>直观理解的话就是拥有加法和数乘的非空集合。首先要求非空，其次满足加法运算的4个属性：</p>
 <blockquote>
-<ol type="1">
+<ol>
 <li>加法交换律</li>
 <li>加法结合律</li>
-<li>存在零元：<span class="math inline">\(x+0=x\)</span></li>
-<li>存在逆元：<span class="math inline">\(x+(-x)=0\)</span></li>
+<li>存在零元：$x+0=x$</li>
+<li>存在逆元：$x+(-x)=0$</li>
 </ol>
 </blockquote>
 <p>满足数乘的4个属性：</p>
 <blockquote>
-<ol type="1">
-<li><span class="math inline">\(1x=x\)</span></li>
-<li><span class="math inline">\(a(bx)=(ab)x\)</span></li>
-<li><span class="math inline">\((a+b)x=ax+bx\)</span></li>
-<li><span class="math inline">\(a(x+y)=ax+ay\)</span></li>
+<ol>
+<li>$1x=x$</li>
+<li>$a(bx)=(ab)x$</li>
+<li>$(a+b)x=ax+bx$</li>
+<li>$a(x+y)=ax+ay$</li>
 </ol>
 </blockquote>
-<h2 id="赋范空间">赋范空间</h2>
-<p>设<span class="math inline">\(X\)</span>是实（或复）线性空间，如果对于<span class="math inline">\(X\)</span>中的每个元素<span class="math inline">\(x\)</span>，按照一定的法则对应于实数<span class="math inline">\(||x||\)</span>，且满足：</p>
+<h2 id="赋范空间"><a href="#赋范空间" class="headerlink" title="赋范空间"></a>赋范空间</h2><p>设$X$是实（或复）线性空间，如果对于$X$中的每个元素$x$，按照一定的法则对应于实数$||x||$，且满足：</p>
 <blockquote>
-<ol type="1">
-<li><span class="math inline">\(||x||\ge0\)</span>，当且仅当<span class="math inline">\(x\)</span>等于零元（<span class="math inline">\(x=0\)</span>）时<span class="math inline">\(||x||=0\)</span>;</li>
-<li><span class="math inline">\(||ax||=|a|||x||\)</span>，<span class="math inline">\(a\)</span>是实（或复）数；</li>
-<li><span class="math inline">\(||x+y||\leq||x||+||y||\)</span></li>
+<ol>
+<li>$||x||\ge0$，当且仅当$x$等于零元（$x=0$）时$||x||=0$;</li>
+<li>$||ax||=|a|||x||$，$a$是实（或复）数；</li>
+<li>$||x+y||\leq||x||+||y||$</li>
 </ol>
 </blockquote>
-<p>则称<span class="math inline">\(X\)</span>是实（或复）赋范线性空间，<span class="math inline">\(||x||\)</span>称为<span class="math inline">\(x\)</span>的范数。</p>
+<p>则称$X$是实（或复）赋范线性空间，$||x||$称为$x$的范数。</p>
 <blockquote>
-<p>注：赋范线性空间必然是距离空间。定义<span class="math display">\[\rho(x,y)=||x-y||\]</span></p>
+<p>注：赋范线性空间必然是距离空间。定义<script type="math/tex">\rho(x,y)=||x-y||</script></p>
 </blockquote>
 <p>与距离空间的不同在于：</p>
-<ol type="1">
-<li>平移不变性：<span class="math inline">\(d(x+a,y+a)=d(x,y)\)</span>，<span class="math inline">\(x,y,a\in X\)</span></li>
-<li>齐次性：<span class="math inline">\(d(ax,ay)=|a|d(x,y)\)</span>，<span class="math inline">\(x,y\in X\)</span>，<span class="math inline">\(a\in K\)</span>。（<span class="math inline">\(K\)</span>是实（或复）数域）。</li>
+<ol>
+<li>平移不变性：$d(x+a,y+a)=d(x,y)$，$x,y,a\in X$</li>
+<li>齐次性：$d(ax,ay)=|a|d(x,y)$，$x,y\in X$，$a\in K$。（$K$是实（或复）数域）。</li>
 </ol>
-<h2 id="banach-空间">Banach 空间</h2>
-<p>如果赋范线性空间是完备的，则称该赋范线性空间是Banach 空间。</p>
-<h2 id="内积空间">内积空间</h2>
-<p>（注：这里的括号全都应该为尖括号） 设<span class="math inline">\(X\)</span>是定义在实（或复）数域<span class="math inline">\(K\)</span>上的线性空间，若对于<span class="math inline">\(X\)</span>任意一对有序元素<span class="math inline">\(x,y\)</span>, 恒对应数域<span class="math inline">\(K\)</span>的值<span class="math inline">\((x, y)\)</span>，且满足：</p>
+<h2 id="Banach-空间"><a href="#Banach-空间" class="headerlink" title="Banach 空间"></a>Banach 空间</h2><p>如果赋范线性空间是完备的，则称该赋范线性空间是Banach 空间。</p>
+<h2 id="内积空间"><a href="#内积空间" class="headerlink" title="内积空间"></a>内积空间</h2><p>（注：这里的括号全都应该为尖括号）<br>设$X$是定义在实（或复）数域$K$上的线性空间，若对于$X$任意一对有序元素$x,y$, 恒对应数域$K$的值$(x, y)$，且满足：</p>
 <blockquote>
-<ol type="1">
-<li><span class="math inline">\((ax,y)=a(x,y)\)</span></li>
-<li><span class="math inline">\((x+y,z)=(x,z)+(y,z)\)</span></li>
-<li><span class="math inline">\((x,y)=(y,x)\)</span></li>
-<li><span class="math inline">\((x,x)\ge0\)</span>，当且仅当<span class="math inline">\(x=0\)</span>时等号成立</li>
+<ol>
+<li>$(ax,y)=a(x,y)$</li>
+<li>$(x+y,z)=(x,z)+(y,z)$</li>
+<li>$(x,y)=(y,x)$</li>
+<li>$(x,x)\ge0$，当且仅当$x=0$时等号成立</li>
 </ol>
 </blockquote>
-<p>则称<span class="math inline">\(X\)</span>为内积空间，<span class="math inline">\((x,y)\)</span>称为<span class="math inline">\(x,y\)</span>的内积。跟上面内积的概念可以结合理解。</p>
-<h2 id="hilbert-空间">Hilbert 空间</h2>
-<p>完备的内积空间称为Hilbert空间，且Hilbert空间必为Banach 空间。 或者换种说法： Hilbert空间是：完备的，可能是无限维的，被赋予内积的线性空间。</p>
+<p>则称$X$为内积空间，$(x,y)$称为$x,y$的内积。跟上面内积的概念可以结合理解。</p>
+<h2 id="Hilbert-空间"><a href="#Hilbert-空间" class="headerlink" title="Hilbert 空间"></a>Hilbert 空间</h2><p>完备的内积空间称为Hilbert空间，且Hilbert空间必为Banach 空间。<br>或者换种说法：<br>Hilbert空间是：完备的，可能是无限维的，被赋予内积的线性空间。</p>
 
     </div>
 
@@ -362,13 +351,10 @@
 
         
     <div class="post-nav">
+      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/posts/11.html" rel="prev" title="线性降维与统计学习理论（Linear Dimensionality Reduction & Statistical Learning Theory）">
-      <i class="fa fa-chevron-left"></i> 线性降维与统计学习理论（Linear Dimensionality Reduction & Statistical Learning Theory）
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/posts/13.html" rel="next" title="支持向量机（SVM）">
-      支持向量机（SVM） <i class="fa fa-chevron-right"></i>
+    <a href="/posts/16.html" rel="next" title="【ML-2020/21】CNN & Self-Attention">
+      【ML-2020/21】CNN & Self-Attention <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -429,7 +415,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">相关概念：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E5%A4%87%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">完备性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E7%A7%AF"><span class="nav-number">1.2.</span> <span class="nav-text">内积</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A9%BA%E9%97%B4"><span class="nav-number">2.</span> <span class="nav-text">空间</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%A6%E9%87%8F%E8%B7%9D%E7%A6%BB%E7%A9%BA%E9%97%B4"><span class="nav-number">2.1.</span> <span class="nav-text">度量（距离）空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E7%A9%BA%E9%97%B4"><span class="nav-number">2.2.</span> <span class="nav-text">线性空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%8B%E8%8C%83%E7%A9%BA%E9%97%B4"><span class="nav-number">2.3.</span> <span class="nav-text">赋范空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#banach-%E7%A9%BA%E9%97%B4"><span class="nav-number">2.4.</span> <span class="nav-text">Banach 空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E7%A7%AF%E7%A9%BA%E9%97%B4"><span class="nav-number">2.5.</span> <span class="nav-text">内积空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hilbert-%E7%A9%BA%E9%97%B4"><span class="nav-number">2.6.</span> <span class="nav-text">Hilbert 空间</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">相关概念：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E5%A4%87%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">完备性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E7%A7%AF"><span class="nav-number">1.2.</span> <span class="nav-text">内积</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A9%BA%E9%97%B4"><span class="nav-number">2.</span> <span class="nav-text">空间</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%A6%E9%87%8F%EF%BC%88%E8%B7%9D%E7%A6%BB%EF%BC%89%E7%A9%BA%E9%97%B4"><span class="nav-number">2.1.</span> <span class="nav-text">度量（距离）空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E7%A9%BA%E9%97%B4"><span class="nav-number">2.2.</span> <span class="nav-text">线性空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%8B%E8%8C%83%E7%A9%BA%E9%97%B4"><span class="nav-number">2.3.</span> <span class="nav-text">赋范空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Banach-%E7%A9%BA%E9%97%B4"><span class="nav-number">2.4.</span> <span class="nav-text">Banach 空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E7%A7%AF%E7%A9%BA%E9%97%B4"><span class="nav-number">2.5.</span> <span class="nav-text">内积空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hilbert-%E7%A9%BA%E9%97%B4"><span class="nav-number">2.6.</span> <span class="nav-text">Hilbert 空间</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -445,14 +431,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -480,7 +466,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

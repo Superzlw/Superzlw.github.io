@@ -40,8 +40,8 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210508042117565.png#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210508042125983.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/2021050804251624.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="article:published_time" content="2021-08-03T19:05:43.265Z">
-<meta property="article:modified_time" content="2021-08-11T01:14:09.541Z">
+<meta property="article:published_time" content="2021-08-11T07:14:10.000Z">
+<meta property="article:modified_time" content="2021-08-11T07:14:10.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/2021050722481379.png#pic_center">
@@ -228,15 +228,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-08-03 21:05:43" itemprop="dateCreated datePublished" datetime="2021-08-03T21:05:43+02:00">2021-08-03</time>
+              <time title="创建时间：2021-08-11 09:14:10" itemprop="dateCreated datePublished" datetime="2021-08-11T09:14:10+02:00">2021-08-11</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-11 03:14:09" itemprop="dateModified" datetime="2021-08-11T03:14:09+02:00">2021-08-11</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -279,32 +272,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>前一篇大概介绍了【李群李代数】的相关性质，这里主要介绍李代数在SLAM中的作用。 <span id="more"></span></p>
-<h2 id="bch公式及其近似形式">BCH公式及其近似形式</h2>
-<p>李代数在SLAM中的作用主要是进行优化，优化过程就不可避免地需要涉及到求导的过程。<br />
-与标量不同，在矩阵中指数的运算法则并不适用，即是说在矩阵中：<span class="math display">\[ln(exp(A)exp(B))\ne A+B\]</span> 取而代之的时BCH公式：<span class="math display">\[ln(exp(A)exp(B))=A+B+\frac{1}{2}[A,B]+\frac{1}{12}[A,[A,B]]-\frac{1}{12}[B,[A,B]]+...\]</span> 其中的"[,]"为李括号，也就是说，两个矩阵指数之积会由这两个矩阵的和与一系列由李括号组成的余项组成。对于SO(3)，当<span class="math inline">\(\phi_{1}\)</span>或<span class="math inline">\(\phi_{2}\)</span>为小量时，小量二次以上的项都可以被忽略，即是有以下关系： <img src="https://img-blog.csdnimg.cn/2021050722481379.png#pic_center" alt="在这里插入图片描述" /> 以第一个近似为例，当对一个旋转向量<span class="math inline">\(R_{2}\)</span>（对应的李代数为<span class="math inline">\(\phi_{2}\)</span>）左乘一个微小旋转矩阵<span class="math inline">\(R_{1}\)</span>，可以近似看作在原有李代数<span class="math inline">\(\phi_{2}\)</span>的基础上加上了<span class="math inline">\(J_{l}(\phi_{2})^{-1}\phi_{1}\)</span>（第二个近似同理，但是是右乘）。<br />
-李代数在BCH近似下分为左乘和右乘两种，注意区分。<br />
-这里的<span class="math inline">\(J\)</span>就是在上一篇关于李群李代数里提到的式子： <img src="https://img-blog.csdnimg.cn/20210507230638737.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 右乘的话只需要改变自变量的符号即可：<span class="math display">\[J_{r}(\phi)=J_{l}(-\phi)\]</span> 现在对于一个旋转<span class="math inline">\(R\)</span>(对应李代数为<span class="math inline">\(\phi\)</span>)，给之左乘一个微小旋转<span class="math inline">\(\triangle R\)</span>(对应于<span class="math inline">\(\triangle \phi\)</span>)，我们就有了如下关系： <img src="https://img-blog.csdnimg.cn/20210507231646273.png#pic_center" alt="在这里插入图片描述" /> 反之，当我们在李代数上做加法运算时则有： <img src="https://img-blog.csdnimg.cn/20210507231729943.png#pic_center" alt="在这里插入图片描述" /> 对于SE(3)，也有类似的关系： <img src="https://img-blog.csdnimg.cn/20210507231854489.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 这里的<span class="math inline">\(\jmath\)</span>是一个<span class="math inline">\(6\times6\)</span>的矩阵。</p>
-<h2 id="so3上的李代数的求导">SO(3)上的李代数的求导</h2>
-<p>在SLAM中要估计一个相机的位置和位姿，我们是通过SO(3)上的旋转矩阵或者SE(3)上的变换矩阵描述的。举个例子，在某时刻相机位姿为<span class="math inline">\(T\)</span>，其观察到世界坐标位于<span class="math inline">\(p\)</span>的一点，产生一个观测数据<span class="math inline">\(z\)</span>，那么我们就有如下关系：<span class="math display">\[z=Tp+\omega\]</span>其中的<span class="math inline">\(\omega\)</span>为随机噪音。<br />
-由于噪音的存在我们无法获得精准的<span class="math inline">\(z-p\)</span>对应关系，所以现在我们就要对这个噪音产生的误差进行计算，即：<span class="math display">\[e=z-Tp\]</span> 假设一共有<span class="math inline">\(N\)</span>个这样的路标点和观察，即是有<span class="math inline">\(N\)</span>个上式，我们现在要预计该相机的位姿，就是要求出一组<span class="math inline">\(T\)</span>，使整体误差最小化：<span class="math display">\[\min_T J(T)=\sum_{i=1}^{N}||z_{i}-Tp_{i}||_{2}^{2}\]</span> 要求解这个问题，就要求<span class="math inline">\(J\)</span>对<span class="math inline">\(T\)</span>的导数，然而因为群SO(3)和SE(3)没有加法，所以我们一般转而处理它们的李代数（因为李代数是向量的集合，对加法封闭），因此思路一般分为两种：</p>
+        <p>前一篇大概介绍了【李群李代数】的相关性质，这里主要介绍李代数在SLAM中的作用。<br><span id="more"></span></p>
+<h2 id="BCH公式及其近似形式"><a href="#BCH公式及其近似形式" class="headerlink" title="BCH公式及其近似形式"></a>BCH公式及其近似形式</h2><p>李代数在SLAM中的作用主要是进行优化，优化过程就不可避免地需要涉及到求导的过程。\<br>与标量不同，在矩阵中指数的运算法则并不适用，即是说在矩阵中：<script type="math/tex">ln(exp(A)exp(B))\ne A+B</script><br>取而代之的时BCH公式：<script type="math/tex">ln(exp(A)exp(B))=A+B+\frac{1}{2}[A,B]+\frac{1}{12}[A,[A,B]]-\frac{1}{12}[B,[A,B]]+...</script><br>其中的”[,]”为李括号，也就是说，两个矩阵指数之积会由这两个矩阵的和与一系列由李括号组成的余项组成。对于SO(3)，当$\phi_{1}$或$\phi_{2}$为小量时，小量二次以上的项都可以被忽略，即是有以下关系：<br><img src="https://img-blog.csdnimg.cn/2021050722481379.png#pic_center" alt="在这里插入图片描述"><br>以第一个近似为例，当对一个旋转向量$R_{2}$（对应的李代数为$\phi_{2}$）左乘一个微小旋转矩阵$R_{1}$，可以近似看作在原有李代数$\phi_{2}$的基础上加上了$J_{l}(\phi_{2})^{-1}\phi_{1}$（第二个近似同理，但是是右乘）。\<br>李代数在BCH近似下分为左乘和右乘两种，注意区分。\<br>这里的$J$就是在上一篇关于李群李代数里提到的式子：<br><img src="https://img-blog.csdnimg.cn/20210507230638737.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>右乘的话只需要改变自变量的符号即可：<script type="math/tex">J_{r}(\phi)=J_{l}(-\phi)</script><br>现在对于一个旋转$R$(对应李代数为$\phi$)，给之左乘一个微小旋转$\triangle R$(对应于$\triangle \phi$)，我们就有了如下关系：<br><img src="https://img-blog.csdnimg.cn/20210507231646273.png#pic_center" alt="在这里插入图片描述"><br>反之，当我们在李代数上做加法运算时则有：<br><img src="https://img-blog.csdnimg.cn/20210507231729943.png#pic_center" alt="在这里插入图片描述"><br>对于SE(3)，也有类似的关系：<br><img src="https://img-blog.csdnimg.cn/20210507231854489.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>这里的$\jmath$是一个$6\times6$的矩阵。</p>
+<h2 id="SO-3-上的李代数的求导"><a href="#SO-3-上的李代数的求导" class="headerlink" title="SO(3)上的李代数的求导"></a>SO(3)上的李代数的求导</h2><p>在SLAM中要估计一个相机的位置和位姿，我们是通过SO(3)上的旋转矩阵或者SE(3)上的变换矩阵描述的。举个例子，在某时刻相机位姿为$T$，其观察到世界坐标位于$p$的一点，产生一个观测数据$z$，那么我们就有如下关系：<script type="math/tex">z=Tp+\omega</script>其中的$\omega$为随机噪音。\<br>由于噪音的存在我们无法获得精准的$z-p$对应关系，所以现在我们就要对这个噪音产生的误差进行计算，即：<script type="math/tex">e=z-Tp</script><br>假设一共有$N$个这样的路标点和观察，即是有$N$个上式，我们现在要预计该相机的位姿，就是要求出一组$T$，使整体误差最小化：<script type="math/tex">\min_T J(T)=\sum_{i=1}^{N}||z_{i}-Tp_{i}||_{2}^{2}</script><br>要求解这个问题，就要求$J$对$T$的导数，然而因为群SO(3)和SE(3)没有加法，所以我们一般转而处理它们的李代数（因为李代数是向量的集合，对加法封闭），因此思路一般分为两种：</p>
 <blockquote>
-<ol type="1">
-<li>用李代数表示位姿，然后对李代数进行求导；<br />
-</li>
+<ol>
+<li>用李代数表示位姿，然后对李代数进行求导；\</li>
 <li>对李群左乘或者右乘微小扰动，然后对这个扰动进行求导，称为左扰动和右扰动模型</li>
 </ol>
 </blockquote>
-<p>第一种对应李代数求导模型，第二种对应扰动模型。<br />
-以下分别进行说明。</p>
-<h3 id="李代数求导">李代数求导</h3>
-<p><em>（其实这部分可不看，因为最后会发现扰动模型更适合）</em><br />
-现在处理SO(3)的情况。假设对空间一点<span class="math inline">\(p\)</span>进行旋转，得到<span class="math inline">\(Rp\)</span>，我们要计算旋转后的点坐标相对于旋转的角度，即是：<span class="math display">\[\frac{\partial(Rp)}{\partial R}\]</span> 由于SO(3)没有加法，所以我们转而求其对应的李代数，即是：<span class="math display">\[\frac{\partial(exp(\phi^{\land})p)}{\partial \phi}\]</span> 根据导数的定义计算： <img src="https://img-blog.csdnimg.cn/20210508033658749.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 第二行的近似为BCH近似，第三行为在0附近的泰勒展开舍去高阶项后的近似，第四到第五行将反对称符号看作叉积，交换后变号。于是我们可以得出以下式子： <img src="https://img-blog.csdnimg.cn/20210508033958370.png#pic_center" alt="在这里插入图片描述" /> 这里简单解释下反对称矩阵和叉积的关系，也就是上面第四到第五行的变换： <span class="math display">\[a=[a_{1},a_{2},a_{3}]\]</span> <span class="math display">\[b=[b_{1},b_{2},b_{3}]\]</span> <span class="math display">\[a\times b=\begin{bmatrix} i&amp; j&amp; k\\ a_{1}&amp;a_{2}&amp; a_{3}\\ b_{1}&amp; b_{2}&amp; b_{3}\end{bmatrix} \\= \begin{bmatrix} a_{2}b_{3}-a_{3}b_{2} \\ -(a_{1}b_{3}-a_{3}b_{1}) \\ a_{1}b_{2}-a_{2}b_{1}\end{bmatrix} \\ =\begin{bmatrix} 0 &amp; -a_{3} &amp; a_{2} \\ a_{3} &amp; 0 &amp; -a_{1} \\ -a_{2} &amp; a_{1} &amp; 0 \end{bmatrix} \begin{bmatrix} b_{1} \\ b_{2} \\ b_{3} \end{bmatrix}\]</span> 所以，<span class="math inline">\(a\)</span> 与<span class="math inline">\(b\)</span>的叉乘即是等于<span class="math inline">\(a\)</span>的反对称矩阵乘以<span class="math inline">\(b\)</span>，同时叉乘满足如下反交换律：<span class="math display">\[a\times b=-b\times a\]</span> 回到原题，在上图中，由于结果式子含有形式比较复杂的<span class="math inline">\(J_{l}\)</span>，不容易计算，所以我们一般不采用上面的方法，而用下面的扰动模型的方法。</p>
-<h3 id="扰动模型左乘">扰动模型（左乘）</h3>
-<p>扰动模型的求导方法是对<span class="math inline">\(R\)</span>进行一次扰动<span class="math inline">\(\triangle R\)</span>，这个微小扰动可以左乘，也可以右乘，最后结果会有一点微小差异，这里以左乘为例。设左扰动<span class="math inline">\(\triangle R\)</span>对应的李代数为<span class="math inline">\(\varphi\)</span>，然后对<span class="math inline">\(\varphi\)</span>进行求导： <img src="https://img-blog.csdnimg.cn/20210508041300661.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 相比直接对李代数求导，这里省去了一个雅可比<span class="math inline">\(J_{l}\)</span>的计算，更为简便。</p>
-<h2 id="se3上的李代数求导">SE(3)上的李代数求导</h2>
-<p>假设空间一点<span class="math inline">\(p\)</span>经过一次变换<span class="math inline">\(T\)</span>(对应的李代数为<span class="math inline">\(\xi\)</span>)，得到<span class="math inline">\(Tp\)</span>(这里的<span class="math inline">\(p\)</span>注意用齐次坐标)。现给<span class="math inline">\(T\)</span>左乘一个扰动<span class="math inline">\(\triangle T=exp(\delta \xi^{\land})\)</span>，设扰动项的李代数为<span class="math inline">\(\delta \xi=[\delta \rho,\delta \phi]^{T}\)</span>，可得： <img src="https://img-blog.csdnimg.cn/20210508042117565.png#pic_center" alt="在这里插入图片描述" /> <img src="https://img-blog.csdnimg.cn/20210508042125983.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> 把最后的结果定义成一个算符<span class="math inline">\(\odot\)</span>，它把一个齐次空间坐标变换成一个<span class="math inline">\(4\times 6\)</span>的矩阵。<br />
-最后这里简单解释下矩阵求导的顺序，设<span class="math inline">\(a,b,x,y\)</span>都是列向量，其求导顺序为： <img src="https://img-blog.csdnimg.cn/2021050804251624.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /> <strong><em>注：本文主要参考自《视觉SLAM十四讲》</em></strong></p>
+<p>第一种对应李代数求导模型，第二种对应扰动模型。\<br>以下分别进行说明。</p>
+<h3 id="李代数求导"><a href="#李代数求导" class="headerlink" title="李代数求导"></a>李代数求导</h3><p><em>（其实这部分可不看，因为最后会发现扰动模型更适合）</em>\<br>现在处理SO(3)的情况。假设对空间一点$p$进行旋转，得到$Rp$，我们要计算旋转后的点坐标相对于旋转的角度，即是：<script type="math/tex">\frac{\partial(Rp)}{\partial R}</script><br>由于SO(3)没有加法，所以我们转而求其对应的李代数，即是：<script type="math/tex">\frac{\partial(exp(\phi^{\land})p)}{\partial \phi}</script><br>根据导数的定义计算：<br><img src="https://img-blog.csdnimg.cn/20210508033658749.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>第二行的近似为BCH近似，第三行为在0附近的泰勒展开舍去高阶项后的近似，第四到第五行将反对称符号看作叉积，交换后变号。于是我们可以得出以下式子：<br><img src="https://img-blog.csdnimg.cn/20210508033958370.png#pic_center" alt="在这里插入图片描述"><br>这里简单解释下反对称矩阵和叉积的关系，也就是上面第四到第五行的变换：</p>
+<script type="math/tex; mode=display">a=[a_{1},a_{2},a_{3}]$$ $$b=[b_{1},b_{2},b_{3}]</script><script type="math/tex; mode=display">a\times b=\begin{bmatrix} i& j& k\\ a_{1}&a_{2}& a_{3}\\ b_{1}& b_{2}& b_{3}\end{bmatrix} \\= \begin{bmatrix} a_{2}b_{3}-a_{3}b_{2} \\ -(a_{1}b_{3}-a_{3}b_{1}) \\ a_{1}b_{2}-a_{2}b_{1}\end{bmatrix} \\ =\begin{bmatrix} 0 & -a_{3} & a_{2} \\ a_{3} & 0 & -a_{1} \\ -a_{2} & a_{1} & 0 \end{bmatrix} \begin{bmatrix} b_{1} \\ b_{2} \\ b_{3} \end{bmatrix}</script><p>所以，$a$ 与$b$的叉乘即是等于$a$的反对称矩阵乘以$b$，同时叉乘满足如下反交换律：<script type="math/tex">a\times b=-b\times a</script><br>回到原题，在上图中，由于结果式子含有形式比较复杂的$J_{l}$，不容易计算，所以我们一般不采用上面的方法，而用下面的扰动模型的方法。</p>
+<h3 id="扰动模型（左乘）"><a href="#扰动模型（左乘）" class="headerlink" title="扰动模型（左乘）"></a>扰动模型（左乘）</h3><p>扰动模型的求导方法是对$R$进行一次扰动$\triangle R$，这个微小扰动可以左乘，也可以右乘，最后结果会有一点微小差异，这里以左乘为例。设左扰动$\triangle R$对应的李代数为$\varphi$，然后对$\varphi$进行求导：<br><img src="https://img-blog.csdnimg.cn/20210508041300661.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>相比直接对李代数求导，这里省去了一个雅可比$J_{l}$的计算，更为简便。</p>
+<h2 id="SE-3-上的李代数求导"><a href="#SE-3-上的李代数求导" class="headerlink" title="SE(3)上的李代数求导"></a>SE(3)上的李代数求导</h2><p>假设空间一点$p$经过一次变换$T$(对应的李代数为$\xi$)，得到$Tp$(这里的$p$注意用齐次坐标)。现给$T$左乘一个扰动$\triangle T=exp(\delta \xi^{\land})$，设扰动项的李代数为$\delta \xi=[\delta \rho,\delta \phi]^{T}$，可得：<br><img src="https://img-blog.csdnimg.cn/20210508042117565.png#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210508042125983.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>把最后的结果定义成一个算符$\odot$，它把一个齐次空间坐标变换成一个$4\times 6$的矩阵。\<br>最后这里简单解释下矩阵求导的顺序，设$a,b,x,y$都是列向量，其求导顺序为：<br><img src="https://img-blog.csdnimg.cn/2021050804251624.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br><strong><em>注：本文主要参考自《视觉SLAM十四讲》</em></strong></p>
 
     </div>
 
@@ -331,12 +312,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/posts/4.html" rel="prev" title="李群和李代数">
-      <i class="fa fa-chevron-left"></i> 李群和李代数
+    <a href="/posts/6.html" rel="prev" title="概率密度估计（Probability Density Estimation）--Part 1：参数估计">
+      <i class="fa fa-chevron-left"></i> 概率密度估计（Probability Density Estimation）--Part 1：参数估计
     </a></div>
       <div class="post-nav-item">
-    <a href="/posts/6.html" rel="next" title="概率密度估计（Probability Density Estimation）--Part 1：参数估计">
-      概率密度估计（Probability Density Estimation）--Part 1：参数估计 <i class="fa fa-chevron-right"></i>
+    <a href="/posts/4.html" rel="next" title="李群和李代数">
+      李群和李代数 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -397,7 +378,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#bch%E5%85%AC%E5%BC%8F%E5%8F%8A%E5%85%B6%E8%BF%91%E4%BC%BC%E5%BD%A2%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">BCH公式及其近似形式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so3%E4%B8%8A%E7%9A%84%E6%9D%8E%E4%BB%A3%E6%95%B0%E7%9A%84%E6%B1%82%E5%AF%BC"><span class="nav-number">2.</span> <span class="nav-text">SO(3)上的李代数的求导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%8E%E4%BB%A3%E6%95%B0%E6%B1%82%E5%AF%BC"><span class="nav-number">2.1.</span> <span class="nav-text">李代数求导</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%B0%E5%8A%A8%E6%A8%A1%E5%9E%8B%E5%B7%A6%E4%B9%98"><span class="nav-number">2.2.</span> <span class="nav-text">扰动模型（左乘）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#se3%E4%B8%8A%E7%9A%84%E6%9D%8E%E4%BB%A3%E6%95%B0%E6%B1%82%E5%AF%BC"><span class="nav-number">3.</span> <span class="nav-text">SE(3)上的李代数求导</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#BCH%E5%85%AC%E5%BC%8F%E5%8F%8A%E5%85%B6%E8%BF%91%E4%BC%BC%E5%BD%A2%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">BCH公式及其近似形式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SO-3-%E4%B8%8A%E7%9A%84%E6%9D%8E%E4%BB%A3%E6%95%B0%E7%9A%84%E6%B1%82%E5%AF%BC"><span class="nav-number">2.</span> <span class="nav-text">SO(3)上的李代数的求导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%8E%E4%BB%A3%E6%95%B0%E6%B1%82%E5%AF%BC"><span class="nav-number">2.1.</span> <span class="nav-text">李代数求导</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%B0%E5%8A%A8%E6%A8%A1%E5%9E%8B%EF%BC%88%E5%B7%A6%E4%B9%98%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">扰动模型（左乘）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SE-3-%E4%B8%8A%E7%9A%84%E6%9D%8E%E4%BB%A3%E6%95%B0%E6%B1%82%E5%AF%BC"><span class="nav-number">3.</span> <span class="nav-text">SE(3)上的李代数求导</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -413,14 +394,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -448,7 +429,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

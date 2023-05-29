@@ -22,12 +22,12 @@
     var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="引入 在实际生活中，我们处理的往往是很大量的数据，分析时经常要对这些数据的某种规律提出一个假设，但我们有时没法直接用总数据来验证这个假设，而是通过样本数据来推断，决定是否拒绝这一假设，这样的统计活动成为假设检验。 假设检测方法的均值对比方法主要有t-test和z-test，以下介绍这两个检测以及中间涉及到的F-test。">
+  <meta name="description" content="引入在实际生活中，我们处理的往往是很大量的数据，分析时经常要对这些数据的某种规律提出一个假设，但我们有时没法直接用总数据来验证这个假设，而是通过样本数据来推断，决定是否拒绝这一假设，这样的统计活动成为假设检验。\假设检测方法的均值对比方法主要有t-test和z-test，以下介绍这两个检测以及中间涉及到的F-test。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="假设性检测 (t-test, z-test)">
 <meta property="og:url" content="https://superzlw.github.io/posts/21.html">
 <meta property="og:site_name" content="SuperZLW&#39;s Blog">
-<meta property="og:description" content="引入 在实际生活中，我们处理的往往是很大量的数据，分析时经常要对这些数据的某种规律提出一个假设，但我们有时没法直接用总数据来验证这个假设，而是通过样本数据来推断，决定是否拒绝这一假设，这样的统计活动成为假设检验。 假设检测方法的均值对比方法主要有t-test和z-test，以下介绍这两个检测以及中间涉及到的F-test。">
+<meta property="og:description" content="引入在实际生活中，我们处理的往往是很大量的数据，分析时经常要对这些数据的某种规律提出一个假设，但我们有时没法直接用总数据来验证这个假设，而是通过样本数据来推断，决定是否拒绝这一假设，这样的统计活动成为假设检验。\假设检测方法的均值对比方法主要有t-test和z-test，以下介绍这两个检测以及中间涉及到的F-test。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://superzlw.github.io/images/251.png">
 <meta property="og:image" content="https://superzlw.github.io/images/252.png">
@@ -37,8 +37,8 @@
 <meta property="og:image" content="https://superzlw.github.io/images/256.png">
 <meta property="og:image" content="https://superzlw.github.io/images/258.png">
 <meta property="og:image" content="https://superzlw.github.io/images/257.png">
-<meta property="article:published_time" content="2021-08-16T21:37:12.531Z">
-<meta property="article:modified_time" content="2021-08-18T19:11:04.873Z">
+<meta property="article:published_time" content="2021-08-19T01:11:06.000Z">
+<meta property="article:modified_time" content="2021-08-19T01:11:06.000Z">
 <meta property="article:author" content="super wzl">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://superzlw.github.io/images/251.png">
@@ -225,15 +225,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-08-16 23:37:12" itemprop="dateCreated datePublished" datetime="2021-08-16T23:37:12+02:00">2021-08-16</time>
+              <time title="创建时间：2021-08-19 03:11:06" itemprop="dateCreated datePublished" datetime="2021-08-19T03:11:06+02:00">2021-08-19</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-18 21:11:04" itemprop="dateModified" datetime="2021-08-18T21:11:04+02:00">2021-08-18</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -276,220 +269,136 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="引入">引入</h1>
-<p>在实际生活中，我们处理的往往是很大量的数据，分析时经常要对这些数据的某种规律提出一个假设，但我们有时没法直接用总数据来验证这个假设，而是通过样本数据来推断，决定是否拒绝这一假设，这样的统计活动成为假设检验。<br />
-假设检测方法的均值对比方法主要有t-test和z-test，以下介绍这两个检测以及中间涉及到的F-test。 <span id="more"></span></p>
+        <h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>在实际生活中，我们处理的往往是很大量的数据，分析时经常要对这些数据的某种规律提出一个假设，但我们有时没法直接用总数据来验证这个假设，而是通过样本数据来推断，决定是否拒绝这一假设，这样的统计活动成为假设检验。\<br>假设检测方法的均值对比方法主要有t-test和z-test，以下介绍这两个检测以及中间涉及到的F-test。<br><span id="more"></span></p>
 <p>该检测一般可以简单概况为以下4个步骤：</p>
 <blockquote>
-<ol type="1">
-<li>提出零假设<span class="math inline">\(H_0\)</span>以及对应的备选假设<span class="math inline">\(H_1\)</span>(分为以下两种):<br />
-  Non-directional(two tailed), e.g. <span class="math inline">\(H_0:\mu=10,H_1:\mu_0\neq 10\)</span>;<br />
-  Directional(one tailed), e.g. <span class="math inline">\(H_0:\mu=10,H_1:\mu_0&gt;10\)</span>(or <span class="math inline">\(\mu_0&lt;10\)</span>);<br />
-</li>
-<li>设定拒绝<span class="math inline">\(H_0\)</span>的标准:<br />
-  Set the significance level <span class="math inline">\(\alpha\)</span>, e.g. 0.05;<br />
-  Find the criteria for a decision: the critical value in z- or t-distribution;<br />
-  Two tailed for non directional alternative hypothesis;<br />
-  One tailed for directional alternative hypothesis;<br />
-</li>
-<li>计算测试统计数据:<br />
-  <span class="math inline">\(\sigma\)</span>已知：z-score;<br />
-  <span class="math inline">\(\sigma\)</span>未知：t-score;<br />
-  <span class="math inline">\(\sigma\)</span>未知但样本数据非常大：z-score。<br />
-</li>
-<li>决定是否拒绝零假设。<br />
-</li>
+<ol>
+<li>提出零假设$H_0$以及对应的备选假设$H_1$(分为以下两种): \<br> &emsp; Non-directional(two tailed), e.g. $H_0:\mu=10,H_1:\mu_0\neq 10$;\<br> &emsp; Directional(one tailed), e.g. $H_0:\mu=10,H_1:\mu_0&gt;10$(or $\mu_0&lt;10$);\</li>
+<li>设定拒绝$H_0$的标准:\<br> &emsp; Set the significance level $\alpha$, e.g. 0.05;\<br> &emsp; Find the criteria for a decision: the critical value in z- or t-distribution;\<br> &emsp; Two tailed for non directional alternative hypothesis;\<br> &emsp; One tailed for directional alternative hypothesis;\</li>
+<li>计算测试统计数据:\<br> &emsp; $\sigma$已知：z-score;\<br> &emsp; $\sigma$未知：t-score;\<br> &emsp; $\sigma$未知但样本数据非常大：z-score。\</li>
+<li>决定是否拒绝零假设。\</li>
 </ol>
 </blockquote>
-<h1 id="one-sample-case-for-the-mean">One sample case for the mean</h1>
-<h2 id="z-test">z-test</h2>
-<p>首先给一个图：<img src="/images/251.png" /> 如果 <span class="math inline">\(\overline{x}\)</span> 是正态分布的话，则<span class="math inline">\(z=\frac{\overline{x}-\mu_0}{\sigma_{\overline{x}}}\)</span>也是正态分布的（这里<span class="math inline">\(\sigma_{\overline{x}}\)</span>是确定或已知的）。<br />
-对于z检验，我们使用（累积）正态分布的表格来找出<span class="math inline">\(z_{\alpha}\)</span>的值。<br />
-</p>
-<h3 id="一个例子">一个例子</h3>
-<p>现用一个例子来说明z-test的步骤。<br />
-以下20个样本是从已知标准差为5的正态分布中产生的。<img src="/images/252.png" /> 现要检测该群体的均值是否大于6。<br />
-</p>
+<h1 id="One-sample-case-for-the-mean"><a href="#One-sample-case-for-the-mean" class="headerlink" title="One sample case for the mean"></a>One sample case for the mean</h1><h2 id="z-test"><a href="#z-test" class="headerlink" title="z-test"></a>z-test</h2><p>首先给一个图：<img src="/images/251.png" alt=""><br>如果 $\overline{x}$ 是正态分布的话，则$z=\frac{\overline{x}-\mu_0}{\sigma_{\overline{x}}}$也是正态分布的（这里$\sigma_{\overline{x}}$是确定或已知的）。\<br>对于z检验，我们使用（累积）正态分布的表格来找出$z_{\alpha}$的值。\</p>
+<h3 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h3><p>现用一个例子来说明z-test的步骤。\<br>以下20个样本是从已知标准差为5的正态分布中产生的。<img src="/images/252.png" alt=""><br>现要检测该群体的均值是否大于6。\</p>
 <blockquote>
-<ol type="1">
-<li><strong>Step 1</strong>: 设置假设：<span class="math inline">\(H_0: \mu=6\)</span> vs <span class="math inline">\(H_1:\mu&gt;6\)</span>;<br />
-</li>
-<li><strong>Step 2</strong>: 设置<span class="math inline">\(\alpha\)</span>，比如说等于0.05，然后从下表中查出其临界值为：<span class="math inline">\(z_{\alpha}=1.645\)</span> <img src="/images/253.png" /></li>
-<li><strong>Step 3</strong>: 计算样本的均值和标准差：<img src="/images/254.png" /></li>
-<li><strong>Step 4</strong>: 计算检测统计值： <span class="math display">\[
-z=\frac{\overline{x}-\mu_0}{\sigma_{\overline{x}}}=\frac{5.572-6}{6.287/\sqrt{20}}=-0.304
-\]</span></li>
-<li><strong>Step 5</strong>: 做决策：由于<span class="math inline">\(z &lt; z_{\alpha}\)</span>，所以不拒绝零假设<span class="math inline">\(H_0\)</span>。</li>
+<ol>
+<li><strong>Step 1</strong>: 设置假设：$H_0: \mu=6$ vs $H_1:\mu&gt;6$;\</li>
+<li><strong>Step 2</strong>: 设置$\alpha$，比如说等于0.05，然后从下表中查出其临界值为：$z_{\alpha}=1.645$ <img src="/images/253.png" alt=""></li>
+<li><strong>Step 3</strong>: 计算样本的均值和标准差：<img src="/images/254.png" alt=""></li>
+<li><strong>Step 4</strong>: 计算检测统计值：<script type="math/tex; mode=display">
+z=\frac{\overline{x}-\mu_0}{\sigma_{\overline{x}}}=\frac{5.572-6}{6.287/\sqrt{20}}=-0.304</script></li>
+<li><strong>Step 5</strong>: 做决策：由于$z &lt; z_{\alpha}$，所以不拒绝零假设$H_0$。</li>
 </ol>
 </blockquote>
-<h2 id="t-test">t-test</h2>
-<p>依旧先给一个图：<img src="/images/255.png" /> 如果 <span class="math inline">\(\overline{x}\)</span> 是正态分布的话，则<span class="math inline">\(t=\frac{\overline{x}-\mu_0}{s_x}\)</span>服从 t 分布（因为<span class="math inline">\(s_x\)</span>是一个估计值，因此是另一个随机变量的输出）。<br />
-这意味着，对于t检验，我们使用t分布的表格来找出𝑡的值。这个表比上面那个累积正态表复杂一丢丢，这里大概说一下怎么查。<br />
-首先这个t分布表长这样：<img src="/images/256.png" /> <span class="math inline">\(t_{\alpha}\)</span>是基于<span class="math inline">\((n-1)\)</span>的，这个值称为自由度degree of freedom (df)。<br />
-举个例子，比如说样本尺寸是7，单尾，则<span class="math inline">\(t_{0.05}\)</span>为1.9432。<br />
-</p>
-<h1 id="two-sample-case-for-the-mean">Two sample case for the mean</h1>
-<p>上面的都是单样本的情况，这里开始介绍双样本，字面意思，就是两个样本（好像在说废话。。。。）。<br />
-跟上面的区别还是有点大的，主要有以下两个方面：<br />
-</p>
+<h2 id="t-test"><a href="#t-test" class="headerlink" title="t-test"></a>t-test</h2><p>依旧先给一个图：<img src="/images/255.png" alt=""><br>如果 $\overline{x}$ 是正态分布的话，则$t=\frac{\overline{x}-\mu_0}{s_x}$服从 t 分布（因为$s_x$是一个估计值，因此是另一个随机变量的输出）。\<br>这意味着，对于t检验，我们使用t分布的表格来找出𝑡的值。这个表比上面那个累积正态表复杂一丢丢，这里大概说一下怎么查。\<br>首先这个t分布表长这样：<img src="/images/256.png" alt=""><br>$t_{\alpha}$是基于$(n-1)$的，这个值称为自由度degree of freedom (df)。\<br>举个例子，比如说样本尺寸是7，单尾，则$t_{0.05}$为1.9432。\</p>
+<h1 id="Two-sample-case-for-the-mean"><a href="#Two-sample-case-for-the-mean" class="headerlink" title="Two sample case for the mean"></a>Two sample case for the mean</h1><p>上面的都是单样本的情况，这里开始介绍双样本，字面意思，就是两个样本（好像在说废话。。。。）。\<br>跟上面的区别还是有点大的，主要有以下两个方面：\</p>
 <blockquote>
-<ol type="1">
-<li>假设不同，举两个例子：<br />
-  女学生的GPA平均值是否要高于男学生；<br />
-  在数据科学领域，女性的工资平均值是否高于男性；<br />
-</li>
-<li>情况不同：<br />
-  样本独立：<br />
-    方差已知；<br />
-    方差未知：<br />
-      总体方差未知但总体方差相等；<br />
-      总体方差未知但总体方差不相等；<br />
-      总体方差未知，也不知道它们的关系。<br />
-  样本不独立。</li>
+<ol>
+<li>假设不同，举两个例子：\<br> &emsp; 女学生的GPA平均值是否要高于男学生；\<br> &emsp; 在数据科学领域，女性的工资平均值是否高于男性；\</li>
+<li>情况不同：\<br> &emsp; 样本独立：\<br> &emsp; &emsp; 方差已知；\<br> &emsp; &emsp; 方差未知：\<br> &emsp; &emsp; &emsp; 总体方差未知但总体方差相等；\<br> &emsp; &emsp; &emsp; 总体方差未知但总体方差不相等；\<br> &emsp; &emsp; &emsp; 总体方差未知，也不知道它们的关系。\<br> &emsp; 样本不独立。</li>
 </ol>
 </blockquote>
 <p>以下对上面情况进行分别讨论。</p>
-<h2 id="样本独立方差已知">样本独立，方差已知</h2>
-<p>方差已知的话就是z-test了。<br />
-两总体均值差异为：<span class="math inline">\(\overline{X}-\overline{Y}\sim \mathcal{N}(\mu_X-\mu_Y,\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m})\)</span>，其中<span class="math inline">\(n,m\)</span>分别为<span class="math inline">\(X,Y\)</span>两样本的大小。<br />
-上面这个复杂的正态分布也可以写为：<span class="math inline">\(\frac{\overline{X}-\overline{Y}-(\mu_X-\mu_Y)}{\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}}\sim \mathcal{N}(0,1)\)</span>，其实就是z-score。<br />
-所以，当<span class="math inline">\(H_0\)</span>为真时，即 <span class="math inline">\(\mu_X-\mu_Y=0\)</span> 时，z-test的统计量为： <span class="math display">\[
-z=\frac{\overline{X}-\overline{Y}}{\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}}
-\]</span></p>
-<h2 id="样本独立方差未知">样本独立，方差未知</h2>
-<p>方差未知即是用t-test。</p>
-<h3 id="case-1方差相等">case 1：方差相等</h3>
-<p>方差相等即：<span class="math inline">\(\mu_X^2=\mu_Y^2\)</span>。<br />
-测试统计量为：<span class="math inline">\(t=\frac{(\overline{x}-\overline{y})}{s_{\overline{x}-\overline{y}}}\)</span>，其中： <span class="math display">\[
-s_{\overline{x}-\overline{y}}=\sqrt{s^2(\frac{1}{n}+\frac{1}{m})}
-\]</span> <span class="math display">\[
-s^2=\frac{\sum^n_{i=1}(x_i-\overline{x})^2+\sum^m_{j=1}(y_j-\overline{y})^2}{n+m-2}
-\]</span> 或： <span class="math display">\[
-s^2=\frac{(n-1)s_x^2+(m-1)s_y^2}{n+m-2}
-\]</span> <span class="math display">\[
-df=n+m-2
-\]</span></p>
-<h3 id="case-2方差不相等">case 2：方差不相等</h3>
-<p>方差不相等即：<span class="math inline">\(\mu_X^2\neq\mu_Y^2\)</span>。<br />
-测试统计量为：<span class="math inline">\(t=\frac{(\overline{x}-\overline{y})}{s_{\overline{x}-\overline{y}}}\)</span>，其中： <span class="math display">\[
-s_{\overline{x}-\overline{y}}=\sqrt{\frac{s_x^2}{n}+\frac{s_y^2}{m}}=\sqrt{s_{\overline{x}}^2+s_{\overline{y}}^2}
-\]</span> <span class="math display">\[
-df = \frac{(s_{\overline{x}}^2+s_{\overline{y}}^2)^2}{\frac{(s_{\overline{x}}^2)^2}{n-1}+\frac{(s_{\overline{y}}^2)^2}{m-1}}
-\]</span><br />
-<strong>上面两个case中：</strong><br />
-<span class="math inline">\(s_{\overline{x}}^2=\frac{s_x^2}{n};\quad s_{\overline{y}}^2=\frac{s_y^2}{m}; \quad s_x^2=\frac{\sum_{i=1}^n(x_i-\overline{x})^2}{n-1}; \quad s_y^2=\frac{\sum_{j=1}^m(y_j-\overline{y})^2}{m-1}\)</span></p>
-<h3 id="case-3方差关系未知">case 3：方差关系未知</h3>
-<p>这里我们不知道 <span class="math inline">\(\sigma_X^2\)</span> 和 <span class="math inline">\(\sigma_Y^2\)</span> 相不相等，首先用 <span class="math inline">\(F_{\max} test\)</span> 检测方差的相等关系。<br />
-这里简单补充下 <span class="math inline">\(F_{\max}test\)</span> 的相关内容。(这里仅补充这里需要用到的，更具体的看另一篇【F-test 方差分析】)。<br />
-</p>
-<h4 id="f_maxtest"><span class="math inline">\(F_{\max}test\)</span></h4>
-<p>F 检测是一种方差差异性检测。<br />
-测试统计量为：<span class="math inline">\(F=\frac{s_x^2}{s_y^2}\)</span>，一般把较大的放分子上。<br />
-F的临界值由以下三部分确定：<br />
-</p>
+<h2 id="样本独立，方差已知"><a href="#样本独立，方差已知" class="headerlink" title="样本独立，方差已知"></a>样本独立，方差已知</h2><p>方差已知的话就是z-test了。\<br>两总体均值差异为：$\overline{X}-\overline{Y}\sim \mathcal{N}(\mu_X-\mu_Y,\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m})$，其中$n,m$分别为$X,Y$两样本的大小。\<br>上面这个复杂的正态分布也可以写为：$\frac{\overline{X}-\overline{Y}-(\mu_X-\mu_Y)}{\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}}\sim \mathcal{N}(0,1)$，其实就是z-score。\<br>所以，当$H_0$为真时，即 $\mu_X-\mu_Y=0$ 时，z-test的统计量为：</p>
+<script type="math/tex; mode=display">
+z=\frac{\overline{X}-\overline{Y}}{\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}}</script><h2 id="样本独立，方差未知"><a href="#样本独立，方差未知" class="headerlink" title="样本独立，方差未知"></a>样本独立，方差未知</h2><p>方差未知即是用t-test。</p>
+<h3 id="case-1：方差相等"><a href="#case-1：方差相等" class="headerlink" title="case 1：方差相等"></a>case 1：方差相等</h3><p>方差相等即：$\mu_X^2=\mu_Y^2$。\<br>测试统计量为：$t=\frac{(\overline{x}-\overline{y})}{s_{\overline{x}-\overline{y}}}$，其中：</p>
+<script type="math/tex; mode=display">
+s_{\overline{x}-\overline{y}}=\sqrt{s^2(\frac{1}{n}+\frac{1}{m})}</script><script type="math/tex; mode=display">
+s^2=\frac{\sum^n_{i=1}(x_i-\overline{x})^2+\sum^m_{j=1}(y_j-\overline{y})^2}{n+m-2}</script><p>或：</p>
+<script type="math/tex; mode=display">
+s^2=\frac{(n-1)s_x^2+(m-1)s_y^2}{n+m-2}</script><script type="math/tex; mode=display">
+df=n+m-2</script><h3 id="case-2：方差不相等"><a href="#case-2：方差不相等" class="headerlink" title="case 2：方差不相等"></a>case 2：方差不相等</h3><p>方差不相等即：$\mu_X^2\neq\mu_Y^2$。\<br>测试统计量为：$t=\frac{(\overline{x}-\overline{y})}{s_{\overline{x}-\overline{y}}}$，其中：</p>
+<script type="math/tex; mode=display">
+s_{\overline{x}-\overline{y}}=\sqrt{\frac{s_x^2}{n}+\frac{s_y^2}{m}}=\sqrt{s_{\overline{x}}^2+s_{\overline{y}}^2}</script><script type="math/tex; mode=display">
+df = \frac{(s_{\overline{x}}^2+s_{\overline{y}}^2)^2}{\frac{(s_{\overline{x}}^2)^2}{n-1}+\frac{(s_{\overline{y}}^2)^2}{m-1}}</script><p>\<br><strong>上面两个case中：</strong>\<br>$s_{\overline{x}}^2=\frac{s_x^2}{n};\quad s_{\overline{y}}^2=\frac{s_y^2}{m}; \quad s_x^2=\frac{\sum_{i=1}^n(x_i-\overline{x})^2}{n-1}; \quad s_y^2=\frac{\sum_{j=1}^m(y_j-\overline{y})^2}{m-1}$</p>
+<h3 id="case-3：方差关系未知"><a href="#case-3：方差关系未知" class="headerlink" title="case 3：方差关系未知"></a>case 3：方差关系未知</h3><p>这里我们不知道 $\sigma_X^2$ 和 $\sigma_Y^2$ 相不相等，首先用 $F_{\max} test$ 检测方差的相等关系。\<br>这里简单补充下 $F_{\max}test$ 的相关内容。(这里仅补充这里需要用到的，更具体的看另一篇【F-test 方差分析】)。\</p>
+<h4 id="F-max-test"><a href="#F-max-test" class="headerlink" title="$F_{\max}test$"></a>$F_{\max}test$</h4><p>F 检测是一种方差差异性检测。\<br>测试统计量为：$F=\frac{s_x^2}{s_y^2}$，一般把较大的放分子上。\<br>F的临界值由以下三部分确定：\</p>
 <blockquote>
-<ol type="1">
-<li>置信度<span class="math inline">\(\alpha\)</span>；</li>
-<li>分子的自由度<span class="math inline">\(df\)</span>；</li>
-<li>分母的自由度<span class="math inline">\(df\)</span>。</li>
+<ol>
+<li>置信度$\alpha$；</li>
+<li>分子的自由度$df$；</li>
+<li>分母的自由度$df$。</li>
 </ol>
 </blockquote>
-<p>根据这三个条件就可以查表了，由于F检测更多的是确定置信区间，所以要记得下面这个等式。 <span class="math display">\[
-\frac{1}{F_{1-\frac{\alpha}{2}},m,n}=F_{\frac{\alpha}{2},n,m}
-\]</span> (注意这里 <span class="math inline">\(m,n\)</span> 的顺序)。<br />
-决策依据是：<br />
-</p>
+<p>根据这三个条件就可以查表了，由于F检测更多的是确定置信区间，所以要记得下面这个等式。</p>
+<script type="math/tex; mode=display">
+\frac{1}{F_{1-\frac{\alpha}{2}},m,n}=F_{\frac{\alpha}{2},n,m}</script><p>(注意这里 $m,n$ 的顺序)。\<br>决策依据是：\</p>
 <blockquote>
-<ol type="1">
-<li>拒绝<span class="math inline">\(H_0\)</span>: <span class="math inline">\(F&gt;F_{\frac{\alpha}{2}} \quad \rightarrow s_x^2 &gt; s_y^2\)</span>；<br />
-</li>
-<li>拒绝<span class="math inline">\(H_0\)</span>: <span class="math inline">\(F&lt; F_{1-\frac{\alpha}{2}} \quad \rightarrow s_x^2 &lt; s_y^2\)</span>；<br />
-</li>
+<ol>
+<li>拒绝$H_0$: $F&gt;F_{\frac{\alpha}{2}} \quad \rightarrow s_x^2 &gt; s_y^2$；\</li>
+<li>拒绝$H_0$: $F&lt; F_{1-\frac{\alpha}{2}} \quad \rightarrow s_x^2 &lt; s_y^2$；\</li>
 </ol>
 </blockquote>
-<p>置信区域如下：<img src="/images/258.png" /> 这里简单推导一下这个等式的由来。<br />
-设<span class="math inline">\(F\sim F(n,m)\)</span>，则<span class="math inline">\(\frac{1}{F}\sim F(m,n)\)</span>。若 <span class="math display">\[
-P\left\{ F&gt;F_{1-\frac{\alpha}{2}}(n,m)\right\}=1-\frac{\alpha}{2}
-\]</span> 即： <span class="math display">\[
-P\left\{ F&lt; F_{1-\frac{\alpha}{2}}(n,m)\right\}=\frac{\alpha}{2}
-\]</span> 则有： <span class="math display">\[
-P\left\{ \frac{1}{F}&gt;\frac{1}{F_{1-\frac{\alpha}{2}}(n,m)}\right\}=\frac{\alpha}{2}
-\]</span> 由于<span class="math inline">\(\frac{1}{F}\sim F(m,n)\)</span>，转换一下就有： <span class="math display">\[
-P\left\{ \frac{1}{F}&gt;{F_{\frac{\alpha}{2}}(m,n)}\right\}=\frac{\alpha}{2}
-\]</span> 所以就得到了上面的等式： <span class="math display">\[
-\frac{1}{F_{1-\frac{\alpha}{2}},m,n}=F_{\frac{\alpha}{2},n,m}
-\]</span></p>
-<p><strong>回到 case 3</strong><br />
-运用F-test 进行方差检测，即：<br />
-</p>
+<p>置信区域如下：<img src="/images/258.png" alt=""><br>这里简单推导一下这个等式的由来。\<br>设$F\sim F(n,m)$，则$\frac{1}{F}\sim F(m,n)$。若</p>
+<script type="math/tex; mode=display">
+P\left\{ F>F_{1-\frac{\alpha}{2}}(n,m)\right\}=1-\frac{\alpha}{2}</script><p>即：</p>
+<script type="math/tex; mode=display">
+P\left\{ F< F_{1-\frac{\alpha}{2}}(n,m)\right\}=\frac{\alpha}{2}</script><p>则有：</p>
+<script type="math/tex; mode=display">
+P\left\{ \frac{1}{F}>\frac{1}{F_{1-\frac{\alpha}{2}}(n,m)}\right\}=\frac{\alpha}{2}</script><p>由于$\frac{1}{F}\sim F(m,n)$，转换一下就有：</p>
+<script type="math/tex; mode=display">
+P\left\{ \frac{1}{F}>{F_{\frac{\alpha}{2}}(m,n)}\right\}=\frac{\alpha}{2}</script><p>所以就得到了上面的等式：</p>
+<script type="math/tex; mode=display">
+\frac{1}{F_{1-\frac{\alpha}{2}},m,n}=F_{\frac{\alpha}{2},n,m}</script><p><strong>回到 case 3</strong>\<br>运用F-test 进行方差检测，即：\</p>
 <blockquote>
-<ol type="1">
-<li><p><span class="math inline">\(H_0\)</span>: <span class="math inline">\(\sigma_X^2=\sigma_Y^2\)</span> 或 <span class="math inline">\(\frac{\sigma_X^2}{\sigma_Y^2}=1\)</span><br />
-</p></li>
-<li><p><span class="math inline">\(H_1\)</span>: <span class="math inline">\(\sigma_X^2 \neq \sigma_Y^2\)</span> 或 <span class="math inline">\(\frac{\sigma_X^2}{\sigma_Y^2}\neq 1\)</span><br />
-(non-directional / two-tailed)</p></li>
+<ol>
+<li><p>$H_0$: $\sigma_X^2=\sigma_Y^2$ 或 $\frac{\sigma_X^2}{\sigma_Y^2}=1$\</p>
+</li>
+<li><p>$H_1$: $\sigma_X^2 \neq \sigma_Y^2$ 或 $\frac{\sigma_X^2}{\sigma_Y^2}\neq 1$\<br>(non-directional / two-tailed)</p>
+</li>
 </ol>
 </blockquote>
 <p>然后根据 F-test 的结果用上面 case 1 或者 case 2 的方法继续下去。</p>
-<h4 id="case-3-的一个例子">case 3 的一个例子</h4>
-<p>现在有两个导师A，B教同一门课，现在要探究哪个导数教的学生成绩更好。有以下数据：</p>
+<h4 id="case-3-的一个例子"><a href="#case-3-的一个例子" class="headerlink" title="case 3 的一个例子"></a>case 3 的一个例子</h4><p>现在有两个导师A，B教同一门课，现在要探究哪个导数教的学生成绩更好。有以下数据：</p>
+<div class="table-container">
 <table>
 <thead>
-<tr class="header">
-<th style="text-align: center;"></th>
-<th style="text-align: center;">amount</th>
-<th style="text-align: center;">average</th>
-<th style="text-align: center;">Standard deviation</th>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">amount</th>
+<th style="text-align:center">average</th>
+<th style="text-align:center">Standard deviation</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: center;">A</td>
-<td style="text-align: center;">7</td>
-<td style="text-align: center;">87</td>
-<td style="text-align: center;">15</td>
+<tr>
+<td style="text-align:center">A</td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">87</td>
+<td style="text-align:center">15</td>
 </tr>
-<tr class="even">
-<td style="text-align: center;">B</td>
-<td style="text-align: center;">7</td>
-<td style="text-align: center;">80</td>
-<td style="text-align: center;">10</td>
+<tr>
+<td style="text-align:center">B</td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">10</td>
 </tr>
 </tbody>
 </table>
-<p>A导师说他更厉害，那我们现在就想检测他说的是不是真的。<br />
-首先我们要检测两总体的方差是否相等：<span class="math inline">\(H_0:\sigma_A^2=\sigma_B^2\)</span> vs <span class="math inline">\(H_1:\sigma_A^2\neq \sigma_B^2\)</span>;<br />
-</p>
+</div>
+<p>A导师说他更厉害，那我们现在就想检测他说的是不是真的。\<br>首先我们要检测两总体的方差是否相等：$H_0:\sigma_A^2=\sigma_B^2$ vs $H_1:\sigma_A^2\neq \sigma_B^2$; \</p>
 <blockquote>
-<ol type="1">
-<li><span class="math inline">\(F_{\max}\)</span>test：<span class="math inline">\(F=\frac{s_A^2}{s_B^2}=\frac{15^2}{10^2}=2.25\)</span>；<br />
-</li>
-<li>A, B 两类均有7个样本，则自由度均为：<span class="math inline">\(df=n-1=7-1=6\)</span>；<br />
-</li>
-<li>选取 <span class="math inline">\(\alpha\)</span> 值，这里令 <span class="math inline">\(\alpha = 0.05\)</span>，寻找寻找分子分母自由度均为6的边界值 <span class="math inline">\(F_{cv}\)</span>；<br />
-</li>
-<li>从下面这个表中读取边界值：<img src="/images/257.png" /> 边界值 <span class="math inline">\(F_{\alpha/2}=5.82\)</span>，即<span class="math inline">\(F_{1-\alpha/2}=\frac{1}{5.82}=0.17\)</span></li>
-<li>由于 <span class="math inline">\(F\)</span> 是位于0.17和5.82之间的，所以接受零假设，<span class="math inline">\(\sigma_A^2=\sigma_B^2\)</span>。</li>
+<ol>
+<li>$F_{\max}$test：$F=\frac{s_A^2}{s_B^2}=\frac{15^2}{10^2}=2.25$；\</li>
+<li>A, B 两类均有7个样本，则自由度均为：$df=n-1=7-1=6$；\</li>
+<li>选取 $\alpha$ 值，这里令 $\alpha = 0.05$，寻找寻找分子分母自由度均为6的边界值 $F_{cv}$；\</li>
+<li>从下面这个表中读取边界值：<img src="/images/257.png" alt=""><br>边界值 $F_{\alpha/2}=5.82$，即$F_{1-\alpha/2}=\frac{1}{5.82}=0.17$</li>
+<li>由于 $F$ 是位于0.17和5.82之间的，所以接受零假设，$\sigma_A^2=\sigma_B^2$。</li>
 </ol>
 </blockquote>
-<p>我们得出了方差相等，现在继续往下，为验证导师A的话，做出如下新的假设：<br />
-</p>
+<p>我们得出了方差相等，现在继续往下，为验证导师A的话，做出如下新的假设：\</p>
 <blockquote>
-<ol type="1">
-<li><span class="math inline">\(H_0: \mu_A=\mu_B\)</span> vs <span class="math inline">\(H_1: \mu_A&gt;\mu_B\)</span>，用case 1的方法;<br />
-</li>
-<li>计算：<span class="math inline">\(s_{\overline{A}-\overline{B}}=\sqrt{\frac{(n-1)s_A^2+(m-1)s_B^2}{n+m-2}(\frac{1}{n}+\frac{1}{m})}=6.81\)</span><br />
-</li>
-<li>t 的统计量为：<span class="math inline">\(t=\frac{87-80}{6.81}=1.03\)</span>，自由度为：7+7-2=12;<br />
-</li>
-<li>边界值为（one tailed）：<span class="math inline">\(t_{0.05,12}=1.782\)</span>；<br />
-</li>
+<ol>
+<li>$H_0: \mu_A=\mu_B$ vs $H_1: \mu_A&gt;\mu_B$，用case 1的方法;\</li>
+<li>计算：$s_{\overline{A}-\overline{B}}=\sqrt{\frac{(n-1)s_A^2+(m-1)s_B^2}{n+m-2}(\frac{1}{n}+\frac{1}{m})}=6.81$\</li>
+<li>t 的统计量为：$t=\frac{87-80}{6.81}=1.03$，自由度为：7+7-2=12; \</li>
+<li>边界值为（one tailed）：$t_{0.05,12}=1.782$；\</li>
 <li>决策：由于 1.03 &lt; 1.782，我们接受零假设，导师A的说法不靠谱。</li>
 </ol>
 </blockquote>
-<p>另外多说一点，如果上面的数据，其它不变，但样本都变成700的话，就会发现导师A的说法是可信的，这个自行计算。<br />
-值得注意的是，如果样本 n 很大，我们也可以用 z-test，700已经足够大了，有700个自由度的 t 分布已经很接近于正态分布了。<br />
-</p>
+<p>另外多说一点，如果上面的数据，其它不变，但样本都变成700的话，就会发现导师A的说法是可信的，这个自行计算。\<br>值得注意的是，如果样本 n 很大，我们也可以用 z-test，700已经足够大了，有700个自由度的 t 分布已经很接近于正态分布了。\</p>
 
     </div>
 
@@ -516,8 +425,8 @@ P\left\{ \frac{1}{F}&gt;{F_{\frac{\alpha}{2}}(m,n)}\right\}=\frac{\alpha}{2}
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/posts/20.html" rel="prev" title="卡尔曼滤波（Kalman Filter）">
-      <i class="fa fa-chevron-left"></i> 卡尔曼滤波（Kalman Filter）
+    <a href="/posts/18.html" rel="prev" title="【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍">
+      <i class="fa fa-chevron-left"></i> 【ML-2020/21】Generative Adversarial Network (GAN) --- Part-1 基本介绍
     </a></div>
       <div class="post-nav-item">
     <a href="/posts/22.html" rel="next" title="方差分析">
@@ -582,7 +491,7 @@ P\left\{ \frac{1}{F}&gt;{F_{\frac{\alpha}{2}}(m,n)}\right\}=\frac{\alpha}{2}
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#one-sample-case-for-the-mean"><span class="nav-number">2.</span> <span class="nav-text">One sample case for the mean</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#z-test"><span class="nav-number">2.1.</span> <span class="nav-text">z-test</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="nav-number">2.1.1.</span> <span class="nav-text">一个例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#t-test"><span class="nav-number">2.2.</span> <span class="nav-text">t-test</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#two-sample-case-for-the-mean"><span class="nav-number">3.</span> <span class="nav-text">Two sample case for the mean</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E7%8B%AC%E7%AB%8B%E6%96%B9%E5%B7%AE%E5%B7%B2%E7%9F%A5"><span class="nav-number">3.1.</span> <span class="nav-text">样本独立，方差已知</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E7%8B%AC%E7%AB%8B%E6%96%B9%E5%B7%AE%E6%9C%AA%E7%9F%A5"><span class="nav-number">3.2.</span> <span class="nav-text">样本独立，方差未知</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#case-1%E6%96%B9%E5%B7%AE%E7%9B%B8%E7%AD%89"><span class="nav-number">3.2.1.</span> <span class="nav-text">case 1：方差相等</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#case-2%E6%96%B9%E5%B7%AE%E4%B8%8D%E7%9B%B8%E7%AD%89"><span class="nav-number">3.2.2.</span> <span class="nav-text">case 2：方差不相等</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#case-3%E6%96%B9%E5%B7%AE%E5%85%B3%E7%B3%BB%E6%9C%AA%E7%9F%A5"><span class="nav-number">3.2.3.</span> <span class="nav-text">case 3：方差关系未知</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#f_maxtest"><span class="nav-number">3.2.3.1.</span> <span class="nav-text">\(F_{\max}test\)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#case-3-%E7%9A%84%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="nav-number">3.2.3.2.</span> <span class="nav-text">case 3 的一个例子</span></a></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#One-sample-case-for-the-mean"><span class="nav-number">2.</span> <span class="nav-text">One sample case for the mean</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#z-test"><span class="nav-number">2.1.</span> <span class="nav-text">z-test</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="nav-number">2.1.1.</span> <span class="nav-text">一个例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#t-test"><span class="nav-number">2.2.</span> <span class="nav-text">t-test</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Two-sample-case-for-the-mean"><span class="nav-number">3.</span> <span class="nav-text">Two sample case for the mean</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E7%8B%AC%E7%AB%8B%EF%BC%8C%E6%96%B9%E5%B7%AE%E5%B7%B2%E7%9F%A5"><span class="nav-number">3.1.</span> <span class="nav-text">样本独立，方差已知</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E7%8B%AC%E7%AB%8B%EF%BC%8C%E6%96%B9%E5%B7%AE%E6%9C%AA%E7%9F%A5"><span class="nav-number">3.2.</span> <span class="nav-text">样本独立，方差未知</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#case-1%EF%BC%9A%E6%96%B9%E5%B7%AE%E7%9B%B8%E7%AD%89"><span class="nav-number">3.2.1.</span> <span class="nav-text">case 1：方差相等</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#case-2%EF%BC%9A%E6%96%B9%E5%B7%AE%E4%B8%8D%E7%9B%B8%E7%AD%89"><span class="nav-number">3.2.2.</span> <span class="nav-text">case 2：方差不相等</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#case-3%EF%BC%9A%E6%96%B9%E5%B7%AE%E5%85%B3%E7%B3%BB%E6%9C%AA%E7%9F%A5"><span class="nav-number">3.2.3.</span> <span class="nav-text">case 3：方差关系未知</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#F-max-test"><span class="nav-number">3.2.3.1.</span> <span class="nav-text">$F_{\max}test$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#case-3-%E7%9A%84%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="nav-number">3.2.3.2.</span> <span class="nav-text">case 3 的一个例子</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -598,14 +507,14 @@ P\left\{ \frac{1}{F}&gt;{F_{\frac{\alpha}{2}}(m,n)}\right\}=\frac{\alpha}{2}
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -633,7 +542,7 @@ P\left\{ \frac{1}{F}&gt;{F_{\frac{\alpha}{2}}(m,n)}\right\}=\frac{\alpha}{2}
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
