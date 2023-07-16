@@ -1,6 +1,229 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Diffusion Probabilistic Models (DPMs)</title>
+    <url>/posts/42.html</url>
+    <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>The concept of the diffusion probability model was initially proposed by Jascha Sohl-Dickstein et al. in 2015. However, due to limitations in hardware devices such as memory at that time, this model did not receive much attention. Thanks to the development of technology, especially the advancements in GPUs and memory devices in recent years, the diffusion model has started to gain recognition. </p>
+<span id="more"></span>
+<p>In the past two years, the diffusion model has emerged as a generative model, and its performance has amazed people, leading to a significant increase in research efforts and the production of high-quality papers.</p>
+<p>The graph below illustrates the increasing level of attention the diffusion model has received in 2022, showcasing its importance:</p>
+<p><img src="../images/379.png" alt=""></p>
+<p>Understanding the classic paper on diffusion probability models is essential for anyone interested in working with such models. Unlike other neural networks, diffusion probability models involve a significant amount of mathematical background knowledge. This blog post aims to explain the most crucial parts of the model using simple language.</p>
+<p>Before diving in, I would like to express my gratitude for the development of the Internet, which has allowed me to easily access high-quality blogs and videos. These resources have played a vital role in helping me understand diffusion probability models. The references to these resources are provided at the end of this post. If you find any inaccuracies or areas that need improvement in my content, please feel free to contact me via email. High-quality communication is the foundation of progress.</p>
+<h1 id="Diffusion-process-and-Reverse-process"><a href="#Diffusion-process-and-Reverse-process" class="headerlink" title="Diffusion process and Reverse process"></a>Diffusion process and Reverse process</h1><p>The diffusion probability model consists of two main components: the diffusion process and the reverse diffusion process. To simplify the explanation (although not entirely accurate), we can illustrate it using an image. In the diffusion process, noise is continually added to the image until it becomes a completely noisy image, as shown in the figure below:</p>
+<p><img src="../images/380.png" alt=""></p>
+<p><em>The data distribution (left) undergoes Gaussian diffusion, which gradually transforms it into an identity-covariance Gaussian (right)</em></p>
+<p>On the other hand, the reverse diffusion process involves obtaining the target image from a noisy image, as depicted in the figure below:</p>
+<p><img src="../images/381.png" alt=""></p>
+<p><em>An identity-covariance Gaussian (right) undergoes a Gaussian diffusion process with learned mean and covariance functions, and is gradually transformed back into the data distribution (left).</em></p>
+<h2 id="Diffusion-process"><a href="#Diffusion-process" class="headerlink" title="Diffusion process"></a>Diffusion process</h2><p><em>“In probability theory and statistics, diffusion processes are a class of continuous-time Markov process with almost surely continuous sample paths.”</em></p>
+<p align="right">---- Wikipedia</p>
+
+<p>This definition is like a master of ambiguity, saying everything and yet saying nothing at all, let’s attempt to dissect this definition and break it down into simpler terms.</p>
+<p><strong>First is the <em>Markov process</em>.</strong> A Markov process is characterized by its memorylessness property, which means that the conditional probability of the process depends only on its current state and is independent of its past history or future states:</p>
+<script type="math/tex; mode=display">
+p(X_{t_n}|X_{t_{n-1}}, ... , X_{t_0})=p(X_{t_n}|X_{t_{n-1}})\qquad \forall t_0 <t_1<...<t_{n-1}<t_n</script><p><strong>Then is <em>continuous sample paths</em>.</strong> If all possible observed trajectories of a process can be observed as continuous, we say that it has continuous sample paths. This means that the process does not exhibit abrupt jumps or discontinuities in its observed behavior over time.</p>
+<p>Any diffusion process can be described using a stochastic differential equation (SDE) in the following form:</p>
+<script type="math/tex; mode=display">
+dX_t = a(X_t, t)dt+\sigma(X_t, t)dWt</script><p>where $a$ is the drift coefficient, $\sigma$ is the diffusion coefficient and W is the Wiener process. And the Wiener process introduces (continuous) randomness with independent Gaussian increments, that is:</p>
+<script type="math/tex; mode=display">
+dW_t\approx W_{t+dt}-W_t \sim \mathcal{N}(0, dt)</script><p>In an alternative representation, difussion function can be written as:</p>
+<script type="math/tex; mode=display">
+X_{t+dt}-X_t \approx a(X_t,t)dt+\sigma(X_t,t)U \qquad where\quad U\sim \mathcal{N}(0,dt)</script><p>that is:</p>
+<script type="math/tex; mode=display">
+X_{t+dt}\approx X_t+a(X_t, t)dt+U' \qquad where \quad U'\sim \mathcal{N}(0,\sigma^2(X_t,t)dt)</script><p>As we can observe, the state at the next time step is equal to the state at the current time step plus a deterministic drift term and a stochastic diffusion term. The diffusion term is defined by a normal random variable, with the variance proportional to the square of the diffusion coefficient. Therefore, the diffusion coefficient represents the intensity of the randomness to be applied.</p>
+<p>Here, let’s borrow an illustration from Joseph’s blog to provide a more visual explanation of the effects of the drift term and the diffusion term:</p>
+<p><img src="../images/382.png" title="" alt="" width="632"></p>
+<p>From this, we can observe that the drift term provides a trend or direction, while the diffusion term introduces randomness. A higher diffusion coefficient implies greater randomness or variability in the process. In other words, a larger diffusion coefficient leads to increased levels of random fluctuations, making the process more unpredictable and volatile.</p>
+<p><strong>Additionally, when the absolute value of the drift coefficient is less than 1 ($|a|&lt;1$), it is referred to as the contracting drift coefficient.</strong></p>
+<p>When a diffusion process has a “contracting” drift coefficient and a non-zero diffusion coefficient, it can gradually transform data from a complex distribution to a set of independent Gaussian noises. </p>
+<p>Here, let’s take the example of one-dimensional data, where the drift coefficient and diffusion coefficient are represented by $\sqrt{1-p}$ and $\sqrt{p}$  respectively ($p &lt;1$). Although this is not a rigorous proof, it provides an intuitive understanding of the concept:</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+X_T&=\sqrt{1-p}X_{T-1}+\sqrt{p}u_T \\
+   &= (\sqrt{1-p})^2X_{T-2}+\sqrt{1-p}\sqrt{p}u_{T-1}+\sqrt{p}u_T \\
+&= ... \\
+&= (\sqrt{1-p})^TX_0+\sum^{T-1}_{i=0}\sqrt{p}(\sqrt{1-p})^iu_{T-i}    \\
+&= (\sqrt{1-p})^TX_0+\sqrt{p}\sum^{T-1}_{i=0}(\sqrt{1-p})^iu_{T-i}\\
+&= (\sqrt{1-p})^TX_0+\sqrt{p}\sum^{T-1}_{i=0}\mathcal{N}(0,(1-p)^i\sigma)\\
+&= (\sqrt{1-p})^TX_0+\sqrt{p}\mathcal{N}(0,\frac{1-(1-p)^T}{1-(1-p)}\sigma)\\
+&= (\sqrt{1-p})^TX_0+\sqrt{1-(1-p)^T}\mathcal{z}_T\\
+\end{aligned}</script><p>where $\mathcal{z}$ is Gussian Distribution $\mathcal{N}(0, \sigma)$.</p>
+<p>Let’s further set $\sigma$ as $I$, and $(1-p)^T$ as $\overline{\alpha}_T$. that is:</p>
+<script type="math/tex; mode=display">
+X_T = \mathcal{N}(X_T;\sqrt{\overline{\alpha}_T}X_0,(1-\overline{\alpha}_T)I)</script><p>Let’s write it in a more general form (just for the sake of elegance):</p>
+<script type="math/tex; mode=display">
+q(x_t|x_0)=\mathcal{N}(x_t;\sqrt{\overline{\alpha}_t}x_0,(1-\overline{\alpha}_t)I)</script><p>Now we have a relationship between $x_0$ and $x_t$.</p>
+<p>According to the properties of the Wiener process, all the Gaussians in the diffusion term are independent. Therefore, as $T$ approaches infinity, we can obtain the following result:</p>
+<script type="math/tex; mode=display">
+(\sqrt{1-p})^T \stackrel{T\rightarrow \infty}{\rightarrow}  0</script><script type="math/tex; mode=display">
+\sqrt{1-(1-p)^T} \stackrel{T\rightarrow\infty}{\rightarrow}1</script><p>(<strong>Note:</strong> Always remember, this is a Wiener process, and the Gaussians are independent.)</p>
+<p>That is:</p>
+<blockquote>
+<p>Given a sufficiently long period of time or a sufficiently large number of iterations, we can transform any initial input into a standard normal distribution.</p>
+</blockquote>
+<p>Although this is 1-D situation, but the same reasoning can be extended to multidimensional data, such as images. In the context of diffusion processes in higher dimensions, such as image data, the concept of independent Gaussians still holds. Each pixel or voxel in the image can be considered as a random variable, and the diffusion process introduces independent Gaussian fluctuations to each of these variables. As time progresses, the diffusion and drift terms act collectively to transform the initial image distribution into a set of independent Gaussian distributions at each pixel or voxel. This property is crucial in various applications, including image denoising, segmentation, and other image processing tasks based on diffusion probability models.</p>
+<p>We performed a series of calculations based on 1-D above to illustrate that the following mathematical form</p>
+<script type="math/tex; mode=display">
+X_T=\sqrt{1-p}X_{T-1}+\sqrt{p}u_T</script><p>is reasonable, that is, the input signal can be transformed into an independent Gaussian distribution through a series of operations. The same form is also applicable in high dimensions, but Another question, is p always the same? Obviously not, p is always changing (the reason will be mentioned later), so we can write a more general form:</p>
+<script type="math/tex; mode=display">
+q(x_t|x_{t-1})=\mathcal{N}(x_t;\sqrt{1-p_t}x_{t-1},p_tI)</script><p>$p_t$ indicates at each step the trade-off between information to be kept from the previous step and noise to be added.</p>
+<p>And in other form (The following formula is easy to prove, which is omitted here):</p>
+<script type="math/tex; mode=display">
+q(x_t|x_0)=\mathcal{N}(x_t;\sqrt{\overline{\alpha}_t}x_0,(1-\overline{\alpha}_t)I)</script><script type="math/tex; mode=display">
+q(x_t|x_{t-1})=\mathcal{N}(x_t;\sqrt{\alpha_t}x_{t-1},(1-\alpha_t)I)</script><p>where:</p>
+<script type="math/tex; mode=display">
+\alpha_t=(1-p_t) \qquad and \qquad \overline{\alpha}_t=\prod_{t=1}^{t}\alpha
+_t=\prod_{t=1}^t(1-p_t) \qquad and\qquad 
+\{\alpha_t \in (0,1)\}_{t=1}^T</script><p>This is the essence of the diffusion process: using it, we can gradually transform data from a complex distribution into isotropic Gaussian noise. This process is relatively straightforward. However, if we want to reverse this process and transform simple distributions into complex ones, it becomes very challenging. Starting from a noisy image, we are unable to recover the underlying structure. </p>
+<p><img src="../images/383.png" alt=""></p>
+<p>Diffusion provides us with a progressive and structured approach to transform data from complex distributions to isotropic Gaussian noise.</p>
+<p><img src="../images/384.png" alt=""></p>
+<p>(<strong>Note:</strong> <em>Generally, in setting the diffusion coefficient, it is common to gradually decrease the coefficient over time. This approach is often referred to as annealing or annealed diffusion.</em></p>
+<p><em>The purpose of reducing the diffusion coefficient over time is to control the rate of diffusion and achieve a more controlled and structured restoration process. By starting with a higher diffusion coefficient, the restoration process initially allows for more randomness and exploration in the diffusion, which helps to break down complex distributions. As the diffusion progresses, the coefficient is gradually reduced, leading to a decrease in the amount of randomness and emphasizing the preservation of important structures and details</em>.)</p>
+<h2 id="Reverse-process"><a href="#Reverse-process" class="headerlink" title="Reverse process"></a>Reverse process</h2><p>There is an interesting question: While theoretically, it is possible to directly achieve the final image restoration from a noisy image by combining multiple recovery steps into one large step, there are several reasons why it is not practical or necessary to do so. Some of the main reasons are:</p>
+<ol>
+<li><p>Computational Complexity: Performing a single large step that encompasses all the recovery operations can be computationally intensive and time-consuming. It may require significantly more resources and processing power, making it impractical for real-time or resource-constrained applications.</p>
+</li>
+<li><p>Information Loss: Each intermediate step in the progressive recovery process provides valuable information and constraints that guide the restoration process. By merging all the steps into one, we might lose this valuable information, resulting in a suboptimal or less accurate final result.</p>
+</li>
+<li><p>Convergence and Stability: The progressive nature of the step-by-step recovery allows for better convergence and stability. It enables the algorithm to refine the restoration iteratively, gradually improving the quality of the image. By attempting to accomplish the entire process in one large step, we may encounter convergence issues or unstable behavior, leading to inferior results.</p>
+</li>
+<li><p>Interpretability and Control: Breaking down the recovery process into smaller steps allows for better interpretability and control. Each step can be individually analyzed, adjusted, or optimized based on specific requirements or prior knowledge. It provides a more fine-grained approach to understand and address the challenges in the restoration process.</p>
+</li>
+<li><p>Each recovery step in the progressive restoration process may not be entirely different from the others. It is possible to use a single model with different parameters to represent each recovery step. This approach allows us to leverage the shared knowledge and capabilities of the model while adapting its behavior to different stages of the restoration process.</p>
+</li>
+</ol>
+<p>Overall, while it may seem feasible to combine all the recovery steps into a single large step, the step-by-step approach offers practical advantages in terms of computational efficiency, information preservation, convergence, stability, interpretability, and control.</p>
+<p>And now back to our main part: reverse process. In the process of recovering the original data from Gaussian noise, we can make the assumption that it follows a Gaussian distribution as well. However, we can’t simply fit the distribution step by step (well, we could try using a Gaussian Mixture Model, but let’s not get into that complexity). Instead, we need to construct a parameterized distribution to make estimations. Reverse process is also a process of Markov chain.</p>
+<p>That is:</p>
+<script type="math/tex; mode=display">
+p_{\theta}(X_{T-1}|X_T)=\mathcal{N}(X_{T-1}; \mu_{\theta}(X_T, T),\Sigma_{\theta}(X_T,T))</script><p>$\mu_{\theta}$ and $\Sigma_{\theta}$ represent two networks respectively. </p>
+<p>Now let’s review the diffusion process again, but this time we focus on the posterior probability. </p>
+<p>Diffusion Conditional Probability of the Posterior $q(X_{T-1}|X_T, X_0)$ can be expressed by formul, that means, we can cauculate $X_{T-1}$ given $X_T$ and $X_0$.</p>
+<p>(<strong>Note</strong>: $X_0$ is required here)</p>
+<p>Assume:</p>
+<script type="math/tex; mode=display">
+q(X_{T-1}|X_T,X_0)=\mathcal{N}(X_{T-1};\widetilde{\mu}(X_T,X_0),\widetilde{\beta}_TI)</script><p>Using Bayes’ rule, we have:</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+q(X_{T-1}|X_T,X_0)&=q(X_T|X_{T-1},X_0)\frac{q(X_{T-1}|X_0)}{q(X_T|X_0)}\\
+                  &\propto \exp(-\frac{1}{2}(\frac{(X_T-\sqrt{\alpha_T}X_{T-1})^2}{1-\alpha_T}+\frac{(X_{T-1}-\sqrt{\overline{\alpha}_{T-1}}X_0)^2}{1-\overline{\alpha}_{T-1}}-
+\frac{(X_{T}-\sqrt{\overline{\alpha}_T}X_0)^2}{1-\overline{\alpha}_T}))\\
+&= \exp(-\frac{1}{2}((\frac{\alpha_T}{1-\alpha_T}+\frac{1}{1-\overline{\alpha}_{T-1}})X_{T-1}^2
+-(\frac{2\sqrt{\alpha_T}}{1-\alpha_T}X_T+\frac{2\sqrt{\overline{\alpha}_{T-1}}}{1-
+\overline{\alpha}_{T-1}}X_0)X_{T-1}+C(X_T,X_0)))
+\end{aligned}</script><p>In the midst of this journey, we encounter a series of steps involving the diffusion equation, the Markov chain, and the following relationship:</p>
+<script type="math/tex; mode=display">
+q(X_{1:T}|X_0)=\prod_{t=1}^Tq(X_t|X_{t-1})</script><script type="math/tex; mode=display">
+ax^2+bx=a(x+\frac{b}{2a})^2+C</script><p>Probability Density Function of Gaussian Distribution:</p>
+<script type="math/tex; mode=display">
+f(x)=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x-\mu)^2}{2\sigma^2}}</script><p>Following the standard Gaussian density function, the variance $\widetilde{\beta}_t$ and the mean $\widetilde{\mu}_t(x_t,x_0)$ can be parameterized as follows ($t$ here is same as $T$ above):</p>
+<script type="math/tex; mode=display">
+\widetilde{\beta}_t=\frac{1}{\frac{\alpha_t}{1-\alpha_t}+\frac{1}{1
+-\overline{\alpha}_{t-1}}}=\frac{1-\overline{\alpha}
+_{t-1}}{1-\overline{\alpha}_t}(1-\alpha_t)</script><script type="math/tex; mode=display">
+\widetilde{\mu}_t(x_t,x_0)=(\frac{\sqrt{\alpha_t}}{\beta_t}X_t+
+\frac{\sqrt{\overline{\alpha}_t}}{1-\overline{\alpha}_t}X_0)/
+(\frac{\alpha_t}{\beta_t}+\frac{1}{1-\overline{\alpha}_{t-1}})=
+\frac{\sqrt{\alpha_t}(1-\overline{\alpha}_{t-1})}{1-\overline{\alpha}_t}X_t
++\frac{\sqrt{\overline{\alpha}_{t-1}}(1-\alpha_t)}{1-\overline{\alpha}_t}X_0</script><p>Based on the relationship between $x_0$ and $x$ mentioned earlier, we have:</p>
+<script type="math/tex; mode=display">
+X_0=\frac{1}{\sqrt{\overline{\alpha}_T}}(X_T-\sqrt{1-\overline{\alpha}_T}\mathcal{z}_T)</script><p>We insert the $X_0$ here into $q(X_{T-1}|X_T, X_0)$ , then we could have a new mean-value-expression(the process is very complex and typing the formula here is also too troublesome…). But we could know that, there is no more $X_0$ here but occurs a noise-term, and base on it, we could design a Neural Network. </p>
+<p>the result is(<em>Intermediate steps are omitted</em>.):</p>
+<script type="math/tex; mode=display">
+\widetilde{\mu}_t = \frac{1}{\sqrt{\alpha_t}}(X_t-\frac{1-\alpha_t}{\sqrt{
+ 1-\overline{\alpha}_t
+}}z_t)</script><p>Now let’s put them aside, and back to our flow. If we want to optimize the network, one of the most important thing is: Loss Function. And since we focus on the reverse process, that is, we want to optimize the reverse process, so the function must be related to $\mu_{\theta}$ and $\Sigma_{\theta}$.  But here we use another form: $-\log p_{\theta}(x_0)$, and we plus a KL divergence to build the upper bound(since KL divergence is always great than 0):</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+
+-\log p_{\theta}(x_0) &\leqslant -\log p_{\theta}(x_0)+D_{KL}(q(x_{1:T}|x_0)
+||p_{\theta}(x_{1:T}|x_0)) \\
+&= -\log p_{\theta}(x_0) + \mathbb{E}_{x_{1:T}\sim q(x_{1:T}|x_0)}[\log \frac
+{q(x_{1:T}|x_0)}{p_{\theta}(x_{0:T})/p_{\theta}(x_0)}]\\
+&= -\log p_{\theta}(x_0) + \mathbb{E}_q[\log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{0:T})}
++\log p_{\theta}(x_0)]\\
+&= \mathbb{E}_q[\log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{0:T})}
+]
+
+\end{aligned}</script><p>Let:</p>
+<script type="math/tex; mode=display">
+L_{VLB}=\mathbb{E}_{q(x_{0:T})}[\log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{0:T})}]
+\geqslant -\mathbb{E}_{q(x_0)}\log p_{\theta}(x_0)</script><p>Further:</p>
+<p><img src="D:\blog\source\images\385.png" alt=""></p>
+<p>The first term here doesn’t depend on $\theta$, so we don’t need to consider about it, the last term is easy to optimise and can be combined with the second term. </p>
+<p>Now what we need to do is to train the reverse process and find $\mu_{\theta}$ , $\Sigma_{\theta}$ to minimise the upper bound:</p>
+<script type="math/tex; mode=display">
+\mathbb{E}_q(\sum_{t=2}^TD_{KL}(q(x_{t-1}|x_t, x_0)||p_{\theta}(x_{t-1}
+|x_t))-\log p_{\theta}(x_0|x_1))</script><p>In the paper, $\Sigma_{\theta}$ is setted as a contant, which is related to $(1-\alpha_t)$, so we don’t have to train it. What we need to do for now is to train a mean value.</p>
+<p>So here, we let:</p>
+<script type="math/tex; mode=display">
+\Sigma_{\theta}(x_t, t)=\sigma_t^2I \qquad where \qquad \sigma_t^2=
+\frac{1-\overline{\alpha}_{t-1}}{1-\overline{\alpha}_t}(1-\alpha_t)</script><p>The variance of  $p_{\theta}(x_{t-1}|x_t)$  is related to the variance of $q(x_{t-1}|x_t,x_0)$. </p>
+<p>Let’s keep going, now the function is:</p>
+<script type="math/tex; mode=display">
+\mathbb{E}_q[\frac{1}{2\sigma_t^2}|| \widetilde{\mu}_t(x_t, x_0)-\mu_{\theta}(x_t, t) ||^2]+C</script><p>Throught the calculation above, we got the expression for $\widetilde{\mu}_t(x_t, x_0)$ :</p>
+<script type="math/tex; mode=display">
+\widetilde{\mu}_t = \frac{1}{\sqrt{\alpha_t}}(x_t-\frac{1-\alpha_t}{\sqrt{
+ 1-\overline{\alpha}_t
+}}z_t)</script><p>By using Renormalization, we have:</p>
+<script type="math/tex; mode=display">
+\mu_{\theta}(x_t, t)=\frac{1}{\sqrt{\alpha_t}}(x_t-\frac{(1-\alpha_t)}{\sqrt{
+    1-\overline{\alpha}_t
+}}z_{\theta}(x_t, t)</script><p>and now we have:</p>
+<script type="math/tex; mode=display">
+\mathbb{E}[\frac{(1-\alpha_t)^2}{2\sigma_t^2\alpha_t(1-\overline{\alpha}_t)}
+||z_t-z_{\theta}(x_t, t)||^2
+]+C</script><p><em>(This is the formula that surprised me the most. Every step along the way makes sense, but here, is it actually minimizing the distance between the noise and the model? ? ? ? I still need some time to understand this step, I always feel weird)</em></p>
+<p>Then the author found that if the coefficients are dropped, the training will be more stable and better, so we have:</p>
+<script type="math/tex; mode=display">
+L_{simple}(\theta)=\mathbb{E}_{t, x_0, z}[||z-z_{\theta}(\sqrt{\overline{
+    \alpha
+}_t}x_0+\sqrt{1-\overline{
+    \alpha
+}_t}z,t)||^2]</script><p>This is what we need to optimize!</p>
+<h1 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h1><p>The code part can refer to this: <a href="https://colab.research.google.com/drive/1XmvnGgWg1GY8HSVscAA_LKJfXWXtWR1y?usp=sharing">Google Colab</a></p>
+<p><em>(Note: I didn’t add any comments, because the parameter names are basically the same as the names of the formulas in the blog. Comments may be added later)</em></p>
+<p>The code effect is shown in the figure below:</p>
+<p><img src="../images/difussion.gif" alt=""></p>
+<h3 id="Additions-wiener-process"><a href="#Additions-wiener-process" class="headerlink" title="Additions: wiener process"></a>Additions: wiener process</h3><p><em>(If you’re not interested in delving into the details, you can skip this part. For understanding the diffusion probability model, it is sufficient to grasp the concept that “the Wiener process introduces (continuous) randomness with independent Gaussian increments.”)</em></p>
+<p>The Wiener process is often associated with Brownian motion, and these two concepts can be considered equivalent. However, some sources argue that the Wiener process is a standard form of Brownian motion. Here, we won’t delve into the precise definitions of these terms but focus more on the properties of the Wiener process.</p>
+<p>The Wiener process is a <strong>stochastic process, and its basic probability distribution at any given time $t$ follows a normal distribution with a mean of 0 and a variance of</strong> $t$. That is:</p>
+<script type="math/tex; mode=display">
+W(t)\sim \mathcal{N}(0, t)</script><p>Mean is an extremely important property of distribution because it tells you where the center of the distribution is.</p>
+<p>Another important property of the Wiener process is that <strong>each increment of the process is also normally distributed</strong>, that is:</p>
+<script type="math/tex; mode=display">
+W(t)-W(s)\sim \mathcal{N}(0, t-s)</script><p>Where $t$ and $s$ are two distinct time points, with $t&gt;s$.</p>
+<p>In addition to the mentioned properties, the Wiener process has several other important characteristics:</p>
+<ul>
+<li><p>Variance $(W(t)-W(s))=t-s$</p>
+</li>
+<li><p>Covariance $(W(t), W(s))=Min(t,s)$</p>
+</li>
+<li><p>Wiener process is a Markov Process</p>
+</li>
+<li><p>Wiener process is continuous, not differentiable</p>
+</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] <a href="https://medium.com/fintechexplained/what-is-brownian-motion-36de732b1645">What Is Brownian Motion?. Explaining Wiener Process — A Must-Know… | by Farhad Malik | FinTechExplained | Medium</a></p>
+<p>[2] <a href="https://towardsdatascience.com/understanding-diffusion-probabilistic-models-dpms-1940329d6048">Understanding Diffusion Probabilistic Models (DPMs) | by Joseph Rocca | Towards Data Science</a></p>
+<p>[3] <a href="https://arxiv.org/pdf/1503.03585.pdf">Deep Unsupervised Learning using Nonequilibrium Thermodynamics (arxiv.org)</a></p>
+<p>[4] <a href="https://www.bilibili.com/video/BV1b541197HX/?spm_id_from=333.880.my_history.page.click&amp;vd_source=60a30fcab490c05a3a49048140bf284a">54、Probabilistic Diffusion Model概率扩散模型理论与完整PyTorch代码详细解读_哔哩哔哩_bilibili</a></p>
+]]></content>
+      <categories>
+        <category>学习总结</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Summary — “Continual learning strategies for cancer-independent detection of lymphnode metastases”</title>
+    <url>/posts/39.html</url>
+    <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1>]]></content>
+      <categories>
+        <category>学习总结</category>
+      </categories>
+  </entry>
+  <entry>
     <title>【LeetCode】排序(未完。。。)</title>
     <url>/posts/32.html</url>
     <content><![CDATA[<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>就只是各种排序的总结，并附上基础代码，供自己随时查阅。<br><span id="more"></span></p>
@@ -1163,15 +1386,19 @@ y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)+p_1(r^2+2y^2)+2P_2xy</script><p>这里�
       </categories>
   </entry>
   <entry>
-    <title>支持向量机（SVM）</title>
+    <title>支持向量机(SVM)</title>
     <url>/posts/13.html</url>
-    <content><![CDATA[<h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>对于上一篇提到的风险（Risk）：<script type="math/tex">R(w)\leq R_{emp}(w)+\epsilon(N,p^*,h)</script>其中$N$是训练数据量，$p^*$是到达边界的概率，$h$是VC维度。<br><span id="more"></span><br>\<br>为了最小化风险，经典的机器学习算法是：</p>
+    <content><![CDATA[<h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>对于上一篇提到的风险（Risk）：</p>
+<script type="math/tex; mode=display">
+R(w)\leq R_{emp}(w)+\epsilon(N,p^*,h)</script><p>其中$N$是训练数据量，$p^*$是到达边界的概率，$h$是VC维度。</p>
+<span id="more"></span>
+<p>为了最小化风险，经典的机器学习算法是：</p>
 <blockquote>
-<p>固定$\epsilon(…)$，最小化经验风险$R_{emp}$\<br>其中$\epsilon(…)$是通过保证一些模型参数不变以固定的，比如说神经网络的隐藏层数量。</p>
+<p>固定$\epsilon(…)$，最小化经验风险$R_{emp}$<br>其中$\epsilon(…)$是通过保证一些模型参数不变以固定的，比如说神经网络的隐藏层数量。</p>
 </blockquote>
 <p>支持向量机（SVM）的做法则是：</p>
 <blockquote>
-<p>保证$R_{emp}(w)$固定以最小化$\epsilon$\<br>当数据可分时，$R_{emp}(w)=0$。\<br>通过改变VC维度以控制$\epsilon$。</p>
+<p>保证$R_{emp}(w)$固定以最小化$\epsilon$<br>当数据可分时，$R_{emp}(w)=0$。<br>通过改变VC维度以控制$\epsilon$。</p>
 </blockquote>
 <p>支持向量机一般分为三类：</p>
 <blockquote>
@@ -1183,7 +1410,7 @@ y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)+p_1(r^2+2y^2)+2P_2xy</script><p>这里�
 </blockquote>
 <p>对于二分类问题：</p>
 <blockquote>
-<p>输入空间：欧式空间或离散集合\<br>特征空间：欧式空间或希尔伯特空间</p>
+<p>输入空间：欧式空间或离散集合<br>特征空间：欧式空间或希尔伯特空间</p>
 </blockquote>
 <p>线性可分支持向量机、线性支持向量机：</p>
 <blockquote>
@@ -1195,49 +1422,152 @@ y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)+p_1(r^2+2y^2)+2P_2xy</script><p>这里�
 </blockquote>
 <p><strong>支持向量机的学习是在特征空间进行的</strong>。</p>
 <p>（这篇会有不少补充推导，这些过程其实看不看都没事，不想看的话就直接记结论。看了，能减少学习过程中的疑惑，不看，也不会对SVM的理解产生大的影响）</p>
-<h1 id="线性SVM"><a href="#线性SVM" class="headerlink" title="线性SVM"></a>线性SVM</h1><h2 id="硬间隔最大化"><a href="#硬间隔最大化" class="headerlink" title="硬间隔最大化"></a>硬间隔最大化</h2><p>直白地说，就是找一个（超）平面，使其距离最近数据点的距离最大，就是最大化下图这个$margin$。<br><img src="https://img-blog.csdnimg.cn/2021072008164997.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>为了最大化这个margin，我们首先要找到一个超平面，使数据得到线性分离：<script type="math/tex">y_i(\pmb{w}^T\pmb{x}_i+b)\ge1 \quad \forall i</script>并且让至少一个点满足$y_i(\pmb{w}^T\pmb{x}_i+b)=1$。<br>然后这个间隔就是$\frac{1}{||w||}$。</p>
+<h1 id="线性SVM"><a href="#线性SVM" class="headerlink" title="线性SVM"></a>线性SVM</h1><h2 id="硬间隔最大化"><a href="#硬间隔最大化" class="headerlink" title="硬间隔最大化"></a>硬间隔最大化</h2><p>直白地说，就是找一个（超）平面，使其距离最近数据点的距离最大，就是最大化下图这个$margin$。<br><img src="https://img-blog.csdnimg.cn/2021072008164997.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" title="" alt="在这里插入图片描述" data-align="center"><br>为了最大化这个margin，我们首先要找到一个超平面，使数据得到线性分离：</p>
+<script type="math/tex; mode=display">
+y_i(\pmb{w}^T\pmb{x}_i+b)\ge1 \quad \forall i</script><p>并且让至少一个点满足$y_i(\pmb{w}^T\pmb{x}_i+b)=1$。<br>然后这个间隔就是$\frac{1}{||w||}$。</p>
 <p>———————————————————————————————————————</p>
 <p>补充1</p>
-<p><strong>上面的（不）等式怎么来的，这里的1又是什么，为什么间隔会是这个？</strong><br>我们要找到最大间隔分类器，就是要找一个合适的参数$w,b$，使其满足：<script type="math/tex">\max margin(w,b)</script> <script type="math/tex">s.t.\quad y_i(\pmb{w}^T\pmb{x}_i+b)>0</script>稍微解释一下这个约束条件：这里有个前提是我们已经把数据分类好了，因为线性可分，其经验风险为0，$y_i$与括号里的式子同号，相乘大于0。<br>再多说一点，点到超平面的距离表示分类预测的确信程度，$w^Tx+b$与标签符号是否一致表示分类的准确性，所以$y(w^Tx+b)$表示分类的正确性和确信度。<br>这里定义一下这个$margin$函数如下：<script type="math/tex">margin(w,b)=\min\limits_{w,b,x_i,i=1...N} distant(w,b,x_i)</script>也就是说我们要找到距离（超）平面最近的那个点所对应的距离。<br>然后点到（超）平面的距离为（距离公式之前那篇分类问题里有用到）：<script type="math/tex">distant=\frac{1}{||\pmb{w}||}|\pmb{w}^Tx_i+b|</script>也就是说，间隔公式可以写为：<script type="math/tex">margin(w,b)=\min\limits_{w,b,x_i,i=1...N} \frac{1}{||\pmb{w}||}|\pmb{w}^Tx_i+b|</script>即是说，最上面我们要处理的问题就变为：<script type="math/tex">\max\limits_{w,b} \min\limits_{x_i,i=1...N}\frac{1}{||\pmb{w}||}|\pmb{w}^Tx_i+b|</script> <script type="math/tex">s.t.\quad y_i(\pmb{w}^T\pmb{x}_i+b)>0</script>因为绝对值符号有点碍眼，根据其约束条件我们可以将其改写成：<script type="math/tex">\max\limits_{w,b} \min\limits_{x_i,i=1...N}\frac{1}{||\pmb{w}||}y_i(\pmb{w}^Tx_i+b)</script>因为我们要求的是最大值对应的参数，所以这里加个系数也无所谓（或许这里写成$argmax$之类的会更好理解？）。\<br>继续改写！\<br>前面那个$\frac{1}{||\pmb{w}||}$跟$\min$无关，所以可以前移，然后对于约束条件，因为左式大于0，所以我们肯定能找到一个$\gamma$，使左式最小值等于$\gamma$，即是：<script type="math/tex">\max\limits_{w,b} \frac{1}{||\pmb{w}||}\min\limits_{x_i,i=1...N}y_i(\pmb{w}^Tx_i+b)</script> <script type="math/tex">s.t.\quad \exists \gamma   \min\limits_{x_i,y_i,i=1,...,N} y_i(\pmb{w}^T\pmb{x}_i+b)=\gamma</script> 令$\gamma=1$，将约束条件带入我们要处理的式子，就可以写成：<script type="math/tex">\max\limits_{w,b} \frac{1}{||\pmb{w}||}</script> <script type="math/tex">s.t.\quad   \min\limits_{x_i,y_i,i=1,...,N} y_i(\pmb{w}^T\pmb{x}_i+b)=1</script><br>为什么这里可以让$\gamma=1$呢？因为这相当于超平面的等比例缩放，取1只是为了方便计算而已，要有闲情逸致的话，取个3.1415926都行。\<br>继续改写约束条件!\<br>这个最小值的等式我们可以用不等式代替，然后这个求最大值的我们也可以用最小值代替，分子分母换位而已，即：<script type="math/tex">arg\min\limits_{w,b} \frac{1}{2}w^Tw</script> <script type="math/tex">s.t.\quad   y_i(\pmb{w}^T\pmb{x}_i+b)\ge1 \quad for \quad \forall i=1,...,N</script>这里乘上$\frac{1}{2}$，又把根号去掉，只是为了方便后面计算，毕竟我们要的是$w,b$，不要求计算实际最大值，所以这无所谓。这是一个典型的凸二次规划问题：有$N$个约束条件，目标函数是二次的。\<br>至此，我们就知道上面的1和（不）等式是什么东西，以及间隔为什么会是$\frac{1}{||w||}$了。</p>
+<p><strong>上面的（不）等式怎么来的，这里的1又是什么，为什么间隔会是这个？</strong><br>我们要找到最大间隔分类器，就是要找一个合适的参数$w,b$，使其满足：</p>
+<script type="math/tex; mode=display">
+\max margin(w,b)</script><script type="math/tex; mode=display">
+s.t.\quad y_i(\pmb{w}^T\pmb{x}_i+b)>0</script><p>稍微解释一下这个约束条件：这里有个前提是我们已经把数据分类好了，因为线性可分，其经验风险为0，$y_i$与括号里的式子同号，相乘大于0。<br>再多说一点，点到超平面的距离表示分类预测的确信程度，$w^Tx+b$与标签符号是否一致表示分类的准确性，所以$y(w^Tx+b)$表示分类的正确性和确信度。<br>这里定义一下这个$margin$函数如下：</p>
+<script type="math/tex; mode=display">
+margin(w,b)=\min\limits_{w,b,x_i,i=1...N} distant(w,b,x_i)</script><p>也就是说我们要找到距离（超）平面最近的那个点所对应的距离。<br>然后点到（超）平面的距离为（距离公式之前那篇分类问题里有用到）：</p>
+<script type="math/tex; mode=display">
+distant=\frac{1}{||\pmb{w}||}|\pmb{w}^Tx_i+b|</script><p>也就是说，间隔公式可以写为：</p>
+<script type="math/tex; mode=display">
+margin(w,b)=\min\limits_{w,b,x_i,i=1...N} \frac{1}{||\pmb{w}||}|\pmb{w}^Tx_i+b|</script><p>即是说，最上面我们要处理的问题就变为：</p>
+<script type="math/tex; mode=display">
+\max\limits_{w,b} \min\limits_{x_i,i=1...N}\frac{1}{||\pmb{w}||}|\pmb{w}^Tx_i+b|</script><script type="math/tex; mode=display">
+s.t.\quad y_i(\pmb{w}^T\pmb{x}_i+b)>0</script><p>因为绝对值符号有点碍眼，根据其约束条件我们可以将其改写成：</p>
+<script type="math/tex; mode=display">
+\max\limits_{w,b} \min\limits_{x_i,i=1...N}\frac{1}{||\pmb{w}||}y_i(\pmb{w}^Tx_i+b)</script><p>因为我们要求的是最大值对应的参数，所以这里加个系数也无所谓（或许这里写成$argmax$之类的会更好理解？）。<br>继续改写！<br>前面那个$\frac{1}{||\pmb{w}||}$跟$\min$无关，所以可以前移，然后对于约束条件，因为左式大于0，所以我们肯定能找到一个$\gamma$，使左式最小值等于$\gamma$，即是：</p>
+<script type="math/tex; mode=display">
+\max\limits_{w,b} \frac{1}{||\pmb{w}||}\min\limits_{x_i,i=1...N}y_i(\pmb{w}^Tx_i+b)</script><script type="math/tex; mode=display">
+s.t.\quad \exists \gamma \min\limits_{x_i,y_i,i=1,...,N} y_i(\pmb{w}^T\pmb{x}_i+b)=\gamma</script><p>令$\gamma=1$，将约束条件带入我们要处理的式子，就可以写成：</p>
+<script type="math/tex; mode=display">
+\max\limits_{w,b} \frac{1}{||\pmb{w}||}</script><script type="math/tex; mode=display">
+s.t.\quad \min\limits_{x_i,y_i,i=1,...,N} y_i(\pmb{w}^T\pmb{x}_i+b)=1</script><p>为什么这里可以让$\gamma=1$呢？因为这相当于超平面的等比例缩放，取1只是为了方便计算而已，要有闲情逸致的话，取个3.1415926都行。<br>继续改写约束条件!<br>这个最小值的等式我们可以用不等式代替，然后这个求最大值的我们也可以用最小值代替，分子分母换位而已，即：</p>
+<script type="math/tex; mode=display">
+arg\min\limits_{w,b} \frac{1}{2}w^Tw</script><script type="math/tex; mode=display">
+s.t.\quad y_i(\pmb{w}^T\pmb{x}_i+b)\ge1 \quad for \quad \forall i=1,...,N</script><p>这里乘上$\frac{1}{2}$，又把根号去掉，只是为了方便后面计算，毕竟我们要的是$w,b$，不要求计算实际最大值，所以这无所谓。这是一个典型的凸二次规划问题：有$N$个约束条件，目标函数是二次的。<br>至此，我们就知道上面的1和（不）等式是什么东西，以及间隔为什么会是$\frac{1}{||w||}$了。</p>
 <p>——————————————————————————————————————</p>
-<p><strong>支持向量（Support vectors）</strong>：所有位于边缘的点，即满足：$y_i(\pmb{w}^T\pmb{x}_i+b)=1$的点。<br>现在计算以下优化问题(写法上跟上面补充内容有一丁点不一样，但意思是一样的)：<script type="math/tex">arg\min\limits_{w,b} \frac{1}{2}||w||^2</script> <script type="math/tex">s.t. \quad y_i(\pmb{w}^T\pmb{x}_i+b)-1\ge0 \quad \forall i</script>带约束条件的优化问题依旧是拉格朗日,如下：<br><img src="https://img-blog.csdnimg.cn/20210720095426527.png#pic_center" alt="在这里插入图片描述"><br>要最小化上面这个$L(w,b,\alpha)$，即是要同时对$b,w$求偏导并令偏导等于0，如下：<br><img src="https://img-blog.csdnimg.cn/20210720100108960.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>现在还剩个$\alpha_i$。<br>在这里，只有在边缘点$\alpha_i$是不为0的，其余点的$\alpha_i$都等于0，比如下面这张图：<br><img src="https://img-blog.csdnimg.cn/20210720100607658.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>只有圈出的那三个点的$\alpha_i$是有意义的。所以SVM是一个稀疏（sparse）的学习机，分类只取决于少数的点。<br>要求解这个$\alpha_i$，我们就要引进这个问题的对偶问题。</p>
+<p><strong>支持向量（Support vectors）</strong>：</p>
+<p>所有位于边缘的点，即满足：$y_i(\pmb{w}^T\pmb{x}_i+b)=1$的点。<br>现在计算以下优化问题(写法上跟上面补充内容有一丁点不一样，但意思是一样的)：</p>
+<script type="math/tex; mode=display">
+arg\min\limits_{w,b} \frac{1}{2}||w||^2</script><script type="math/tex; mode=display">
+s.t. \quad y_i(\pmb{w}^T\pmb{x}_i+b)-1\ge0 \quad \forall i</script><p>带约束条件的优化问题依旧是拉格朗日,如下：<br><img src="https://img-blog.csdnimg.cn/20210720095426527.png#pic_center" alt="在这里插入图片描述"><br>要最小化上面这个$L(w,b,\alpha)$，即是要同时对$b,w$求偏导并令偏导等于0，如下：<br><img src="https://img-blog.csdnimg.cn/20210720100108960.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>现在还剩个$\alpha_i$。<br>在这里，只有在边缘点$\alpha_i$是不为0的，其余点的$\alpha_i$都等于0，比如下面这张图：<br><img src="https://img-blog.csdnimg.cn/20210720100607658.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>只有圈出的那三个点的$\alpha_i$是有意义的。所以SVM是一个稀疏（sparse）的学习机，分类只取决于少数的点。<br>要求解这个$\alpha_i$，我们就要引进这个问题的对偶问题。</p>
 <p>———————————————————————————————————————</p>
 <p>补充2——拉格朗日对偶</p>
-<p>在约束最优化问题中，常常利用拉格朗日对偶性(Lagrange duality)将原始问题转换为对偶问题，通过解对偶问题得到原始问题的解。<br>比如说，现有原始问题：<br>设$f(x),c(x),h(x)$是定义在$\mathcal{R}^n$上的连续可微函数：<script type="math/tex">\min\limits_{x\in \mathcal{R}^n}f(x)</script> <script type="math/tex">s.t. \quad c_i(x)\leq0,\quad i=1,...,k</script> <script type="math/tex">h_j(x)=0,\quad j=1,...,l</script><br>引入拉格朗日函数$\alpha_i,\beta_j$为乘子$\alpha_i\ge0$:<script type="math/tex">L(x,\alpha,\beta)=f(x)+\sum_{i=1}^{k}\alpha_ic_i(x)+\sum_{j=1}^{l}\beta_jh_j(x)</script>考虑$x$的函数，$P$为原始问题：<script type="math/tex">\theta_P(x)=\max\limits_{\alpha,\beta,\alpha_i\ge0}L(x,\alpha,\beta)</script>假定给定一个$x$，如果$x$违反约束条件，即：<script type="math/tex">c_i(x)>0\quad h_j(x)\ne0</script>则 <script type="math/tex">\theta_P(x)=\max\limits_{\alpha,\beta,\alpha_i\ge0}[f(x)+\sum_{i=1}^{k}\alpha_ic_i(x)+\sum_{j=1}^{l}\beta_jh_j(x)]=+\infty</script>即（这个结论下面需要用到）：<br><img src="https://img-blog.csdnimg.cn/20210720162958878.png#pic_center" alt="在这里插入图片描述"><br>考虑极小问题：<script type="math/tex">\min\limits_{x}\theta_P(x)=\min\limits_{x}\max\limits_{\alpha,\beta,\alpha_i\ge0}L(x,\alpha,\beta)</script>这个极小问题与原始的最优化问题等价<script type="math/tex">p^*=\min\limits_{x}\theta_P(x)</script><br><strong>原始问题</strong>变为：<script type="math/tex">\min\limits_{x}\theta_P(x)=\min\limits_{x}\max\limits_{\alpha,\beta,\alpha_i\ge0}L(x,\alpha,\beta)</script>称为广义拉格朗日函数的极小极大问题，定义最优解为$p^*=\min\limits_{x}\theta_P(x)$。</p>
-<p><strong>对偶问题</strong>为：<br>定义：$\theta_D(\alpha,\beta)=\min L(x,\alpha,\beta)$<br>所以：<script type="math/tex">\max\limits_{\alpha,\beta,\alpha_i\ge0}\theta_D(\alpha,\beta)=\max\limits_{\alpha,\beta,\alpha_i\ge0}\min\limits_xL(x,\alpha,\beta)</script>称为广义拉格朗日函数的极大极小问题，约束条件为$\alpha_i\ge0,i=1,…,k$，这个称为原始问题的对偶问题，对偶问题的最优值为：<script type="math/tex">d^*=\max\limits_{\alpha,\beta,\alpha_i\ge0}\theta_D(\alpha,\beta)</script>若原始问题和对偶问题都有最优值，则：<script type="math/tex">d^*=\max\limits_{\alpha,\beta,\alpha_i\ge0}\min\limits_xL(x,\alpha,\beta)\leq \min\limits_{x}\max\limits_{\alpha,\beta,\alpha_i\ge0}L(x,\alpha,\beta)=p^*</script></p>
-<p>在SVM这里，对偶问题其实就可以表示为很直接的一个式子：<script type="math/tex">\max\min f(x)\leq \min\max f(x)</script>这个式子直观上就能理解，所以这里不解释。<br>这个不等式称为弱对偶关系，但在SVM我们要强对偶关系，也就是：<script type="math/tex">\max\min f(x)=\min\max f(x)</script>而凸优化的二次规划问题恰恰就满足强对偶条件。</p>
+<p>在约束最优化问题中，常常利用拉格朗日对偶性(Lagrange duality)将原始问题转换为对偶问题，通过解对偶问题得到原始问题的解。<br>比如说，现有原始问题：<br>设$f(x),c(x),h(x)$是定义在$\mathcal{R}^n$上的连续可微函数：</p>
+<script type="math/tex; mode=display">
+\min\limits_{x\in \mathcal{R}^n}f(x)</script><script type="math/tex; mode=display">
+s.t. \quad c_i(x)\leq0,\quad i=1,...,k</script><script type="math/tex; mode=display">
+h_j(x)=0,\quad j=1,...,l</script><p>引入拉格朗日函数$\alpha_i,\beta_j$为乘子$\alpha_i\ge0$:</p>
+<script type="math/tex; mode=display">
+L(x,\alpha,\beta)=f(x)+\sum_{i=1}^{k}\alpha_ic_i(x)+\sum_{j=1}^{l}\beta_jh_j(x)</script><p>考虑$x$的函数，$P$为原始问题：</p>
+<script type="math/tex; mode=display">
+\theta_P(x)=\max\limits_{\alpha,\beta,\alpha_i\ge0}L(x,\alpha,\beta)</script><p>假定给定一个$x$，如果$x$违反约束条件，即：</p>
+<script type="math/tex; mode=display">
+c_i(x)>0\quad h_j(x)\ne0</script><p>则 </p>
+<script type="math/tex; mode=display">
+\theta_P(x)=\max\limits_{\alpha,\beta,\alpha_i\ge0}[f(x)+\sum_{i=1}^{k}\alpha_ic_i(x)+\sum_{j=1}^{l}\beta_jh_j(x)]=+\infty</script><p>即（这个结论下面需要用到）：<br><img src="https://img-blog.csdnimg.cn/20210720162958878.png#pic_center" alt="在这里插入图片描述"><br>考虑极小问题：</p>
+<script type="math/tex; mode=display">
+\min\limits_{x}\theta_P(x)=\min\limits_{x}\max\limits_{\alpha,\beta,\alpha_i\ge0}L(x,\alpha,\beta)</script><p>这个极小问题与原始的最优化问题等价</p>
+<script type="math/tex; mode=display">
+p^*=\min\limits_{x}\theta_P(x)</script><p><strong>原始问题</strong>变为：</p>
+<script type="math/tex; mode=display">
+\min\limits_{x}\theta_P(x)=\min\limits_{x}\max\limits_{\alpha,\beta,\alpha_i\ge0}L(x,\alpha,\beta)</script><p>称为广义拉格朗日函数的极小极大问题，定义最优解为$p^*=\min\limits_{x}\theta_P(x)$。</p>
+<p><strong>对偶问题</strong>为：<br>定义：$\theta_D(\alpha,\beta)=\min L(x,\alpha,\beta)$<br>所以：</p>
+<script type="math/tex; mode=display">
+\max\limits_{\alpha,\beta,\alpha_i\ge0}\theta_D(\alpha,\beta)=\max\limits_{\alpha,\beta,\alpha_i\ge0}\min\limits_xL(x,\alpha,\beta)</script><p>称为广义拉格朗日函数的极大极小问题，约束条件为$\alpha_i\ge0,i=1,…,k$，这个称为原始问题的对偶问题，对偶问题的最优值为：</p>
+<script type="math/tex; mode=display">
+d^*=\max\limits_{\alpha,\beta,\alpha_i\ge0}\theta_D(\alpha,\beta)</script><p>若原始问题和对偶问题都有最优值，则：</p>
+<script type="math/tex; mode=display">
+d^*=\max\limits_{\alpha,\beta,\alpha_i\ge0}\min\limits_xL(x,\alpha,\beta)\leq \min\limits_{x}\max\limits_{\alpha,\beta,\alpha_i\ge0}L(x,\alpha,\beta)=p^*</script><p>在SVM这里，对偶问题其实就可以表示为很直接的一个式子：</p>
+<script type="math/tex; mode=display">
+\max\min f(x)\leq \min\max f(x)</script><p>这个式子直观上就能理解，所以这里不解释。<br>这个不等式称为弱对偶关系，但在SVM我们要强对偶关系，也就是：</p>
+<script type="math/tex; mode=display">
+\max\min f(x)=\min\max f(x)</script><p>而凸优化的二次规划问题恰恰就满足强对偶条件。</p>
 <p>————————————————————————————————————————</p>
-<p>也就是说，现在问题变成求以下优化问题：<script type="math/tex">\max\limits_{\alpha}\min\limits_{w,b}L(w,b,\alpha)$$$$s.t. \quad \alpha\ge0</script>现在问题就好算了。<br>在继续往下之前先对上面做个总结（上面的看着挺乱）：</p>
+<p>也就是说，现在问题变成求以下优化问题：</p>
+<script type="math/tex; mode=display">
+\max\limits_{\alpha}\min\limits_{w,b}L(w,b,\alpha)</script><script type="math/tex; mode=display">
+s.t. \quad \alpha\ge0</script><p>现在问题就好算了。<br>在继续往下之前先对上面做个总结（上面的看着挺乱）：</p>
 <ol>
-<li>首先我们要求解以下这个优化问题：<script type="math/tex">arg \min\limits_{w,b}\frac{1}{2}w^Tw$$$$s.t. \quad y_i(\pmb{w}^T\pmb{x}_i+b)\ge1 \quad for \quad \forall i=1,...,N</script></li>
-<li>用拉格朗日法进行去约束，变为：<script type="math/tex">\min\limits_{w,b}\max\limits_{\alpha}L(w,b,\alpha)$$$$s.t. \quad \alpha\ge0</script>这里再简单说一下，这个优化跟$w,b$已经无关了（这么说好像不太准确。。。），就是说，如果$y_i(\pmb{w}^T\pmb{x}_i+b)&lt;1$的话，根据上面补充（关于$+\infty$）的内容，值是等于$+\infty$的，再根据前面的最小约束，怎么都取不到这个值，所以不管$w,b$的值怎么取，结果都是等价于是在约束$y_i(\pmb{w}^T\pmb{x}_i+b)\ge1$里取，这是被上面拉格朗日的方程限制死的，所以我们不再需要考虑上面的约束了。</li>
-<li>根据强对偶关系，优化问题等价于：<script type="math/tex">\max\limits_{\alpha}\min\limits_{w,b}L(w,b,\alpha)$$$$s.t. \quad \alpha\ge0</script></li>
+<li><p>首先我们要求解以下这个优化问题：</p>
+<script type="math/tex; mode=display">
+arg \min\limits_{w,b}\frac{1}{2}w^Tw</script><script type="math/tex; mode=display">
+s.t. \quad y_i(\pmb{w}^T\pmb{x}_i+b)\ge1 \quad for \quad \forall i=1,...,N</script></li>
+<li><p>用拉格朗日法进行去约束，变为：</p>
+<script type="math/tex; mode=display">
+\min\limits_{w,b}\max\limits_{\alpha}L(w,b,\alpha)</script></li>
 </ol>
-<p>总结结束，继续\<br>对于这个优化问题就很容易求了，两次求导即可。上面我们已经有过一次求导了，把上面的结论写下来即是：<br><img src="https://img-blog.csdnimg.cn/20210720193528375.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>将其带入下面这个最开始的拉格朗日方程里：<br><img src="https://img-blog.csdnimg.cn/20210720195830686.png#pic_center" alt="在这里插入图片描述"><br>得到下面这个式子：<br><img src="https://img-blog.csdnimg.cn/20210720195959244.png#pic_center" alt="在这里插入图片描述"><br>这就是拉格朗日方程的最小值，再由于：<br><img src="https://img-blog.csdnimg.cn/20210720200724523.png#pic_center" alt="在这里插入图片描述"><br>继续改写成如下的式子<br><img src="https://img-blog.csdnimg.cn/20210720200849578.png#pic_center" alt="在这里插入图片描述"><br>这就是我们要最大化的东西。<br>这里我们要这么大费周章地推导求解对偶问题，主要是因为：</p>
+<script type="math/tex; mode=display">
+s.t. \quad \alpha\ge0</script><p>   这里再简单说一下，这个优化跟$w,b$已经无关了（这么说好像不太准确。。。），就是说，如果$y_i(\pmb{w}^T\pmb{x}_i+b)&lt;1$的话，根据上面补充（关于$+\infty$）的内容，值是等于$+\infty$的，再根据前面的最小约束，怎么都取不到这个值，所以不管$w,b$的值怎么取，结果都是等价于是在约束$y_i(\pmb{w}^T\pmb{x}_i+b)\ge1$里取，这是被上面拉格朗日的方程限制死的，所以我们不再需要考虑上面的约束了。</p>
+<ol>
+<li>根据强对偶关系，优化问题等价于：</li>
+</ol>
+<script type="math/tex; mode=display">
+\max\limits_{\alpha}\min\limits_{w,b}L(w,b,\alpha)</script><script type="math/tex; mode=display">
+s.t. \quad \alpha\ge0</script><p>总结结束，继续!<br>对于这个优化问题就很容易求了，两次求导即可。上面我们已经有过一次求导了，把上面的结论写下来即是：<br><img src="https://img-blog.csdnimg.cn/20210720193528375.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>将其带入下面这个最开始的拉格朗日方程里：<br><img src="https://img-blog.csdnimg.cn/20210720195830686.png#pic_center" alt="在这里插入图片描述"><br>得到下面这个式子：<br><img src="https://img-blog.csdnimg.cn/20210720195959244.png#pic_center" alt="在这里插入图片描述"><br>这就是拉格朗日方程的最小值，再由于：<br><img src="https://img-blog.csdnimg.cn/20210720200724523.png#pic_center" alt="在这里插入图片描述"><br>继续改写成如下的式子<br><img src="https://img-blog.csdnimg.cn/20210720200849578.png#pic_center" alt="在这里插入图片描述"><br>这就是我们要最大化的东西。<br>这里我们要这么大费周章地推导求解对偶问题，主要是因为：</p>
 <blockquote>
 <ol>
-<li>对偶问题往往更容易求解；\</li>
+<li>对偶问题往往更容易求解；</li>
 <li>引入核函数，即为非线性SVM做准备。</li>
 </ol>
 </blockquote>
 <h2 id="软间隔最大化"><a href="#软间隔最大化" class="headerlink" title="软间隔最大化"></a>软间隔最大化</h2><p>软间隔最大化问题跟硬间隔的差不多，只是训练集中会有一些异常点（outlier）不能满足约束条件$y_i(\pmb{w}^T\pmb{x}_i+b)\ge1$。如下图：<br><img src="https://img-blog.csdnimg.cn/20210720211011111.png#pic_center" alt="在这里插入图片描述"></p>
 <p>一个简单的思路就是，将这些数据点映射到新的特征空间，然后就可以线性区分了，比如用小半径的RBF核函数（这在下面非线性SVM会介绍）。<br>但这会产生一个问题，就是$VC$维度特别大，可能会导致过拟合。</p>
 <p>另一种解决方法是：选择性地忽略一些点。对每个样本点$(x_i,y_i)$引进一个松弛变量（slack variables）$\xi_i\ge0$，使：<br><img src="https://img-blog.csdnimg.cn/20210721215433434.png#pic_center" alt="在这里插入图片描述"></p>
-<p>函数间隔加上松弛变量大于等于1，即约束条件变为：<script type="math/tex">y_i(\pmb{w}^T\pmb{x}_i+b)\ge1-\xi_i</script><br>目标函数就变为：<script type="math/tex">\frac{1}{2}||w||^2+C\sum_{i=1}^{N}\xi_i</script>其中$C&gt;0$为惩罚参数。\<br>由此可得，线性不可分的线性支持向量机的学习问题为：<br><img src="https://img-blog.csdnimg.cn/20210721215658777.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>函数间隔加上松弛变量大于等于1，即约束条件变为：</p>
+<script type="math/tex; mode=display">
+y_i(\pmb{w}^T\pmb{x}_i+b)\ge1-\xi_i</script><p>目标函数就变为：</p>
+<script type="math/tex; mode=display">
+\frac{1}{2}||w||^2+C\sum_{i=1}^{N}\xi_i</script><p>其中$C&gt;0$为惩罚参数。<br>由此可得，线性不可分的线性支持向量机的学习问题为：<br><img src="https://img-blog.csdnimg.cn/20210721215658777.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
 <p>其中$w$的解是唯一的，$b$不是（不作证明）。</p>
-<p>最大化边际（margin），同时最小化所有不在边际之<strong>外</strong>的数据点的惩罚<br>权重 C 允许我们指定权衡。 通常通过交叉验证确定<br>即使数据是可分离的，最好允许偶尔的惩罚（penalty）。</p>
-<p>剩下的解优化问题跟硬间隔几乎是一模一样了，不过还是再过一遍吧。<br>回到我们上面的学习问题，带约束的优化，用拉格朗日函数如下：<script type="math/tex">L(w,b,\xi,\alpha,\mu)=\frac{1}{2}||w||^2+C\sum_{i=1}^{N}\xi_i-\sum_{i=1}^{N}\alpha_i(y_i(wx_i+b)-1+\xi_i)-\sum_{i=1}^{N}\mu_i\xi_i</script>其中: $\alpha_i\ge 0,\mu_i\ge0$。对偶问题是这个函数的极大极小问题，首先求$L(w,b,\xi,\alpha,\mu)$对$w,b,\xi$的极小，即是求导等于0，得：<br><img src="https://img-blog.csdnimg.cn/20210720212504986.png#pic_center" alt="在这里插入图片描述"><br>即是说，极小值为：<br><img src="https://img-blog.csdnimg.cn/20210720212541576.png#pic_center" alt="在这里插入图片描述"><br>再对$\alpha$求极大：<br><img src="https://img-blog.csdnimg.cn/20210720212652248.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>这里$alpha_i\leq C$称为box constraint(箱体约束)。</p>
+<p>最大化边际（margin），同时最小化所有不在边际之<strong>外</strong>的数据点的惩罚权重 C 允许我们指定权衡。 通常通过交叉验证确定, 即使数据是可分离的，最好允许偶尔的惩罚（penalty）。</p>
+<p>剩下的解优化问题跟硬间隔几乎是一模一样了，不过还是再过一遍吧。<br>回到我们上面的学习问题，带约束的优化，用拉格朗日函数如下：</p>
+<script type="math/tex; mode=display">
+L(w,b,\xi,\alpha,\mu)=\frac{1}{2}||w||^2+C\sum_{i=1}^{N}\xi_i-\sum_{i=1}^{N}\alpha_i(y_i(wx_i+b)-1+\xi_i)-\sum_{i=1}^{N}\mu_i\xi_i</script><p>其中: $\alpha_i\ge 0,\mu_i\ge0$。对偶问题是这个函数的极大极小问题，首先求$L(w,b,\xi,\alpha,\mu)$对$w,b,\xi$的极小，即是求导等于0，得：<br><img src="https://img-blog.csdnimg.cn/20210720212504986.png#pic_center" alt="在这里插入图片描述"><br>即是说，极小值为：<br><img src="https://img-blog.csdnimg.cn/20210720212541576.png#pic_center" alt="在这里插入图片描述"><br>再对$\alpha$求极大：<br><img src="https://img-blog.csdnimg.cn/20210720212652248.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>这里$alpha_i\leq C$称为box constraint(箱体约束)。</p>
 <blockquote>
-<p>设$\alpha^<em>=(\alpha_1^</em>,…,\alpha_N^<em>)^T$是上面对偶问题的一个解，若存在$\alpha$的一个分量$\alpha_j$，$0&lt;\alpha_j^</em>&lt;C$，则原始问题的解$w,b$为：<script type="math/tex">w^*=\sum_{i=1}^{N_s}\alpha_i^*y_ix_i$$$$b^*=y_j-\sum_{i=1}^{N_s}y_i\alpha_i^*(x_ix_j)</script></p>
-</blockquote>
+<p>设$\alpha^<em>=(\alpha_1^</em>,…,\alpha_N^<em>)^T$是上面对偶问题的一个解，若存在$\alpha$的一个分量$\alpha_j$，$0&lt;\alpha_j^</em>&lt;C$，则原始问题的解$w,b$为：</p>
+<script type="math/tex; mode=display">
+w^*=\sum_{i=1}^{N_s}\alpha_i^*y_ix_i</script><script type="math/tex; mode=display">
+b^*=y_j-\sum_{i=1}^{N_s}y_i\alpha_i^*(x_ix_j)</script></blockquote>
 <p>(注：在硬间隔中求出的$\alpha$也是一个向量。)</p>
 <p>———————————————————————————————————————</p>
 <p>补充3——合页损失函数（hinge loss function）</p>
-<p>线性支持向量机学习还有另一种解释，就是最小化下面这个目标函数：<script type="math/tex">\sum_{i=1}^{N}[1-y_i(wx_i+b)]_++\lambda||w||^2</script>第一项：$L(y(wx+b))=[1-y(wx+b)]_+$就称为合页损失函数，其中：<script type="math/tex">[z]_+=z,\quad z>0$$$$[z]_+=0,\quad z\le0</script>最优化问题就可以等价为：<br><img src="https://img-blog.csdnimg.cn/20210720215356556.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>线性支持向量机学习还有另一种解释，就是最小化下面这个目标函数：</p>
+<script type="math/tex; mode=display">
+\sum_{i=1}^{N}[1-y_i(wx_i+b)]_++\lambda||w||^2</script><p>第一项：$L(y(wx+b))=[1-y(wx+b)]_+$就称为合页损失函数，其中：</p>
+<script type="math/tex; mode=display">
+[z]_+=z,\quad z>0</script><script type="math/tex; mode=display">
+[z]_+=0,\quad z\le0</script><p>最优化问题就可以等价为：<br><img src="https://img-blog.csdnimg.cn/20210720215356556.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
 <p>———————————————————————————————————————</p>
-<h1 id="非线性SVM"><a href="#非线性SVM" class="headerlink" title="非线性SVM"></a>非线性SVM</h1><p>然而很多时候我们得到的数据并不是直接用硬或者软间隔进行线性分类的，比如下面这个：<br><img src="https://img-blog.csdnimg.cn/20210721163854894.png#pic_center" alt="在这里插入图片描述"><br>明显，不管怎么画直线都没办法把这两类分开，这时候我们可以增加一个维度，从二维变三维，变成下面这种情况：<br><img src="https://img-blog.csdnimg.cn/20210721164054328.png#pic_center" alt="在这里插入图片描述"><br>这个就可以用（超）平面进行线性划分了。记住一点：<strong>相对于低维，高维更可能可以用线性进行分类</strong>。<br>也就是说在这里，数据的输入空间不再直接充当特征空间，我们要新构造一个特征空间，就跟之前的线性回归那里的思想是一样的。<br>我们的输入是$\pmb{x}$，然后就要找到一个非线性变换$\phi$，将输入空间映射到特征空间（但这个映射也不能太过分了，不然容易过拟合）。<br>现在回顾上面的对偶形式：<br><img src="https://img-blog.csdnimg.cn/20210721165319361.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>通过非线性变换，可以得到下面的方程：<br><img src="https://img-blog.csdnimg.cn/20210721165401767.png#pic_center" alt="在这里插入图片描述"><br>这个式子可以看出，当两个特征空间的元素$\phi(x_i)$和$\phi(x_j)$内积时，就会产生一个标量。<br>再看判别函数：<script type="math/tex">y(x)=w^T\phi(x)+b</script>由于<script type="math/tex">w=\sum_{i=1}^{N_s}\alpha_iy_i\phi(x_i)</script>则非线性判别函数可以写为：<script type="math/tex">y(x)=\sum_{i=1}^{N_s}\alpha_iy_i\phi(x_i)^T\phi(x)+b</script>其中$N_s$是支持向量的数目。<br>又发现，判别函数也可以只用非线性特征的标量积来表示。<br>但是我们想直接计算它们内积是不太可能的，因为这个非线性转换可能会出现无限维的情况。<br>这就引出了核技巧（Kernel Trick），即使用核函数取代每一个标量积：<script type="math/tex">K(x_i,x_j)=\phi(x_i)^T\phi(x_j)</script>如果我们能找到这么一个核函数，那就可以避免高维空间的映射，转而直接计算这个标量积。<br>但该怎么判断是否存在这样的核函数呢？</p>
-<h2 id="多项式核（Polynomial-Kernel）"><a href="#多项式核（Polynomial-Kernel）" class="headerlink" title="多项式核（Polynomial Kernel）"></a>多项式核（Polynomial Kernel）</h2><p>以以下二阶核为例：<script type="math/tex">K(x,y)=(x^Ty)^2</script>等同于点积：<script type="math/tex">K(x,y)=(x^Ty)^2=x_1^2y_1^2+2x_1x-2y_1y_2+y_1^2y_2^2</script>对应的非线性转换为：<br><img src="https://img-blog.csdnimg.cn/2021072117411341.png#pic_center" alt="在这里插入图片描述"><br>以这个为例，核方法的一个优点是核计算量的简便，比如这里的计算数为：3（$x,y$的点积）+1（结果的平方）=4\<br>另外需要注意，一个核函数的非线性变换不是唯一的，比如上面这个核函数，其对应的变换还可能是：<br><img src="https://img-blog.csdnimg.cn/20210721174440506.png#pic_center" alt="在这里插入图片描述"><br><strong>转换空间维度以及VC维度的确定</strong><br>令$C_d(x)$为将一个向量映射到所有阶数为$d$的有序单项式空间的变换。<script type="math/tex">K(x,y)=(x^Ty)^d=C_d(x)^TC_d(y)</script>转换空间$H$的维度为：$C_{d+N-1}^{d}$。<br>比如说：<script type="math/tex">N=16\times 16=256 \quad d=4</script>则转换空间维度为：<script type="math/tex">dim(H)=183181376</script>该分类器的$VC$维度为：$dim(H)+1$。</p>
-<h2 id="径向基函数（Radial-Basis-Functions）"><a href="#径向基函数（Radial-Basis-Functions）" class="headerlink" title="径向基函数（Radial Basis Functions）"></a>径向基函数（Radial Basis Functions）</h2><p>径向基函数（RBF），通常定义为空间任一点到某一中心的$y$的欧氏距离的单调函数，最常用的是高斯核函数，定义为：<script type="math/tex">K(x,y)=\exp(-\frac{||x-y||^2}{2\sigma^2})</script>换种说法的话，这个核函数可以衡量$x$和$y$的相似度的。<strong>其对应的变换空间是无限维的</strong>，所以其<strong>VC维度也是无限维的</strong>。当$x$和$y$很接近时值为1，很远时值为0，$\sigma$为函数的宽度参数，控制函数的径向作用范围。<br>用这个核函数的效果如下：<br><img src="https://img-blog.csdnimg.cn/20210721204316240.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h1 id="非线性SVM"><a href="#非线性SVM" class="headerlink" title="非线性SVM"></a>非线性SVM</h1><p>然而很多时候我们得到的数据并不是直接用硬或者软间隔进行线性分类的，比如下面这个：<br><img src="https://img-blog.csdnimg.cn/20210721163854894.png#pic_center" alt="在这里插入图片描述"><br>明显，不管怎么画直线都没办法把这两类分开，这时候我们可以增加一个维度，从二维变三维，变成下面这种情况：<br><img src="https://img-blog.csdnimg.cn/20210721164054328.png#pic_center" alt="在这里插入图片描述"><br>这个就可以用（超）平面进行线性划分了。记住一点：<strong>相对于低维，高维更可能可以用线性进行分类</strong>。<br>也就是说在这里，数据的输入空间不再直接充当特征空间，我们要新构造一个特征空间，就跟之前的线性回归那里的思想是一样的。<br>我们的输入是$\pmb{x}$，然后就要找到一个非线性变换$\phi$，将输入空间映射到特征空间（但这个映射也不能太过分了，不然容易过拟合）。<br>现在回顾上面的对偶形式：<br><img src="https://img-blog.csdnimg.cn/20210721165319361.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>通过非线性变换，可以得到下面的方程：<br><img src="https://img-blog.csdnimg.cn/20210721165401767.png#pic_center" alt="在这里插入图片描述"><br>这个式子可以看出，当两个特征空间的元素$\phi(x_i)$和$\phi(x_j)$内积时，就会产生一个标量。<br>再看判别函数：</p>
+<script type="math/tex; mode=display">
+y(x)=w^T\phi(x)+b</script><p>由于</p>
+<script type="math/tex; mode=display">
+w=\sum_{i=1}^{N_s}\alpha_iy_i\phi(x_i)</script><p>则非线性判别函数可以写为：</p>
+<script type="math/tex; mode=display">
+y(x)=\sum_{i=1}^{N_s}\alpha_iy_i\phi(x_i)^T\phi(x)+b</script><p>其中$N_s$是支持向量的数目。<br>又发现，判别函数也可以只用非线性特征的标量积来表示。<br>但是我们想直接计算它们内积是不太可能的，因为这个非线性转换可能会出现无限维的情况。<br>这就引出了核技巧（Kernel Trick），即使用核函数取代每一个标量积：</p>
+<script type="math/tex; mode=display">
+K(x_i,x_j)=\phi(x_i)^T\phi(x_j)</script><p>如果我们能找到这么一个核函数，那就可以避免高维空间的映射，转而直接计算这个标量积。<br>但该怎么判断是否存在这样的核函数呢？</p>
+<h2 id="多项式核（Polynomial-Kernel）"><a href="#多项式核（Polynomial-Kernel）" class="headerlink" title="多项式核（Polynomial Kernel）"></a>多项式核（Polynomial Kernel）</h2><p>以以下二阶核为例：</p>
+<script type="math/tex; mode=display">
+K(x,y)=(x^Ty)^2</script><p>等同于点积：</p>
+<script type="math/tex; mode=display">
+K(x,y)=(x^Ty)^2=x_1^2y_1^2+2x_1x-2y_1y_2+y_1^2y_2^2</script><p>对应的非线性转换为：<br><img src="https://img-blog.csdnimg.cn/2021072117411341.png#pic_center" alt="在这里插入图片描述"><br>以这个为例，核方法的一个优点是核计算量的简便，比如这里的计算数为：3（$x,y$的点积）+1（结果的平方）=4<br>另外需要注意，一个核函数的非线性变换不是唯一的，比如上面这个核函数，其对应的变换还可能是：<br><img src="https://img-blog.csdnimg.cn/20210721174440506.png#pic_center" alt="在这里插入图片描述"><br><strong>转换空间维度以及VC维度的确定</strong><br>令$C_d(x)$为将一个向量映射到所有阶数为$d$的有序单项式空间的变换。</p>
+<script type="math/tex; mode=display">
+K(x,y)=(x^Ty)^d=C_d(x)^TC_d(y)</script><p>转换空间$H$的维度为：$C_{d+N-1}^{d}$。<br>比如说：</p>
+<script type="math/tex; mode=display">
+N=16\times 16=256 \quad d=4</script><p>则转换空间维度为：</p>
+<script type="math/tex; mode=display">
+dim(H)=183181376</script><p>该分类器的$VC$维度为：$dim(H)+1$。</p>
+<h2 id="径向基函数（Radial-Basis-Functions）"><a href="#径向基函数（Radial-Basis-Functions）" class="headerlink" title="径向基函数（Radial Basis Functions）"></a>径向基函数（Radial Basis Functions）</h2><p>径向基函数（RBF），通常定义为空间任一点到某一中心的$y$的欧氏距离的单调函数，最常用的是高斯核函数，定义为：</p>
+<script type="math/tex; mode=display">
+K(x,y)=\exp(-\frac{||x-y||^2}{2\sigma^2})</script><p>换种说法的话，这个核函数可以衡量$x$和$y$的相似度的。<strong>其对应的变换空间是无限维的</strong>，所以其<strong>VC维度也是无限维的</strong>。当$x$和$y$很接近时值为1，很远时值为0，$\sigma$为函数的宽度参数，控制函数的径向作用范围。<br>用这个核函数的效果如下：<br><img src="https://img-blog.csdnimg.cn/20210721204316240.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2MzUwMTg4,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
 <h2 id="Mercer’s-Condition"><a href="#Mercer’s-Condition" class="headerlink" title="Mercer’s Condition"></a>Mercer’s Condition</h2><p>既然核函数能极大地简便我们的计算量，那现在就有个问题，我们该如何判断给定的一个函数$K$是一个有效的核函数呢，或者说，我们如何判断这个$K$能够替代$\phi(x_i)^T\phi(x_j)$？<br>这就引出了Mercer定理。</p>
 <blockquote>
 <p>Mercer定理：<br>如果函数$K$是$R^n\times R^n\rightarrow R$上的映射（也就是从两个$n$维向量映射到实数域），当且仅当对于任意训练样例$[x_1,…,x_n]$，其相应的核函数矩阵是对称半正定的话，则$K$是一个有效核函数（也称为Mercer核函数）。</p>
@@ -1253,9 +1583,15 @@ y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)+p_1(r^2+2y^2)+2P_2xy</script><p>这里�
 <blockquote>
 <p>对于满足$\int g(x)^2dx&lt;0$的$g(x)$，若$K(x,y)$满足$\int \int K(x,y)g(x)g(y)dxdy\ge0$，则$K(x,y)$是一个有效核函数。</p>
 </blockquote>
-<p>判断一个函数是否满足Mercer定理并不容易，但我们可以根据现有的有效核函数构造出新的，也就是说，如果$K_1(x,y),K_2(x,y)$是有效核函数，则下面这些也是：<script type="math/tex">cK_1(x,y)\\K_1(x,y)+K_2(x,y)\\K_1(x,y)K_2(x,y)\\f(x)K_1(x,y)f(y)\\...</script></p>
-<h2 id="相关补充"><a href="#相关补充" class="headerlink" title="相关补充"></a>相关补充</h2><p>除了上面的，非齐次多项式核函数也可以用来表示$d$阶多项式，形式如下：<script type="math/tex">K(\pmb{x},\pmb{y})=(\pmb{x}^T\pmb{y}+c)^d</script>除了Gaussian RBF 核函数：<script type="math/tex">K(\pmb{x},\pmb{y})=\exp(-\frac{||\pmb{x}-\pmb{y}||^2}{2\sigma^2})</script>还有其它比如Hyperbolic tangent核函数：<script type="math/tex">K(\pmb{x},\pmb{y})=tahn(a\pmb{x}^T\pmb{y}+b)</script></p>
-]]></content>
+<p>判断一个函数是否满足Mercer定理并不容易，但我们可以根据现有的有效核函数构造出新的，也就是说，如果$K_1(x,y),K_2(x,y)$是有效核函数，则下面这些也是：</p>
+<script type="math/tex; mode=display">
+cK_1(x,y)\\K_1(x,y)+K_2(x,y)\\K_1(x,y)K_2(x,y)\\f(x)K_1(x,y)f(y)\\...</script><h2 id="相关补充"><a href="#相关补充" class="headerlink" title="相关补充"></a>相关补充</h2><p>除了上面的，非齐次多项式核函数也可以用来表示$d$阶多项式，形式如下：</p>
+<script type="math/tex; mode=display">
+K(\pmb{x},\pmb{y})=(\pmb{x}^T\pmb{y}+c)^d</script><p>除了Gaussian RBF 核函数：</p>
+<script type="math/tex; mode=display">
+K(\pmb{x},\pmb{y})=\exp(-\frac{||\pmb{x}-\pmb{y}||^2}{2\sigma^2})</script><p>还有其它比如Hyperbolic tangent核函数：</p>
+<script type="math/tex; mode=display">
+K(\pmb{x},\pmb{y})=tahn(a\pmb{x}^T\pmb{y}+b)</script>]]></content>
       <categories>
         <category>学习总结</category>
         <category>机器学习</category>
@@ -1274,16 +1610,17 @@ y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)+p_1(r^2+2y^2)+2P_2xy</script><p>这里�
   <entry>
     <title>卡尔曼滤波（Kalman Filter）</title>
     <url>/posts/20.html</url>
-    <content><![CDATA[<h1 id="写在前面的说明"><a href="#写在前面的说明" class="headerlink" title="写在前面的说明"></a>写在前面的说明</h1><p>本文总结自B站博主DR_CAN，他是整个B站我最喜欢的博主没有之一，推荐大家直接去看他的视频，这篇当作学后的回顾，链接在这$\rightarrow$<a href="https://space.bilibili.com/230105574/channel/detail?cid=139198&amp;ctype=0">【传送门】</a>。<br><span id="more"></span></p>
-<h1 id="引入-——-递归算法"><a href="#引入-——-递归算法" class="headerlink" title="引入 —— 递归算法"></a>引入 —— 递归算法</h1><p>卡尔曼滤波器可看作是一种“Optimal Recursive Data Processing Algorithm”，即“最优的递归数字处理算法”。与滤波器相比它更像是一种观测器。\<br>卡尔曼滤波器的应用非常广泛，尤其是导航中，这是因为现实生活中充满大量的不确定性，当我们描述一个系统的时候，这个不确定性主要体现在以下三个方面：\</p>
+    <content><![CDATA[<h1 id="写在前面的说明"><a href="#写在前面的说明" class="headerlink" title="写在前面的说明"></a>写在前面的说明</h1><p>本文总结自B站博主DR_CAN，他是整个B站我最喜欢的博主没有之一，推荐大家直接去看他的视频，这篇当作学后的回顾，链接在这$\rightarrow$<a href="https://space.bilibili.com/230105574/channel/detail?cid=139198&amp;ctype=0">【传送门】</a>。</p>
+<span id="more"></span>
+<h1 id="引入-——-递归算法"><a href="#引入-——-递归算法" class="headerlink" title="引入 —— 递归算法"></a>引入 —— 递归算法</h1><p>卡尔曼滤波器可看作是一种“Optimal Recursive Data Processing Algorithm”，即“最优的递归数字处理算法”。与滤波器相比它更像是一种观测器。<br>卡尔曼滤波器的应用非常广泛，尤其是导航中，这是因为现实生活中充满大量的不确定性，当我们描述一个系统的时候，这个不确定性主要体现在以下三个方面：</p>
 <blockquote>
 <ol>
-<li>不存在完美的数学模型；\</li>
-<li>系统的挠动是不可控的，也很难建模；\</li>
-<li>测量传感器存在误差。\ </li>
+<li>不存在完美的数学模型；</li>
+<li>系统的挠动是不可控的，也很难建模；</li>
+<li>测量传感器存在误差。</li>
 </ol>
 </blockquote>
-<p>举个例子：\<br>当我们要测量一枚硬币的直径时，设第$k$次测量结果为$z_k$，假如三次测量分别为：</p>
+<p>举个例子：<br>当我们要测量一枚硬币的直径时，设第$k$次测量结果为$z_k$，假如三次测量分别为：</p>
 <script type="math/tex; mode=display">z_1=50.1mm</script><script type="math/tex; mode=display">z_2=50.4mm</script><script type="math/tex; mode=display">z_3=50.2mm</script><p>若要估计真实数据，很自然地，我们会用平均值来表示，即第$k$次的估计值$\hat{x}_k$为：</p>
 <script type="math/tex; mode=display">
 \begin{split}
@@ -1294,12 +1631,12 @@ y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)+p_1(r^2+2y^2)+2P_2xy</script><p>这里�
 &=\hat{x}_{k-1}-\frac{1}{k}\hat{x}_{k-1}+\frac{1}{k}z_k
 \end{split}</script><p>即是：</p>
 <script type="math/tex; mode=display">
-\hat{x}_k=\hat{x}_{k-1}+\frac{1}{k}(z_k-\hat{x}_{k-1})</script><p>由此可见，当$k$逐渐增加时，$\frac{1}{k}\rightarrow \infty$，也就是说$\hat{x}_k\rightarrow \hat{x}_{k-1}$。\<br>用文字描述的话，就是说随着$k$的增加，之后测量结果也就不再重要了，也就是对前面的真实估计值已经非常有信心了。\<br>相反，当$k$比较小时，$\frac{1}{k}$就会很大，也就是说此时$z_k$的作用会很大。\<br>现在改写一下上面的式子为：</p>
+\hat{x}_k=\hat{x}_{k-1}+\frac{1}{k}(z_k-\hat{x}_{k-1})</script><p>由此可见，当$k$逐渐增加时，$\frac{1}{k}\rightarrow \infty$，也就是说$\hat{x}_k\rightarrow \hat{x}_{k-1}$。<br>用文字描述的话，就是说随着$k$的增加，之后测量结果也就不再重要了，也就是对前面的真实估计值已经非常有信心了。<br>相反，当$k$比较小时，$\frac{1}{k}$就会很大，也就是说此时$z_k$的作用会很大。<br>现在改写一下上面的式子为：</p>
 <script type="math/tex; mode=display">
-\hat{x}_k=\hat{x}_{k-1}+K_k(z_k-\hat{x}_{k-1})</script><p>在卡尔曼滤波器里，这个系数$K_k$就叫Kalman Gain，中文称为卡尔曼增益/因数。\<br>由这个式子可以看出，跟马尔科夫链类似，当前估计值只与该次测量值以及上一次的估计值有关，这体现了一种递归的思想。\<br>这里先对这个系数作简单的讨论。首先引入两个变量：</p>
+\hat{x}_k=\hat{x}_{k-1}+K_k(z_k-\hat{x}_{k-1})</script><p>在卡尔曼滤波器里，这个系数$K_k$就叫Kalman Gain，中文称为卡尔曼增益/因数。<br>由这个式子可以看出，跟马尔科夫链类似，当前估计值只与该次测量值以及上一次的估计值有关，这体现了一种递归的思想。<br>这里先对这个系数作简单的讨论。首先引入两个变量：</p>
 <blockquote>
 <ol>
-<li>估计误差：$e_{EST}$；\</li>
+<li>估计误差：$e_{EST}$；</li>
 <li>测量误差：$e_{MEA}$。</li>
 </ol>
 </blockquote>
@@ -1308,19 +1645,19 @@ y_{distorted}=y(1+k_1r^2+k_2r^4+k_3r^6)+p_1(r^2+2y^2)+2P_2xy</script><p>这里�
 K_k=\frac{e_{EST_{k-1}}}{e_{EST_{k-1}}+e_{MEA_k}}</script><p><strong>这个公式是卡尔曼滤波的核心公式，详细推导见后文。</strong>\<br>这里先简单讨论在$k$时刻两个变量的作用：</p>
 <blockquote>
 <ol>
-<li>当$e_{EST_{k-1}} \gg e_{MEA_k}$，即$k\rightarrow 1$时，$\hat{x}_k=\hat{x}_{k-1}+z_k-\hat{x}_{k-1}=z_{k}$；\</li>
+<li>当$e_{EST_{k-1}} \gg e_{MEA_k}$，即$k\rightarrow 1$时，$\hat{x}_k=\hat{x}_{k-1}+z_k-\hat{x}_{k-1}=z_{k}$；</li>
 <li>当$e_{EST_{k-1}} \ll e_{MEA_k}$，即$k\rightarrow 0$时，$\hat{x}_k=\hat{x}_{k-1}$。</li>
 </ol>
 </blockquote>
 <p>运用卡尔曼滤波器，真实估计值就可以表示为以下三个步骤：</p>
 <blockquote>
 <ol>
-<li><strong>Step 1</strong>：计算卡尔曼增益：$K_k=\frac{e_{EST_{k-1}}}{e_{EST_{k-1}}+e_{MEA_k}}$；\</li>
+<li><strong>Step 1</strong>：计算卡尔曼增益：$K_k=\frac{e_{EST_{k-1}}}{e_{EST_{k-1}}+e_{MEA_k}}$；</li>
 <li><strong>Step 2</strong>：计算当前估计值$\hat{x}_k=\hat{x}_{k-1}+K_k(z_k-\hat{x}_{k-1})$；</li>
 <li><strong>Step 3</strong>：更新$e_{EST_k}=(1-K_k)e_{EST_{k-1}}$（这个式子后面推导）。</li>
 </ol>
 </blockquote>
-<p>这里举个例子说明上面三个步骤：\<br>假设我们要测量一个长度是$50mm$的物体，第0次的估计值，也就是相当于先验吧，是$\hat{x}_0=40mm$，第0次估计误差为$e_{EST_0}=5mm$，第一次测量为$z_1=51mm$，测量误差一直为$e_{MEA_k}=3mm$。\<br>填入起始值，如下表：\</p>
+<p>这里举个例子说明上面三个步骤：<br>假设我们要测量一个长度是$50mm$的物体，第0次的估计值，也就是相当于先验吧，是$\hat{x}_0=40mm$，第0次估计误差为$e_{EST_0}=5mm$，第一次测量为$z_1=51mm$，测量误差一直为$e_{MEA_k}=3mm$。<br>填入起始值，如下表：</p>
 <div class="table-container">
 <table>
 <thead>
@@ -1368,7 +1705,7 @@ K_k=\frac{e_{EST_{k-1}}}{e_{EST_{k-1}}+e_{MEA_k}}</script><p><strong>这个公�
 </tbody>
 </table>
 </div>
-<p>借助上面三个步骤：\<br>$k=1$时：</p>
+<p>借助上面三个步骤：<br>$k=1$时：</p>
 <script type="math/tex; mode=display">
 K_k=\frac{5}{5+3}=0.625</script><script type="math/tex; mode=display">
 \hat{x}_k=40+0.625(51-40)=46.875</script><script type="math/tex; mode=display">
@@ -1421,14 +1758,14 @@ e_{EST}=(1-0.625)\times 5 = 1.875</script><p>然后$k=2$时，设此次测量值
 </tbody>
 </table>
 </div>
-<p>这样不断下去，最后这个真实估计值会收敛于$50mm$。\<br>借用博主视频里的数值结果图片，其表现如下：<br><img src="/images/250.png" alt=""><br>其中蓝色线表示测量值，红色线表示估计值。</p>
+<p>这样不断下去，最后这个真实估计值会收敛于$50mm$。<br>借用博主视频里的数值结果图片，其表现如下：<br><img src="D:\blog\source\images\250.png" alt=""><br>其中蓝色线表示测量值，红色线表示估计值。</p>
 <h1 id="数据融合，协方差矩阵，状态空间方程"><a href="#数据融合，协方差矩阵，状态空间方程" class="headerlink" title="数据融合，协方差矩阵，状态空间方程"></a>数据融合，协方差矩阵，状态空间方程</h1><p>这部分是复习基础知识，可跳过。</p>
-<h2 id="数据融合"><a href="#数据融合" class="headerlink" title="数据融合"></a>数据融合</h2><p>简单讲，就是从多个测量数据中找到一个最优的。\<br>举个例子，我们在称量一个物体的时候，两次称量结果如下：</p>
+<h2 id="数据融合"><a href="#数据融合" class="headerlink" title="数据融合"></a>数据融合</h2><p>简单讲，就是从多个测量数据中找到一个最优的。<br>举个例子，我们在称量一个物体的时候，两次称量结果如下：</p>
 <script type="math/tex; mode=display">
 z_1=30g, \quad \sigma_1=2g</script><script type="math/tex; mode=display">
-z_2=32g, \quad \sigma_2=4g</script><p>根据正态分布的性质，对于第一个测量结果，真实值落在区间[28,32]的概率是68.4%；对第二个测量结果，真实值落在区间[28,36]的概率是68.4%，如果这时候要我们估计真实值的话，我们会把真实值估计在区间[30,32]之间，而且由于第一个测量标准差较小，所以真实值会更靠近于30。\<br>如果要我们在数学上得到一个比较准确的值，就可以用上面递归的方法，写出如下等式：</p>
+z_2=32g, \quad \sigma_2=4g</script><p>根据正态分布的性质，对于第一个测量结果，真实值落在区间[28,32]的概率是68.4%；对第二个测量结果，真实值落在区间[28,36]的概率是68.4%，如果这时候要我们估计真实值的话，我们会把真实值估计在区间[30,32]之间，而且由于第一个测量标准差较小，所以真实值会更靠近于30。<br>如果要我们在数学上得到一个比较准确的值，就可以用上面递归的方法，写出如下等式：</p>
 <script type="math/tex; mode=display">
-\hat{z}=z_1+K(z_2-z_1)</script><p>其中 $K\in [0,1]$，当$K=0$时，$\hat{z}=z_1$；当$K=1$时，$\hat{z}=z_2$。\<br>现在我们要求$K$，使得 $\sigma_{\hat{z}}$ 最小，即是要 $Var(\hat{z})$ 最小。\<br>而这个方差我们可以写成：</p>
+\hat{z}=z_1+K(z_2-z_1)</script><p>其中 $K\in [0,1]$，当$K=0$时，$\hat{z}=z_1$；当$K=1$时，$\hat{z}=z_2$。\<br>现在我们要求$K$，使得 $\sigma_{\hat{z}}$ 最小，即是要 $Var(\hat{z})$ 最小。<br>而这个方差我们可以写成：</p>
 <script type="math/tex; mode=display">
 \sigma_{\hat{z}}^2=Var(z_1+K(z_2-z_1))=Var((1-K)z_1+Kz_2)</script><p>由于括号里的两项 $(1-K)z_1$ 和 $Kz_2$ 相互独立(毕竟是两个不同的称，称量结果肯定不会相互影响)，根据方差的性质，上面式子可以继续往下写：</p>
 <script type="math/tex; mode=display">
@@ -1444,7 +1781,7 @@ K=\frac{\sigma_1^2}{\sigma_1^2+\sigma_2^2}=0.2</script><p>把$K$代入上面式�
 <script type="math/tex; mode=display">
 \hat{z}=z_1+K(z_2-z_1)=30+0.2(32-30)=30.4</script><p>其方差为：</p>
 <script type="math/tex; mode=display">
-\sigma_{\hat{z}}^2=(1-0.2)^22^2+0.2^24^2=3.2</script><p>标准差为：$\sqrt{3.2}=1.79$\<br>这个计算过程就是数据融合。\</p>
+\sigma_{\hat{z}}^2=(1-0.2)^22^2+0.2^24^2=3.2</script><p>标准差为：$\sqrt{3.2}=1.79$<br>这个计算过程就是数据融合。</p>
 <h2 id="协方差矩阵"><a href="#协方差矩阵" class="headerlink" title="协方差矩阵"></a>协方差矩阵</h2><p>协方差矩阵是将矩阵，协方差在一个矩阵中表示出来，表明变量空间的联动关系。比如说下面这个表格：</p>
 <div class="table-container">
 <table>
@@ -1493,7 +1830,7 @@ K=\frac{\sigma_1^2}{\sigma_1^2+\sigma_2^2}=0.2</script><p>把$K$代入上面式�
 &= 18.7=\sigma_y\sigma_x
 \end{aligned}</script><p>同理：</p>
 <script type="math/tex; mode=display">
-\sigma_x\sigma_z=4.4=\sigma_z\sigma_x, \quad \sigma_y\sigma_z=3.3=\sigma_z\sigma_y</script><p>(协方差矩阵是对称矩阵。)\<br>协方差矩阵形式如下：</p>
+\sigma_x\sigma_z=4.4=\sigma_z\sigma_x, \quad \sigma_y\sigma_z=3.3=\sigma_z\sigma_y</script><p>(协方差矩阵是对称矩阵。)<br>协方差矩阵形式如下：</p>
 <script type="math/tex; mode=display">
  \left[
  \begin{matrix}
