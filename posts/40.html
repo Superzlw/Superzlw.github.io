@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"superzlw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Introduction (Before we start this blog, I must clarify that it serves as an initial introduction to the &quot;Mean Teacher&quot; framework. I may enhance this article later if I come across intriguing insig">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mean Teacher">
+<meta property="og:url" content="https://superzlw.github.io/posts/40.html">
+<meta property="og:site_name" content="SuperZLW&#39;s Blog">
+<meta property="og:description" content="Introduction (Before we start this blog, I must clarify that it serves as an initial introduction to the &quot;Mean Teacher&quot; framework. I may enhance this article later if I come across intriguing insig">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://superzlw.github.io/images/386.png">
+<meta property="og:image" content="https://superzlw.github.io/images/388.png">
+<meta property="og:image" content="https://superzlw.github.io/images/389.png">
+<meta property="og:image" content="https://superzlw.github.io/images/390.png">
+<meta property="article:published_time" content="2023-09-05T21:10:13.385Z">
+<meta property="article:modified_time" content="2023-09-05T21:50:54.484Z">
+<meta property="article:author" content="super wzl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://superzlw.github.io/images/386.png">
+
+<link rel="canonical" href="https://superzlw.github.io/posts/40.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Mean Teacher | SuperZLW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SuperZLW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">我很笨，但是我不懒</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://superzlw.github.io/posts/40.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="super wzl">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuperZLW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mean Teacher
+        </h1>
+
+        <div class="post-meta">
+          <span class="post-time">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-09-05 23:10:13 / 修改时间：23:50:54" itemprop="dateCreated datePublished" datetime="2023-09-05T23:10:13+02:00">2023-09-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">学习总结</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/posts/40.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/posts/40.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="introduction">Introduction</h1>
+<p><em>(Before we start this blog, I must clarify that it serves as an
+initial introduction to the "Mean Teacher" framework. I may enhance this
+article later if I come across intriguing insights or new
+information.)</em></p>
+<span id="more"></span>
+<p>Obtaining a sufficiently large labeled dataset for supervised
+learning can be quite challenging, primarily due to the cost involved.
+This challenge becomes even more pronounced in fields like medical
+imaging, where annotating data requires domain-specific expertise and
+experimentation. Hence, our focus shifts towards Semi-Supervised
+Learning.</p>
+<p>Within the realm of Semi-Supervised Learning, various algorithms have
+emerged, each founded on distinct methodologies, such as the following
+figures: <img src="../images/386.png" /> In this discussion, we'll
+center our attention on the second method: Consistency Regularization.
+The "Mean Teacher" concept plays a pivotal role in this context, serving
+as a fundamental cornerstone upon which many other algorithms are
+built.</p>
+<h1 id="how-does-mean-teacher-work">How does mean teacher work</h1>
+<p>Here is the basic frame of mean teacher: <img
+src="../images/387.png" /> Within the Mean Teacher framework, there are
+two same models employed with distinct training strategies: <strong>the
+student model</strong> and <strong>the teacher model</strong>.</p>
+<p>The workflow of the Mean Teacher framework follows these steps:</p>
+<ol type="1">
+<li><p><strong>Adding Noise</strong>: Noise is introduced to the input
+data, both for labeled and unlabeled data.</p></li>
+<li><p><strong>Model Training</strong>:</p>
+<ul>
+<li><strong>Unlabeled Data</strong>: The unlabeled data is passed
+through two models, the student model and the teacher model.</li>
+<li><strong>Labeled Data</strong>: The labeled data is exclusively fed
+into the student model.</li>
+</ul></li>
+<li><p><strong>Classification Loss Calculation</strong>: The framework
+calculates the classification loss by comparing the results obtained
+from the student model with the actual labels. This loss quantifies the
+error in the model's predictions.</p></li>
+<li><p><strong>Consistency Cost Calculation</strong>: The consistency
+cost is computed between the student model and the teacher model. This
+cost is typically defined as the Mean Squared Error (MSE) between the
+predictions of the two models. It measures the similarity or consistency
+of their predictions on the same input data:</p></li>
+</ol>
+<p><span class="math display">\[
+J(\theta)=E_{x,\eta&#39;,\eta}[|f(x,\theta&#39;,\eta&#39;)-f(x,\theta,\eta)|^2]
+\]</span></p>
+<p>where: <span class="math inline">\(x\)</span> is input data, <span
+class="math inline">\(\theta&#39;\)</span> and <span
+class="math inline">\(\theta\)</span> mean the weights of two models,
+<span class="math inline">\(\eta&#39;\)</span> and <span
+class="math inline">\(\eta\)</span> are the noise * The total loss in
+the Mean Teacher framework combines two different losses above: the
+classification loss and the consistency cost.</p>
+<ul>
+<li><p>update the weights of teacher model with the following form:</p>
+<p><span class="math display">\[
+\theta&#39;_t = \alpha\theta&#39;_{t-1}+(1-\alpha)\theta_t
+\]</span></p>
+<p>where <span class="math inline">\(\alpha\)</span> is a smoothing
+coefficient hyper parameter.</p></li>
+</ul>
+<h1 id="some-detail-about-mean-teacher">Some detail about mean
+teacher</h1>
+<h2 id="details-about-noise">Details about Noise:</h2>
+<p>In the Mean Teacher framework, various types of noise are introduced
+to the input data to enhance the robustness of the model. These
+include:</p>
+<ol type="1">
+<li><strong>Random Shift</strong>: Randomly shifting the input data to
+introduce positional variability.</li>
+<li><strong>Random Horizontal Flip</strong>: Applying random horizontal
+flips to the input data to create mirrored versions.</li>
+<li><strong>Gaussian Noise</strong>: Adding Gaussian noise to the input
+layer, which introduces random variations.</li>
+<li><strong>Dropout</strong>: Applying dropout to the network, which
+temporarily deactivates random neurons during training, forcing the
+model to learn more robust features.</li>
+</ol>
+<h2 id="details-about-hyperparameters">Details about
+Hyperparameters:</h2>
+<ol type="1">
+<li><strong>Consistency Cost (L2 Loss)</strong>: The consistency cost,
+which measures the similarity between the student and teacher model
+predictions, uses L2 loss. The weight of this cost increases gradually
+from 0 to its final value during the first 80 epochs of training.</li>
+<li><strong>Alpha (α)</strong>: The hyperparameter α controls the rate
+at which the teacher model's weights are updated. Initially, it is set
+to 0.99, and later it increases to 0.999. This choice is based on the
+observation that the student model tends to improve more rapidly in the
+early stages of training. A smaller α allows the teacher model to forget
+old and potentially inaccurate student model weights more quickly. As
+training progresses and the student model improves more slowly, a larger
+α allows the teacher model to retain longer-term memory and benefit from
+the accumulated knowledge.</li>
+</ol>
+<h3 id="details-about-predictions">Details about Predictions:</h3>
+<p>The authors note that both the student and teacher models can be used
+for making predictions. However, after training, the predictions
+generated by the teacher model are more likely to be correct.</p>
+<h1 id="why-mean-teacher">Why mean teacher</h1>
+<h2 id="compare-with-temporal-ensembling">Compare with Temporal
+Ensembling</h2>
+<p>The "Mean Teacher" concept can be seen as an improvement over
+Temporal Ensembling. In Temporal Ensembling, a similar concept of
+Exponential Moving Average (EMA) is utilized, but <strong>it employs
+predictions for the averaging process</strong>. This approach means
+that</p>
+<ul>
+<li>each target update occurs once per epoch, which can become
+time-consuming, especially with large datasets.</li>
+<li>The process of incorporating the learned information into the
+training procedure can be sluggish.</li>
+</ul>
+<p>To address this challenge, Mean Teacher introduces a novel approach.
+Instead of averaging based on predictions, it performs averaging on the
+model's weight parameters. This innovation allows for a more efficient
+and streamlined integration of learned information during the training
+process.</p>
+<h2 id="its-influence">Its influence</h2>
+<p>Given that the paper is now five years old, even though it achieved
+SOTA with some dataset in some tasks, we don't care about it, instead,
+we are more interested in assessing its lasting influence and impact on
+the field.</p>
+<p>As we show in the "Introduction" above:</p>
+<blockquote>
+<p>The "Mean Teacher" serves as a fundamental cornerstone upon which
+many other algorithms are built.</p>
+</blockquote>
+<p>Here, I will provide a brief introduction to some of these concepts
+or topics. For detailed information on the specific paper, please refer
+to "Inference[1]."</p>
+<h2 id="input-perturbations">Input perturbations</h2>
+<p>The basic frame looks like: <img src="../images/388.png" /></p>
+<p>It is very similar to the Mean Teacher model, incorporates input
+perturbations in the unlabeled data by means of the mix function and the
+M mask. “Mix” here is a function, which obtains two images and returns
+the combination of them.</p>
+<p>the main data augmentation methods are:</p>
+<ul>
+<li><p>CutOut and CutMix(2020): </p>
+<ul>
+<li><p><strong>CutOut</strong>: CutOut discards the rectangular section
+marked by the mask in the training process. Then, the consistency
+between the predictions of the original image and the modified image is
+forced by the regularization term</p></li>
+<li><p><strong>CutMix</strong>: Use rectangular section marked to
+combine two images, one is from the original image, the other is from
+another image</p></li>
+</ul></li>
+<li><p><strong>ClassMix</strong>: Similar as CutMix, but here toward to
+the rectangular section marked, use the same class-image</p></li>
+<li><p><strong>ComplexMix</strong>: proposes the combined use of CutMix
+and ClassMix</p></li>
+</ul>
+<h2 id="feature-perturbations">Feature perturbations</h2>
+<p><img src="../images/389.png" /> That is: extends a supervised
+segmentation model with an encoder-decoder structure with some auxiliary
+decoders, </p>
+<ul>
+<li>First, a supervised training is carried out with the available
+labeled data, using the main decoder. </li>
+<li>And then, when inputting the unlabeled data, the encoder output is
+perturbed in different ways, resulting in different versions of the same
+features, which are directed to different auxiliary decoders. </li>
+<li>Finally, consistency between the outputs of the auxiliary decoders
+is enforced, favoring similar predictions for different perturbed
+versions of the encoder output features.</li>
+</ul>
+<p>(Shortly: use labeled data to train encoder-decoder, and then do some
+perturbations in the output of encoder, use regularization to make the
+results from different decoder same)</p>
+<h2 id="network-perturbations">Network perturbations</h2>
+<p><img src="../images/390.png" /> The model is based on two models.</p>
+<p>Similar to the Mean Teacher model, but here, training of the two
+networks involved is carried out in a parallel and independent way,
+instead of updating one ac- cording to the EMA of the other. These two
+models:</p>
+<ul>
+<li>use different initial-methods to initial the weight of the
+model. </li>
+<li>but always use regularization-term to make the predictions from
+different models the same.</li>
+</ul>
+<h1 id="conclusion">Conclusion</h1>
+<p>When embarking on a new project involving Semi-Supervised Learning,
+it's worth considering that the "mean teacher" framework may not
+necessarily be the optimal choice, but rather an alternative to
+explore.</p>
+<h1 id="inference">Inference</h1>
+<p>[1] <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2302.09899.pdf">A Survey on
+Semi-Supervised Semantic Segmentation</a></p>
+<p>[2] <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1703.01780.pdf">Mean teachers are
+better role models: Weight-averaged consistency targets improve
+semi-supervised deep learning results</a></p>
+<p>[3] <a
+target="_blank" rel="noopener" href="https://bksaini078.medium.com/machine-learning-understanding-mean-teacher-model-ffb8d07819a4">Machine
+Learning: Understanding Mean Teacher Model</a></p>
+<p>[4] <a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/577959642">半监督学习算法Mean
+Teachers</a></p>
+<p>[5] <a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/467917019">论文阅读笔记：Mean
+teachers are better role models</a></p>
+
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+      
+    </div>
+
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/41.html" rel="prev" title="Deal with imbalance dataset -- Sampler">
+      <i class="fa fa-chevron-left"></i> Deal with imbalance dataset -- Sampler
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/43.html" rel="next" title="Class-Imbalanced Semi-Supervised Learning with Adaptive-Thresholding">
+      Class-Imbalanced Semi-Supervised Learning with Adaptive-Thresholding <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#how-does-mean-teacher-work"><span class="nav-number">2.</span> <span class="nav-text">How does mean teacher work</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#some-detail-about-mean-teacher"><span class="nav-number">3.</span> <span class="nav-text">Some detail about mean
+teacher</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#details-about-noise"><span class="nav-number">3.1.</span> <span class="nav-text">Details about Noise:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#details-about-hyperparameters"><span class="nav-number">3.2.</span> <span class="nav-text">Details about
+Hyperparameters:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#details-about-predictions"><span class="nav-number">3.2.1.</span> <span class="nav-text">Details about Predictions:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#why-mean-teacher"><span class="nav-number">4.</span> <span class="nav-text">Why mean teacher</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#compare-with-temporal-ensembling"><span class="nav-number">4.1.</span> <span class="nav-text">Compare with Temporal
+Ensembling</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#its-influence"><span class="nav-number">4.2.</span> <span class="nav-text">Its influence</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#input-perturbations"><span class="nav-number">4.3.</span> <span class="nav-text">Input perturbations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#feature-perturbations"><span class="nav-number">4.4.</span> <span class="nav-text">Feature perturbations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#network-perturbations"><span class="nav-number">4.5.</span> <span class="nav-text">Network perturbations</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#conclusion"><span class="nav-number">5.</span> <span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#inference"><span class="nav-number">6.</span> <span class="nav-text">Inference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="super wzl"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">super wzl</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">super wzl</span>
+</div>
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-611ffbcfffca5ad1" async="async"></script>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'JbTCzSGo7EeV9tTlVHeWHuWx-MdYXbMMI',
+      appKey     : '3yO7D6U6pVQy4RVNcsKIxy4m',
+      placeholder: "来唠两句吗？",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
